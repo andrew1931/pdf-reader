@@ -6,7 +6,7 @@ export default tseslint.config(
     {
         ignores: [
             "**/dist/*",
-            "esbuild.config.mjs",
+            "esbuild.config.js",
             "tailwind.config.js",
         ]
     },

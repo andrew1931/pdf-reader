@@ -3,8 +3,8 @@
     "version": "0.1.0",
     "description": "",
     "scripts": {
-        "build:dev": "node ./esbuild.config.mjs",
-        "build:prod": "node ./esbuild.config.mjs --prod",
+        "build:dev": "node ./esbuild.config.js",
+        "build:prod": "node ./esbuild.config.js --prod",
         "lint": "eslint ."
     },
     "author": "",
