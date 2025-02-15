@@ -1,6 +1,6 @@
 {
     "tasks": {
-        "start": "deno run --env-file=../.env --allow-env --allow-net --allow-read --allow-write --allow-ffi --allow-sys ./src/main.ts"
+        "start": "deno run --env-file=.env --allow-env --allow-net --allow-read --allow-write --allow-ffi --allow-sys ./src/main.ts"
     },
     "imports": {
         "@deno-library/logger": "jsr:@deno-library/logger@^1.1.8",
