@@ -30,7 +30,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "andrewkuzmo-pdf-swiper-22"
-          entrypoint: "src/main.ts"
-          root: "deno-app"
+          entrypoint: "deno-app/src/main.ts"
+          root: "./"
           
           
