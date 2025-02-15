@@ -1,0 +1,5 @@
+client-app/dist
+client-app/node_modules
+
+deno-app/log
+.DS_Store

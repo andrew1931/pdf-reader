@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind utilities;
+
+html {
+   --outline-color: #eab308;
+   --outline-button-color: #eab308;
+   --active-color: #eab308;
+   --tabs-bg-color: #e5e7eb;
+   --tabs-color: #303337;
+   --active-tab-bg: #ffffff;
+   --active-tab-color: #127cff;
+   --link-color: #475569;
+   --link-hover-color: #243043;
+   --bg-color: #f8fafc;
+   --input-bg-color: #f8fafc;
+   --bg-color-modal: #f8fafc;
+   --title-color: #475569;
+   --subtitle-color: #64748b;
+   --card-bg-color: #ffffff;
+   --card-hover-bg-color: #f1f5f9;
+   --card-active-bg-color: #e2e8f0;
+   --swiper-arrows-opacity: 1;
+   --swiper-navigation-color: #475569;
+   --swiper-navigation-sides-offset: -2px;
+}
+
+html[theme="dark"] {
+   --outline-color: #127cff;
+   --outline-button-color: #eab308;
+   --active-color: #127cff;
+   --tabs-bg-color: #303337;
+   --tabs-color: #cbd5e1;
+   --active-tab-bg: #127cff; 
+   --active-tab-color: #ffffff;
+   --link-color: #cbd5e1;
+   --link-hover-color: #94a3b8;
+   --bg-color: #242629;
+   --input-bg-color: #303337;
+   --bg-color-modal: #1d1d20;
+   --title-color: #f1f5f9;
+   --subtitle-color: #e2e8f0;
+   --card-bg-color: #102339;
+   --card-hover-bg-color: #112e4b;
+   --card-active-bg-color: #1f4164;
+   --swiper-navigation-color: #ffffff;
+}
+
+html[is-touch-device="true"] {
+   --swiper-arrows-opacity: 0;
+   /* --outline-button-color: transparent; */
+   /* --outline-color: transparent; */
+   /* --link-hover-color: var(--link-color); */
+   /* --card-hover-bg-color: transparent; */
+}
+
+.swiper .swiper-button-prev,
+.swiper .swiper-button-next {
+   opacity: var(--swiper-arrows-opacity);
+}
+
+.disable-dbl-tap-zoom {
+   touch-action: manipulation;
+ }
+
+button, input, textarea, a {
+   outline-offset: 3px !important;
+   outline-width: 2px !important;
+   outline-color: transparent !important;
+   outline-style: solid !important;
+}
+
+.btn:focus, .toggle:focus, input:focus, textarea:focus {
+   outline-color: var(--outline-color) !important;
+}
+
+input[type="range"]:focus + div .knob {
+   /* box-shadow: 0px 0px 0px 1px var(--outline-button-color) !important; */
+   border: 2px solid var(--outline-button-color);
+}
+
+button:focus, a:focus {
+   color: var(--outline-button-color) !important;
+}
+
+/* .btn:active {
+   backdrop-filter: brightness(90%);
+} */
+
+input, textarea, .progress-text {
+   background-color: var(--input-bg-color);
+   color: var(--subtitle-color);
+}
+
+.input-icon {
+   color: var(--subtitle-color);
+}
+
+.file-attached {
+   background-color: var(--card-active-bg-color);
+   color: var(--subtitle-color);
+}
+
+html, body, #app, #layout, .document-view-container  {
+   height: 100%;
+   background-color: var(--bg-color);
+}
+
+.card, .header {
+   background-color: var(--card-bg-color);
+   color: var(--title-color);
+}
+
+.modal, .preview {
+   background-color: var(--bg-color-modal);
+   color: var(--title-color);
+}
+
+.card:active {
+   background-color: var(--card-active-bg-color) !important;
+}
+
+.card:hover {
+   background-color: var(--card-hover-bg-color);
+}
+
+.title {
+   color: var(--title-color);
+}
+
+.subtitle {
+   color: var(--subtitle-color);
+}
+
+.link, .label {
+   color: var(--link-color);
+}
+
+.link:active {
+   color: var(--active-color) !important;
+}
+
+.link:hover {
+   color: var(--link-hover-color);
+}
+
+.header button:active {
+   background-color: var(--card-active-bg-color);
+   color: var(--active-tab-color);
+}
+
+.tabs {
+   background-color: var(--tabs-bg-color);
+   color: var(--tabs-color);
+}
+
+.active-tab {
+   color: var(--active-tab-color);
+}
+
+.tabs-active {
+   background-color: var(--active-tab-bg);
+}
