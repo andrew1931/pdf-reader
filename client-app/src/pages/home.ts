@@ -30,7 +30,7 @@ export const DocumentsTitle = (orderBy: HTMLElement): HTMLElement => {
         "mx-auto"
     );
 
-    const title = document.createElement("h3");
+    const title = document.createElement("h2");
     title.classList.add(
         "subtitle",
         "text-center",
