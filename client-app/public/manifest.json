@@ -3,7 +3,7 @@
     "short_name": "Pdf Swiper",
     "id": "/?page=1",
     "start_url": "/?page=1",
-    "description": "App for swiping local pdf files like a book",
+    "description": "App for swiping local pdf file pages",
     "display_override": ["window-controls-overlay"],
     "display": "standalone",
     "icons": [
