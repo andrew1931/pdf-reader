@@ -58,7 +58,9 @@ export const Header = (): HTMLElement => {
 
         link.append(iconWrapper, textWrapper);
       
-        ul.appendChild(link);
+        const li = document.createElement("li");
+        li.appendChild(link);
+        ul.appendChild(li);
     });
     el.appendChild(ul);
     return el;

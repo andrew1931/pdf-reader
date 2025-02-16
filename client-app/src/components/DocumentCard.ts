@@ -2,15 +2,9 @@ import { type DbFileMeta } from "../core/DB";
 import { DocumentPreview } from "./DocumentPreview/DocumentPreview";
 
 export const DocumentCard = (doc: DbFileMeta) => {
-    const li = document.createElement("button");
-    li.setAttribute("aria-label", "Document card");
+    const li = document.createElement("li");
     li.classList.add(
-        "btn",
         "cursor-pointer",
-        "relative",
-        "flex",
-        "items-center",
-        "justify-center",
         "w-full",
         "sm:w-[46%]", 
         "md:w-[31%]", 
@@ -22,12 +16,6 @@ export const DocumentCard = (doc: DbFileMeta) => {
         "lg:h-72",
         "rounded-md",
         "mb-6",
-        "overflow-visible",
-        "shadow-card",
-        "p-2",
-        "bg-gradient-to-r", 
-        "from-sky-500", 
-        "to-indigo-500",
         "md:transition-transform",
         "md:active:scale-95",
     );
@@ -83,7 +71,27 @@ export const DocumentCard = (doc: DbFileMeta) => {
         "-top-1.5",   
     );
 
-    li.onclick = () => DocumentPreview.show(doc);
-    li.append(innerBorder, badgesWrapper);
+    const button = document.createElement("button");
+    button.setAttribute("aria-label", "Document card");
+    button.classList.add(
+        "btn",
+        "cursor-pointer",
+        "relative",
+        "flex",
+        "items-center",
+        "justify-center",
+        "rounded-[inherit]",
+        "h-full",
+        "w-full",
+        "bg-gradient-to-r",
+        "from-sky-500", 
+        "to-indigo-500",
+        "p-2",
+        "shadow-card",
+        "overflow-visible",
+    );
+    button.onclick = () => DocumentPreview.show(doc);
+    button.append(innerBorder, badgesWrapper);
+    li.appendChild(button);
     return li;
 };

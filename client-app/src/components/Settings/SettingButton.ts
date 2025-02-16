@@ -13,8 +13,9 @@ export const SettingButton = (item: SettingsActionButton) => {
     const labelEl = document.createElement("span");
     labelEl.innerText = item.label;
 
-    const link = document.createElement("button");
-    link.classList.add(
+    const button = document.createElement("button");
+    button.setAttribute("aria-label", item.label);
+    button.classList.add(
         "card",
         "w-full",
         "flex",
@@ -29,16 +30,15 @@ export const SettingButton = (item: SettingsActionButton) => {
         "cursor-pointer"
     );
 
-    link.onclick = (e) => {
+    button.onclick = (e) => {
         e.preventDefault();
         item.action();
-        link.blur();
+        button.blur();
     };
 
-    link.append(iconEl, labelEl);
+    button.append(iconEl, labelEl);
     if (item.labelInfo) {
-        link.appendChild(item.labelInfo);
+        button.appendChild(item.labelInfo);
     }
-
-    return link;
+    return button;
 };
