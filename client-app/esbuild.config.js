@@ -2,7 +2,7 @@ const { build } = require("esbuild");
 const { rmSync, cpSync, copyFileSync } = require("node:fs");
 const { resolve, join } = require("node:path");
 const { execSync } = require("node:child_process");
-require("dotenv").config({ path: "../.env" });
+require("dotenv").config({ path: "../deno-app/.env" });
 
 const isProd = process.argv.includes("--prod");
 const outDir = resolve(__dirname, "../deno-app/dist");
