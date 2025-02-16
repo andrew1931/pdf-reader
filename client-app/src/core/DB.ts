@@ -176,6 +176,7 @@ export const DB = (() => {
             numberOfPages?: number,
             lastViewedPage?: number
       }): Promise<void> {
+            if (dbIsDisabled) return Promise.reject(new NotEnabledError());
             return new Promise((resolve, reject) => {
                 transaction<DbFileMeta>(FILES_META_STORE, (files) => files.get(fileName))
                     .then((file) => {

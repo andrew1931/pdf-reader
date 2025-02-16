@@ -65,11 +65,13 @@ export const DocumentsList = (): HTMLElement => {
         DB.getAllFilesMeta()
             .then((files) => {
                 fetchedFiles = files;
-                list.innerHTML = "";
+                listWrapper.innerHTML = "";
                 if (files.length > 0) {
+                    list.innerHTML = "";
                     sortByDate(sorOrder).forEach(listItemCb);
+                    listWrapper.append(list);
                 } else {
-                    list.appendChild(emptyList);
+                    listWrapper.appendChild(emptyList);
                 }
                 usePaginationRequest.emit(files.length);
             })
@@ -95,6 +97,5 @@ export const DocumentsList = (): HTMLElement => {
         fetchDocuments();
     });
 
-    listWrapper.append(list);
     return listWrapper;
 };

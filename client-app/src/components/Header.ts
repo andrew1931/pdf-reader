@@ -36,12 +36,14 @@ export const Header = (): HTMLElement => {
             "rounded-full",
             "w-[63px]",
             "h-[63px]",
+            "mt-1",
+            "mb-2",
+            "md:flex-row",
+            "md:p-2",
             "md:w-auto",
             "md:h-auto",
             "md:mx-4",
-            "mt-1",
             "md:mt-4",
-            "mb-2",
         );
         if (isActive) {
             link.classList.add("text-button-400");
@@ -54,18 +56,8 @@ export const Header = (): HTMLElement => {
         textWrapper.innerText = item.label;
         textWrapper.classList.add("text-[10px]", "md:underline", "md:text-sm", "md:ml-1");
 
-        const li = document.createElement("li");
-        li.classList.add(
-            "flex",
-            "flex-col",
-            "md:flex-row",
-            "justify-center",
-            "items-center",
-            "md:p-2"
-        );
-        li.append(iconWrapper, textWrapper);
+        link.append(iconWrapper, textWrapper);
       
-        link.appendChild(li);
         ul.appendChild(link);
     });
     el.appendChild(ul);

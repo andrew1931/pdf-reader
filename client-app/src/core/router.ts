@@ -1,5 +1,5 @@
 import { useRouterPush } from "./hooks";
-import { debounce } from "./utils";
+import { debounce, isTouchDevice } from "./utils";
 
 type Route = {
    path: string;
@@ -72,8 +72,11 @@ export const useQueryParamsChange = (effect: SideEffect) => {
 
 export const navigate = (url: string) => {
     const prevUrl = window.location.href;
-    window.history.pushState({}, "", url);
-    // window.history.replaceState({}, "", url);
+    if (isTouchDevice()) {
+        window.history.replaceState({}, "", url);
+    } else {
+        window.history.pushState({}, "", url);
+    }
     useRouterPush.emit();
     handleQueryParamsEffects(prevUrl);
 };
