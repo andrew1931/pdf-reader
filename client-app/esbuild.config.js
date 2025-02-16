@@ -18,7 +18,9 @@ build({
         resolve(__dirname, pdfWorkerPath, "pdf.min.mjs")
     ],
     define: {
-        API_URL: JSON.stringify("http://" + process.env.HOST + ":" + process.env.PORT + "/api")
+        API_URL: JSON.stringify(
+            isProd ? "https://pdf-swiper.com" : "http://" + process.env.HOST + ":" + process.env.PORT + "/api"
+        )
     },
     write: true,
     bundle: true,
