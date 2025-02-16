@@ -22,7 +22,7 @@ export const USER_ROLES = {
 
 export const ApiClient = (() => {
     // @ts-expect-error API_URL is defined in esbuild config
-    const httpClient = HttpClient(API_URL);
+    const httpClient = HttpClient(API_URL + "/api");
 
     return {
         logError(path: string, message: unknown) {

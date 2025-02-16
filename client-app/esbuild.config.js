@@ -19,7 +19,7 @@ build({
     ],
     define: {
         API_URL: JSON.stringify(
-            isProd ? "https://pdf-swiper.com" : "http://" + process.env.HOST + ":" + process.env.PORT + "/api"
+            isProd ? "https://pdf-swiper.com" : "http://" + process.env.HOST + ":" + process.env.PORT 
         )
     },
     write: true,
