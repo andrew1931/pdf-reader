@@ -8,5 +8,4 @@ process.chdir(__dirname);
 
 process.chdir(resolve(__dirname, "deno-app"));
 execSync(("deno install --allow-scripts"));
-execSync(("deno run start"));
 process.chdir(__dirname);

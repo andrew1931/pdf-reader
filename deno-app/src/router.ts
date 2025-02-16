@@ -66,82 +66,82 @@ export const Router = (() => {
             logger.debug("path:", pathname);
             for (const route of assetsRoutes) {
                 if (pathname.startsWith(route)) {
-                return {
-                    type: "dir",
-                    status: 200,
-                    data: route,
-                    urlRoot: route,
-                    errorMessage: "",
-                }
+                    return {
+                        type: "dir",
+                        status: 200,
+                        data: route,
+                        urlRoot: route,
+                        errorMessage: "",
+                    }
                 }
             }
 
             if (streamRoutes.has(pathname)) {
                 try {
-                const handler = await streamRoutes.get(pathname) as StreamHandler;
-                const data = new ReadableStream({
-                    start(controller) {
-                        handler(req, controller)
+                    const handler = await streamRoutes.get(pathname) as StreamHandler;
+                    const data = new ReadableStream({
+                        start(controller) {
+                            handler(req, controller)
                             .then((res) => {
-                            try {
-                                controller.enqueue(
-                                    steamResponse(res, 200)
-                                );
-                                controller.close();
-                            } catch (error) {
-                                throw error;
-                            }
+                                try {
+                                    controller.enqueue(
+                                        steamResponse(res, 200)
+                                    );
+                                    controller.close();
+                                } catch (error) {
+                                    throw error;
+                                }
                             })
                             .catch((error) => {
-                            try {
-                                controller.enqueue(
-                                    steamResponse(errorToString(error), 400)
-                                );
-                                controller.close();
-                            } catch (error) {
-                                logger.error(errorToString(error));
-                            }
+                                try {
+                                    controller.enqueue(
+                                        steamResponse(errorToString(error), 400)
+                                    );
+                                    controller.close();
+                                } catch (error) {
+                                    logger.error(errorToString(error));
+                                }
                             })
-                    },
-                    cancel() {}
-                });
+                        },
+                        cancel() {}
+                    });
 
-                return {
-                    type: "stream",
-                    status: 200,
-                    data,
-                    errorMessage: ""
-                }
+                    return {
+                        type: "stream",
+                        status: 200,
+                        data,
+                        errorMessage: ""
+                    }
                 } catch (error: unknown) {
-                const strError = errorToString(error);
-                logger.error(strError);
-                return {
-                    type: "stream",
-                    status: getErrorCode(error),
-                    data: null,
-                    errorMessage: strError
-                }
+                    const strError = errorToString(error);
+                    logger.error(strError);
+                    return {
+                        type: "stream",
+                        status: getErrorCode(error),
+                        data: null,
+                        errorMessage: strError
+                    }
                 }
             }
 
             if (apiRoutes.has(pathname)) {
                 try {
-                const data = await apiRoutes.get(pathname)(req);
-                return {
-                    type: "json",
-                    status: 200,
-                    data,
-                    errorMessage: ""
-                }
+                    const data = await apiRoutes.get(pathname)(req);
+                    return {
+                        type: "json",
+                        status: 200,
+                        data,
+                        errorMessage: ""
+                    }
                 } catch (error: unknown) {
-                const strError = errorToString(error);
-                logger.error(strError);
-                return {
-                    type: "json",
-                    status: getErrorCode(error),
-                    data: null,
-                    errorMessage: strError
-                }
+                    const strError = errorToString(error);
+                    logger.error(strError);
+                    return {
+                        type: "json",
+                        status: getErrorCode(error),
+                        data: null,
+                        errorMessage: strError
+                    }
                 }
             }
 

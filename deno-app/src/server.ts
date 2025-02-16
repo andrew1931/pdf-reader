@@ -24,33 +24,33 @@ export const Server = (() => {
             Deno.serve({ port: config.port, hostname: config.host }, (req) => {
                 return Router.handle(req)
                 .then((response) => {
-                if (response.type === "file") {
-                    return serveFile(req, response.data as string);
-                }
+                    if (response.type === "file") {
+                        return serveFile(req, response.data as string);
+                    }
 
-                if (response.type === "dir") {
-                    return serveDir(req, {
-                        fsRoot: response.data as string,
-                        urlRoot: response.urlRoot || ''
-                    });
-                }
+                    if (response.type === "dir") {
+                        return serveDir(req, {
+                            fsRoot: response.data as string,
+                            urlRoot: response.urlRoot || ''
+                        });
+                    }
 
-                if (response.type === "stream") {
-                    return new Response(response.data as ReadableStream, {
-                        headers: {
-                            "content-type": "text/plain",
-                            "x-content-type-options": "nosniff",
-                        },
-                    });
-                }
+                    if (response.type === "stream") {
+                        return new Response(response.data as ReadableStream, {
+                            headers: {
+                                "content-type": "text/plain",
+                                "x-content-type-options": "nosniff",
+                            },
+                        });
+                    }
 
-                return Response.json(response)
+                    return Response.json(response)
                 })
                 .catch(() => {
-                return Response.json({
-                    status: 500,
-                    data: "unknown error"
-                })
+                    return Response.json({
+                        status: 500,
+                        data: "unknown error"
+                    })
                 });
             });
         }
