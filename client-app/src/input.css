@@ -163,6 +163,15 @@ html, body, #app, #layout, .document-view-container  {
     background-color: var(--active-tab-bg);
 }
 
+.policy-text h2 {
+    font-weight: 600;
+    margin: 0;
+}
+
+.policy-text a {
+    color: #127cff;
+}
+
 @media (max-width: 640px) {
     * {
         --swiper-arrows-visibility: none
