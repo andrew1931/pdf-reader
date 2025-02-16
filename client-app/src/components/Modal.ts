@@ -50,6 +50,7 @@ export const Modal = (() => {
     );
 
     const closIcon = document.createElement("button");
+    closIcon.setAttribute("aria-label", "Close modal");
     closIcon.innerHTML = CloseIcon;
     closIcon.onclick = closeModal;
     closIcon.classList.add("w-7", "h-7", "cursor-pointer", "absolute", "right-0", "p-1");

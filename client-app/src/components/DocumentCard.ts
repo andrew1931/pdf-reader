@@ -3,6 +3,7 @@ import { DocumentPreview } from "./DocumentPreview/DocumentPreview";
 
 export const DocumentCard = (doc: DbFileMeta) => {
     const li = document.createElement("button");
+    li.setAttribute("aria-label", "Document card");
     li.classList.add(
         "btn",
         "cursor-pointer",

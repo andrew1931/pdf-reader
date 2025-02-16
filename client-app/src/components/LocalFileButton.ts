@@ -38,6 +38,7 @@ export const LocalFileButton = () => {
     buttonIcon.classList.add("w-4", "mr-2");
 
     const fileBtn = document.createElement("button");
+    fileBtn.setAttribute("aria-label", "Choose local file");
     fileBtn.append(buttonIcon, buttonText);
     fileBtn.classList.add(
         "flex",

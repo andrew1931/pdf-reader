@@ -12,6 +12,7 @@ export const ReadingControls = () => {
     const wrapper = document.createElement("div");
 
     const closeButton = document.createElement("button");
+    closeButton.setAttribute("aria-label", "Close document");
     closeButton.innerHTML = CloseIcon;
     closeButton.classList.add("w-6", "text-slate-300");
 
@@ -39,6 +40,7 @@ export const ReadingControls = () => {
     pagesInfo.classList.add("text-slate-100", "font-medium", "text-sm", "ml-auto");
 
     const settingsButton = document.createElement("button");
+    settingsButton.setAttribute("aria-label", "Reading settings");
     settingsButton.innerHTML = SettingsIcon;
     settingsButton.classList.add("w-6", "text-slate-100", "ml-auto");
     settingsButton.onclick = (e) => {

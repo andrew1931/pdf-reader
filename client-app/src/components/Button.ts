@@ -45,6 +45,7 @@ const Button = (text: string) => {
         "relative",
         "self-end",
     );
+    el.setAttribute("aria-label", text);
     el.append(buttonText);
     return el;
 };

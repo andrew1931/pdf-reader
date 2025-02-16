@@ -59,7 +59,7 @@ export const Tabs = (tabList: Tab[], paramKey = "") => {
             "h-[44px]",
             tabWidth,
         );
-      
+        li.setAttribute("aria-label", "Tab " + item.label);
         li.innerText = item.label;
         li.onclick = () => {
             activeLocalTab = item.param;

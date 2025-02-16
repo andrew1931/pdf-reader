@@ -30,6 +30,7 @@ export const Toggle = (defaultValue: boolean) => {
         "items-center",
         "disable-dbl-tap-zoom"
     );
+    toggle.setAttribute("aria-label", "Toggle button");
     toggle.append(handle);
 
     handleCheckedStyle();

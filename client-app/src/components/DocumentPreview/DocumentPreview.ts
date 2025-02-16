@@ -61,6 +61,7 @@ const MenuItems = (
             "text-start",
             "cursor-pointer"
         );
+        btn.setAttribute("aria-label", item.label);
         const label = document.createElement("span");
         label.innerText = item.label;
         const icon = document.createElement("span");
