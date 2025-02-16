@@ -1,3 +1,4 @@
+import * as path from "jsr:@std/path";
 import { NotAuthorizedError } from "./api/user.controller.ts";
 import { config } from "./config.ts";
 import { logger } from "./logger.ts";
@@ -17,7 +18,7 @@ const normalizePathname = (initialPath: string) => {
 export type StreamHandler = (req: Request, controller: ReadableStreamDefaultController) => Promise<unknown>;
 
 type RouterResponse = {
-    type: "dir" | "file" | "json" | "stream";
+    type: "file" | "json" | "stream";
     status: number;
     data: unknown;
     errorMessage: string;
@@ -25,7 +26,6 @@ type RouterResponse = {
 }
 
 export const Router = (() => {
-    const assetsRoutes: Set<string> = new Set();
     const apiRoutes = new Map();
     const streamRoutes = new Map();
 
@@ -47,9 +47,6 @@ export const Router = (() => {
     };
 
     return {
-        asset(path: string): void {
-            assetsRoutes.add(path);
-        },
         stream(path: string, handler: StreamHandler): void {
             streamRoutes.set(path, handler);
         },
@@ -64,17 +61,6 @@ export const Router = (() => {
             const pathname = normalizePathname(url.pathname);
 
             logger.debug("path:", pathname);
-            for (const route of assetsRoutes) {
-                if (pathname.startsWith(route)) {
-                    return {
-                        type: "dir",
-                        status: 200,
-                        data: route,
-                        urlRoot: route,
-                        errorMessage: "",
-                    }
-                }
-            }
 
             if (streamRoutes.has(pathname)) {
                 try {
@@ -150,7 +136,7 @@ export const Router = (() => {
             return {
                 type: "file",
                 status: 200,
-                data: config.clientAppDir + targetFile,
+                data: path.join(config.clientAppDir, targetFile),
                 errorMessage: ""
             }
         }

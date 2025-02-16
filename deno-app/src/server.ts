@@ -1,5 +1,5 @@
 import { config } from "./config.ts";
-import { serveDir, serveFile } from "@std/http/file-server";
+import { serveFile } from "@std/http/file-server";
 import { Router } from "./router.ts";
 import { IssueReportController } from "./api/issue-report.controller.ts";
 import { QuestionController } from "./api/question.controller.ts";
@@ -26,13 +26,6 @@ export const Server = (() => {
                 .then((response) => {
                     if (response.type === "file") {
                         return serveFile(req, response.data as string);
-                    }
-
-                    if (response.type === "dir") {
-                        return serveDir(req, {
-                            fsRoot: response.data as string,
-                            urlRoot: response.urlRoot || ''
-                        });
                     }
 
                     if (response.type === "stream") {
