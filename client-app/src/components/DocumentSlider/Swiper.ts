@@ -37,9 +37,14 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
     let swiper: Swiper | undefined;
     setTimeout(() => {
         swiper = new Swiper(".swiper", {
+            autoHeight: true,
             grabCursor: true,
             initialSlide: initialSlide <= numberOfSlides ? initialSlide : 0,
-            modules: [ Navigation, Keyboard, EffectCreative ],
+            modules: [
+                Navigation,
+                Keyboard, 
+                EffectCreative 
+            ],
             effect: "creative",
             creativeEffect: {
                 prev: {

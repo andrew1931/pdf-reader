@@ -50,7 +50,7 @@ export const Document = (() => {
                 return;
             }
             const canvas = document.createElement("canvas");
-            canvas.classList.add("max-w-full", "max-h-full", "bg-inherit",);
+            canvas.classList.add("max-w-full", "max-h-dvh", "bg-inherit",);
             canvases.push(canvas);
             renderer(canvas, index + 1).catch(console.error);
             slides[index].appendChild(canvas);

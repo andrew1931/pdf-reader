@@ -89,7 +89,6 @@ export const Settings = () => {
     function updateStorageInfo() {
         DB.getUsedSize()
             .then((size) => {
-                if (size === 0) return;
                 usedStorageEl.innerText = "(" + bytesToMb(size) + "mb)";
             });
     }
