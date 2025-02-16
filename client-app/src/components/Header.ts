@@ -54,7 +54,7 @@ export const Header = (): HTMLElement => {
         iconWrapper.innerHTML = item.icon;
         const textWrapper = document.createElement("span");
         textWrapper.innerText = item.label;
-        textWrapper.classList.add("text-[10px]", "md:underline", "md:text-sm", "md:ml-1");
+        textWrapper.classList.add("text-[10px]", "md:underline", "md:text-sm", "md:ml-2");
 
         link.append(iconWrapper, textWrapper);
       
