@@ -77,9 +77,14 @@ export const Settings = () => {
         "md:max-w-[70%]",
     );
 
+    const themeToggle = ThemeToggle();
+
     useDbInit.on(updateStorageInfo);
 
-    useNavigationEnter(updateStorageInfo);
+    useNavigationEnter(() => {
+        updateStorageInfo();
+        themeToggle.update();
+    });
 
     function updateStorageInfo() {
         DB.getUsedSize()
@@ -94,7 +99,7 @@ export const Settings = () => {
         wrapper.append(
             userEmailInfo("Anonym guest"),
             // joinedDateInfo(new Date().toString()),
-            ThemeToggle(),
+            themeToggle.target,
             DbToggle(),
             settingsButtons.storage(usedStorageEl),
             settingsButtons.question,

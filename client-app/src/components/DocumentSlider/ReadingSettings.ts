@@ -14,7 +14,7 @@ export const ReadingSettings = ({ numberOfPages, currentPage }) => {
     page.onChange(useDocumentPageChange.emit);
 
     settings.append(
-        ThemeToggle(),
+        ThemeToggle().target,
         page.target,
     );
 

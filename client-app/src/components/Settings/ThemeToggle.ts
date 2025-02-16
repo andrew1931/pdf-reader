@@ -19,5 +19,10 @@ export const ThemeToggle = () => {
     const toggle = Toggle(Theme.isDarkTheme());
     toggle.onChange(() => useThemeToggle.emit());
     label.append(text, toggle.target);
-    return label;
+    return {
+        target: label,
+        update() {
+            toggle.update(Theme.isDarkTheme());
+        }
+    };
 };
