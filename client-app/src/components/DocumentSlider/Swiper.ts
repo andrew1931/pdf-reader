@@ -1,5 +1,5 @@
 import Swiper from "swiper";
-import { Navigation, Keyboard } from "swiper/modules";
+import { Navigation, Keyboard, EffectCreative } from "swiper/modules";
 
 type SwipeSubscriber = (index: number) => void;
 
@@ -37,8 +37,19 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
     let swiper: Swiper | undefined;
     setTimeout(() => {
         swiper = new Swiper(".swiper", {
+            grabCursor: true,
             initialSlide: initialSlide <= numberOfSlides ? initialSlide : 0,
-            modules: [ Navigation, Keyboard ],
+            modules: [ Navigation, Keyboard, EffectCreative ],
+            effect: "creative",
+            creativeEffect: {
+                prev: {
+                    shadow: true,
+                    translate: [0, 0, -100],
+                },
+                next: {
+                    translate: ["100%", 0, 0],
+                },
+            },
             keyboard: true,
             navigation: {
                 nextEl: ".swiper-button-next",

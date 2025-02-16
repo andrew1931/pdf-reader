@@ -38,12 +38,8 @@ build({
         copyFileSync(join(outDir, baseDir, "app.js"), join(outDir, appScriptName));
         copyFileSync(join(__dirname, "index.html"), outputHTMLPath);
         copyFileSync(
-            join(__dirname, "node_modules/swiper/swiper.css"),
+            join(__dirname, "node_modules/swiper/swiper-bundle.min.css"),
             join(outDir, "swiper.css")
-        );
-        copyFileSync(
-            join(__dirname, "node_modules/swiper/modules/navigation.css"),
-            join(outDir, "swiper-navigation.css")
         );
 
         const indexHTML = readFileSync(outputHTMLPath);
