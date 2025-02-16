@@ -75,6 +75,9 @@ export const settingsButtons = {
                         DB.clear()
                             .then(() => {
                                 Toast.success("Cache was cleared successfully");
+                                setTimeout(() => {
+                                    window.location.reload();
+                                }, 1000);
                             })
                             .catch((error) => {
                                 Toast.error(error);

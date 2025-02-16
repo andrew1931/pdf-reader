@@ -51,21 +51,31 @@ export const DB = (() => {
         });
     };
 
-    const deleteDb = (cb: () => void) => {
+    const deleteDb = (): Promise<void> => {
         console.log("[DB] delete attempt");
-        try {
-            const request = indexedDB.deleteDatabase(DB_NAME);
-            request.onerror = (e) => {
-                console.error("[DB] Error deleting database: ", e);
-            };
-   
-            request.onsuccess = () => {
-                console.log("[DB] delete db success");
-                cb();
-            };
-        } catch (error) {
-            console.error("[DB] deleteDb", error);
-        }
+        return new Promise((resolve, reject) => {
+            try {
+                if (db) {
+                    db.close();
+                }
+                const request = indexedDB.deleteDatabase(DB_NAME);
+                request.onsuccess = () => {
+                    console.log("[DB] delete db success");
+                    resolve();
+                };
+                request.onerror = (e) => {
+                    console.error("[DB] Error deleting database: ", e);
+                    reject(e);
+                };
+                request.onblocked = () => {
+                    console.error("[DB] Error deleting database is blocked");
+                    reject("database is blocked");
+                };
+            } catch (error) {
+                console.error("[DB] deleteDb", error);
+                reject(error);
+            }
+        });
     };
 
     let connectAttempts = 0;
@@ -220,17 +230,7 @@ export const DB = (() => {
             });
         },
         clear(): Promise<void> {
-            return new Promise((resolve, reject) => {
-                Promise.all([
-                    transaction(FILES_STORE, (files) => files.clear()),
-                    transaction(FILES_META_STORE, (meta) => meta.clear())
-                ])
-                    .then(() => resolve())
-                    .catch((error) => {
-                        reject(error);
-                        deleteDb(resolve);
-                    });
-            });
+            return deleteDb();
         }
     };
 })();
