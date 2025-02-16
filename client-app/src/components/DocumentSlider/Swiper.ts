@@ -21,7 +21,7 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
             "swiper-slide",
             "h-full",
             "w-full",
-            "bg-inherit",
+            "bg-white",
             "items-center",
             "justify-center",
             "relative"
