@@ -1,5 +1,5 @@
 const { build } = require("esbuild");
-const { rmSync, cpSync, copyFileSync } = require("node:fs");
+const { rmSync, cpSync, copyFileSync, readFileSync, writeFileSync } = require("node:fs");
 const { resolve, join } = require("node:path");
 const { execSync } = require("node:child_process");
 require("dotenv").config({ path: "../deno-app/.env" });
@@ -29,12 +29,14 @@ build({
     outdir: outDir,
 })
     .then(() => {
+        const appScriptName = `app-${Date.now().toString()}.js`;
+        const outputHTMLPath = join(outDir, "index.html");
         cpSync(resolve(__dirname, "public"), outDir, { recursive: true });
         copyFileSync(join(__dirname, "package.json"), join(outDir, "package.json"));
         copyFileSync(join(outDir, pdfWorkerPath, "pdf.worker.min.js"), join(outDir, "pdf.worker.js"));
         copyFileSync(join(outDir, pdfWorkerPath, "pdf.min.js"), join(outDir, "pdf.min.js"));
-        copyFileSync(join(outDir, baseDir, "app.js"), join(outDir, "app.js"));
-        copyFileSync(join(__dirname, "index.html"), join(outDir, "index.html"));
+        copyFileSync(join(outDir, baseDir, "app.js"), join(outDir, appScriptName));
+        copyFileSync(join(__dirname, "index.html"), outputHTMLPath);
         copyFileSync(
             join(__dirname, "node_modules/swiper/swiper.css"),
             join(outDir, "swiper.css")
@@ -42,6 +44,12 @@ build({
         copyFileSync(
             join(__dirname, "node_modules/swiper/modules/navigation.css"),
             join(outDir, "swiper-navigation.css")
+        );
+
+        const indexHTML = readFileSync(outputHTMLPath);
+        writeFileSync(
+            outputHTMLPath,
+            indexHTML.toString().replace("{SCRIPT_PATH}", appScriptName)
         );
 
         rmSync(join(outDir, baseDir), { recursive: true, force: true });
