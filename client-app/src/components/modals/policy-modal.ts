@@ -12,5 +12,5 @@ export const PolicyModal = () => {
         .catch((error) => {
             text.innerHTML = errorToString(error);
         });
-    Modal.show("Our policy", text);
+    Modal.show("Privacy policy", text);
 };

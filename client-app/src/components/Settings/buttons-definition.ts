@@ -35,7 +35,7 @@ export const settingsButtons = {
         action: reportBugModal
     }),
     info: SettingButton({
-        label: "About app",
+        label: "Privacy policy",
         icon: InfoIcon,
         iconColor: "text-lime-500",
         action: PolicyModal
