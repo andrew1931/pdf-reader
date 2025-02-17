@@ -55,6 +55,11 @@ html[is-touch-device="true"] {
    /* --card-hover-bg-color: transparent; */
 }
 
+html.no-scroll {
+    overflow: hidden;
+    padding-right: 0;
+}
+
 .swiper .swiper-button-prev,
 .swiper .swiper-button-next {
     display: var(--swiper-arrows-visibility);

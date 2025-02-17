@@ -205,7 +205,9 @@ export const DocumentPreview = (() => {
                                     )
                                 );
                                 setTimeout(() => {
-                                    canvas.classList.remove("opacity-0");
+                                    if (isOpen) {
+                                        canvas.classList.remove("opacity-0");
+                                    }
                                 }, 300);
                             })
                             .catch((error) => {
