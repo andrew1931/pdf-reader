@@ -32,11 +32,11 @@ import { Theme } from "./theme";
 
     useScrollToggle.on((value) => {
         if (value) {
-            htmlEl.style.overflow = "auto";
-            htmlEl.style.paddingRight = "initial";
+            document.body.style.overflow = "auto";
+            document.body.style.paddingRight = "initial";
         } else {
-            htmlEl.style.overflow = "hidden";
-            htmlEl.style.paddingRight = "0px";
+            document.body.style.overflow = "hidden";
+            document.body.style.paddingRight = "0px";
         }
     });
 
