@@ -12,6 +12,12 @@ import { createSwiper } from "./Swiper";
 
 const ANIMATION_DURATION = 300;
 export const Document = (() => {
+    const canvases: HTMLCanvasElement[] = [];
+    const CANVASES_CAPACITY = 30;
+
+    let swiper;
+    let isOpen = false;
+
     const contentEl = document.createElement("div");
     contentEl.classList.add(
         "flex", 
@@ -23,27 +29,9 @@ export const Document = (() => {
     const controls = ReadingControls();
     controls.onClose(hideModal);
 
-    const wrapper = document.createElement("div");
-    wrapper.classList.add(
-        "document-view-container",
-        "flex",
-        "w-full",
-        "h-full",
-        "justify-center",
-        "fixed",
-        "top-0",
-        "left-0",
-        "bg-slate-50",
-        "z-40",
-        "duration-300",
-        "opacity-0",
-    );
-    wrapper.append(contentEl, controls.target);
-
-    const canvases: HTMLCanvasElement[] = [];
-    const CANVASES_CAPACITY = 20;
-
-    function initSliderContent(slides: HTMLElement[], renderer: PdfReaderRenderer, index: number) {
+    function initSliderContent(renderer: PdfReaderRenderer, index: number) {
+        if (!swiper) return;
+        const slides = swiper.slides as HTMLElement[];
         const render = (index) => {
             if (!slides[index] || slides[index].querySelector("canvas")) {
                 return;
@@ -68,10 +56,9 @@ export const Document = (() => {
         controls.updatePageInfo(index + 1, slides.length);
     }
 
-    let swiper;
     let openPdf: PdfParsedDocument | null = null;
 
-    const saveLastViewedPage = debounce<string, number>((fileName: string, index: number) => {
+    const saveLastViewedPage = debounce((fileName: string, index: number) => {
         DB.editFileMeta(fileName, { lastViewedPage: index })
             .catch(console.error);
     }, 1000);
@@ -84,19 +71,37 @@ export const Document = (() => {
         openPdf = pdf;
         swiper = createSwiper(pdf.numberOfPages, initialPage || 0);
         swiper.onSlideChange((index) => {
-            initSliderContent(swiper.slides, pdf.render, index);
             controls.hide();
+            initSliderContent(pdf.render, index);
             saveLastViewedPage(fileName, index);
         });
-        initSliderContent(swiper.slides, pdf.render, initialPage || 0);
+        initSliderContent(pdf.render, initialPage || 0);
         contentEl.innerHTML = "";
         contentEl.appendChild(swiper.target);
     }
 
-    let isOpen = false;
-
-    wrapper.onclick = () => {
-        if (!isOpen) return;
+    const wrapper = document.createElement("div");
+    wrapper.classList.add(
+        "document-view-container",
+        "flex",
+        "w-full",
+        "h-full",
+        "justify-center",
+        "fixed",
+        "top-0",
+        "left-0",
+        "bg-slate-50",
+        "z-40",
+        "duration-300",
+        "opacity-0",
+    );
+    wrapper.append(contentEl, controls.target);
+    wrapper.onclick = (e: MouseEvent) => {
+        if (
+            !isOpen ||
+            (e.target as HTMLElement).matches(".swiper-button-next") ||
+            (e.target as HTMLElement).matches(".swiper-button-prev")
+        ) return;
         controls.toggle();
     };
 

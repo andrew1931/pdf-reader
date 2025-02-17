@@ -94,7 +94,7 @@ function callEffects(target: Map<string, SideEffect[]>, pathname?: string) {
     }
 }
 
-const debouncedQueryEffect = debounce<Map<string, SideEffect[]>, string>(callEffects);
+const debouncedQueryEffect = debounce(callEffects);
 
 function handleQueryParamsEffects(hrefBefore: string) {
     const urlBefore = new URL(hrefBefore);

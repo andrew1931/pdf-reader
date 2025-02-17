@@ -19,12 +19,13 @@ export const emailIsValid = (email: string) => {
     return emailRegExp.test(email);
 };
 
-export const debounce = <A, B>(callback: (a: A, b: B) => void, wait = 0) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const debounce = (callback: (...args: any[]) => void, wait = 0) => {
     let timeout;
-    return (a: A, b: B) => {
+    return (...args) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            callback.call(this, a, b);
+            callback.apply(this, args);
         }, wait);
     };
 };

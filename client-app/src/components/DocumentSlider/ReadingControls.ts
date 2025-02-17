@@ -16,33 +16,13 @@ export const ReadingControls = () => {
     closeButton.innerHTML = CloseIcon;
     closeButton.classList.add("w-6", "text-slate-300");
 
-    const VISIBLE_CONTROLS_TOP_STYLE = "top-0";
-    const HIDDEN_CONTROLS_TOP_STYLE = "-top-20";
-    const header = document.createElement("div");
-    header.classList.add(
-        "flex",
-        "justify-end",
-        "w-full",
-        "absolute",
-        "top-0",
-        "left-0",
-        "bg-transparent",
-        "py-4",
-        "px-4",
-        "md:px-8",
-        "transition-[top]",
-        "z-40",
-        VISIBLE_CONTROLS_TOP_STYLE
-    );
-    header.append(closeButton);
-
     const pagesInfo = document.createElement("span");
-    pagesInfo.classList.add("text-slate-100", "font-medium", "text-sm", "ml-auto");
+    pagesInfo.classList.add("text-slate-100", "font-medium", "text-sm");
 
     const settingsButton = document.createElement("button");
     settingsButton.setAttribute("aria-label", "Reading settings");
     settingsButton.innerHTML = SettingsIcon;
-    settingsButton.classList.add("w-6", "text-slate-100", "ml-auto");
+    settingsButton.classList.add("w-6", "text-slate-100");
     settingsButton.onclick = (e) => {
         e.stopPropagation();
         Modal.show(
@@ -63,7 +43,7 @@ export const ReadingControls = () => {
     const footer = document.createElement("div");
     footer.classList.add(
         "flex",
-        "justify-center",
+        "justify-between",
         "w-full",
         "absolute",
         "bottom-0",
@@ -75,25 +55,21 @@ export const ReadingControls = () => {
         "z-40",
         VISIBLE_CONTROLS_BOTTOM_STYLE
     );
-    footer.append(pagesInfo, settingsButton);
+    footer.append(closeButton, pagesInfo, settingsButton);
 
     function hideControls() {
         isVisible = false;
-        header.classList.remove(VISIBLE_CONTROLS_TOP_STYLE);
-        header.classList.add(HIDDEN_CONTROLS_TOP_STYLE);
         footer.classList.remove(VISIBLE_CONTROLS_BOTTOM_STYLE);
         footer.classList.add(HIDDEN_CONTROLS_BOTTOM_STYLE);
     }
 
     function showControls() {
         isVisible = true;
-        header.classList.add(VISIBLE_CONTROLS_TOP_STYLE);
-        header.classList.remove(HIDDEN_CONTROLS_TOP_STYLE);
         footer.classList.add(VISIBLE_CONTROLS_BOTTOM_STYLE);
         footer.classList.remove(HIDDEN_CONTROLS_BOTTOM_STYLE);
     }
 
-    wrapper.append(header, footer);
+    wrapper.append(footer);
 
     return {
         target: wrapper,
