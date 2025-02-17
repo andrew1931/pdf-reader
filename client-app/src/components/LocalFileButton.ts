@@ -1,4 +1,4 @@
-import { DB, NotEnabledError } from "../core/DB";
+import { DB, KeyExistsError, NotEnabledError } from "../core/DB";
 import { Document } from "./DocumentSlider/Document";
 import { AttachmentIcon } from "./icons/attachment";
 import { Toast } from "./Toast";
@@ -17,8 +17,8 @@ export const LocalFileButton = () => {
                 })
                 .catch((error) => {
                     if (
-                        "name" in error && error.name === "ConstraintError" ||
-               error instanceof NotEnabledError
+                        error instanceof KeyExistsError ||
+                        error instanceof NotEnabledError
                     ) {
                         console.warn(error);
                         Document.parseAndShow(file);

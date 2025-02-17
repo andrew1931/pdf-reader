@@ -1,4 +1,4 @@
-import { DB, type DbFileMeta, NotEnabledError } from "../../core/DB";
+import { DB, type DbFileMeta, KeyExistsError, NotEnabledError } from "../../core/DB";
 import {
     useOutlineToggle,
     useScrollToggle,
@@ -107,8 +107,8 @@ export const Document = (() => {
                 })
                     .catch((error) => {
                         if (
-                            "name" in error && error.name === "ConstraintError" ||
-               error instanceof NotEnabledError
+                            error instanceof KeyExistsError ||
+                            error instanceof NotEnabledError
                         ) {
                             console.warn(error);
                         } else {

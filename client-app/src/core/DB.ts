@@ -19,6 +19,12 @@ export type DbFile = {
     file: File;
 };
 
+export class KeyExistsError extends Error {
+    constructor() {
+        super("Key already exists in DB");
+    }
+}
+
 export class NotInitError extends Error {
     constructor() {
         super("Db is not initialized");
@@ -123,8 +129,16 @@ export const DB = (() => {
                     resolve(request.result);
                 };
                 request.onerror = () => {
-                    ApiClient.logError("[transaction][onerror]", request.error);
-                    reject(request.error);
+                    if (
+                        request.error &&
+                        "name" in request.error &&
+                        request.error.name === "ConstraintError"
+                    ) {
+                        reject(new KeyExistsError());
+                    } else {
+                        ApiClient.logError("[transaction][onerror]", request.error);
+                        reject(request.error);
+                    }
                 };
             } else {
                 reject(new NotInitError());

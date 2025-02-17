@@ -55,13 +55,13 @@ export const UrlPagination = (
     const PAGE_SIZE = 12;
     const MIN_PAGE = 1;
 
-    const getPage = () => parseInt(getSearchParam("page"));
+    const getPage = () => parseInt(getSearchParam("page") || String(MIN_PAGE));
 
     const getOffset = () => (getPage() - 1) * PAGE_SIZE;
 
     function handleSearchParams() {
         const page = getPage();
-        if (!page || page < MIN_PAGE) {
+        if (page < MIN_PAGE) {
             updateSearchParams("page", String(MIN_PAGE));
         } else {
             let shouldUpdate = dependencyParams.length === 0;
