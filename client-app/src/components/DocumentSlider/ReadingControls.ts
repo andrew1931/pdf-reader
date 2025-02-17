@@ -14,7 +14,7 @@ export const ReadingControls = () => {
     const closeButton = document.createElement("button");
     closeButton.setAttribute("aria-label", "Close document");
     closeButton.innerHTML = CloseIcon;
-    closeButton.classList.add("w-6", "text-slate-300");
+    closeButton.classList.add("w-6", "text-slate-100");
 
     const pagesInfo = document.createElement("span");
     pagesInfo.classList.add("text-slate-100", "font-medium", "text-sm");
