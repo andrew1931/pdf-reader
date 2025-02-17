@@ -1,5 +1,6 @@
 import { DB, KeyExistsError, NotEnabledError } from "../core/DB";
 import { Document } from "./DocumentSlider/Document";
+import { PdfReader } from "./DocumentSlider/pdf-reader";
 import { AttachmentIcon } from "./icons/attachment";
 import { Toast } from "./Toast";
 
@@ -11,22 +12,28 @@ export const LocalFileButton = () => {
     fileInput.onchange = () => {
         if (fileInput.files) {
             const file = fileInput.files[0];
-            DB.addFile(file)
-                .then(() => {
-                    Document.parseAndShow(file);
-                })
-                .catch((error) => {
-                    if (
-                        error instanceof KeyExistsError ||
-                        error instanceof NotEnabledError
-                    ) {
-                        console.warn(error);
-                        Document.parseAndShow(file);
-                    } else {
-                        Toast.error(error);
-                    }
-                });
             fileInput.value = "";
+            PdfReader.read(file)
+                .then((pdf) => {
+                    DB.addFile(file, {
+                        title: pdf.title,
+                        author: pdf.author,
+                        numberOfPages: pdf.numberOfPages,
+                    })
+                        .then(() => Document.show(pdf, file.name, 0))
+                        .catch((error) => {
+                            if (
+                                error instanceof KeyExistsError ||
+                                error instanceof NotEnabledError
+                            ) {
+                                console.warn(error);
+                                Document.show(pdf, file.name, 0);
+                            } else {
+                                Toast.error(error);
+                            }
+                        });
+                })
+                .catch(Toast.error);
         }
     };
 

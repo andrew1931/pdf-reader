@@ -1,4 +1,4 @@
-import { DB, type DbFileMeta, KeyExistsError, NotEnabledError } from "../../core/DB";
+import { DB } from "../../core/DB";
 import {
     useOutlineToggle,
     useScrollToggle,
@@ -6,8 +6,7 @@ import {
     useDocumentPageChange
 } from "../../core/hooks";
 import { debounce } from "../../core/utils";
-import { Toast } from "../Toast";
-import { type PdfParsedDocument, PdfReader, type PdfReaderRenderer } from "./pdf-reader";
+import { type PdfParsedDocument, type PdfReaderRenderer } from "./pdf-reader";
 import { ReadingControls } from "./ReadingControls";
 import { createSwiper } from "./Swiper";
 
@@ -94,34 +93,6 @@ export const Document = (() => {
         contentEl.appendChild(swiper.target);
     }
 
-    function readPdf(file: File) {
-        contentEl.innerHTML = "";
-        controls.updatePageInfo(0, 0);
-        PdfReader.read(file)
-            .then((pdf) => {
-                initSwiper(pdf, file.name, 0);
-                DB.editFileMeta(file.name, {
-                    title: pdf.title,
-                    author: pdf.author,
-                    numberOfPages: pdf.numberOfPages,
-                })
-                    .catch((error) => {
-                        if (
-                            error instanceof KeyExistsError ||
-                            error instanceof NotEnabledError
-                        ) {
-                            console.warn(error);
-                        } else {
-                            Toast.error(error);
-                        }
-                    });
-            })
-            .catch((error) => {
-                Toast.error(error);
-                hideModal();
-            });
-    }
-
     let isOpen = false;
 
     wrapper.onclick = () => {
@@ -175,12 +146,12 @@ export const Document = (() => {
     });
 
     return {
-        parseAndShow(file: File) {
-            readPdf(file);
-            showModal();
-        },
-        show(pdf: PdfParsedDocument, doc: DbFileMeta) {
-            initSwiper(pdf, doc.fileName, doc.lastViewedPage);
+        show(
+            pdf: PdfParsedDocument,
+            fileName: string,
+            lastViewedPage: number
+        ) {
+            initSwiper(pdf, fileName, lastViewedPage);
             showModal();
         },
     };

@@ -18,7 +18,7 @@ type DropDownItem = {
 };
 
 function showDocument(doc: DbFileMeta, pdf: PdfParsedDocument) {
-    Document.show(pdf, doc);
+    Document.show(pdf, doc.fileName, doc.lastViewedPage);
     DB.editFileMeta(
         doc.fileName, { lastViewedAt: new Date() }
     ).catch(Toast.error);

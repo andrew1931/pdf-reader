@@ -5,7 +5,7 @@ type SwipeSubscriber = (index: number) => void;
 
 export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
     const el = document.createElement("div");
-    el.classList.add("swiper", "h-full", "w-full", "flex", "items-center");
+    el.classList.add("swiper", "h-full", "w-full");
     const wrapper = document.createElement("div");
     wrapper.classList.add("swiper-wrapper", "h-full", "w-full");
 
@@ -64,9 +64,6 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
         swiper.on("slideChange", (e) => {
             swipesSub(e.activeIndex);
         });
-        setTimeout(() => {
-            swiper?.update(); // to fix vertical slide alignment after init
-        });
     });
 
     return {
@@ -92,6 +89,9 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
             } else {
                 console.warn("swiper is not initialized");
             }
+        },
+        update() {
+            swiper?.update(); // to fix vertical slide alignment after init
         }
     };
 };

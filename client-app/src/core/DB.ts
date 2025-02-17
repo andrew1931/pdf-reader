@@ -13,6 +13,14 @@ export type DbFileMeta = {
     lastViewedPage: number;
 };
 
+type EditFileMeta = {
+    title?: string,
+    author?: string,
+    lastViewedAt?: Date,
+    numberOfPages?: number,
+    lastViewedPage?: number
+};
+
 export type DbFile = {
     fileName: string;
     createdAt: Date;
@@ -159,7 +167,7 @@ export const DB = (() => {
             LS.saveDbIsEnabled("1");
             dbIsDisabled = false;
         },
-        addFile(file: File): Promise<void> {
+        addFile(file: File, fileMeta: EditFileMeta): Promise<void> {
             if (dbIsDisabled) return Promise.reject(new NotEnabledError());
             return new Promise((resolve, reject) => {
                 return transaction(FILES_STORE, (files) => {
@@ -176,9 +184,9 @@ export const DB = (() => {
                                 fileName: file.name,
                                 size: file.size,
                                 lastViewedAt: new Date(),
-                                title: "",
-                                author: "",
-                                numberOfPages: 0,
+                                title: fileMeta.title || "",
+                                author: fileMeta.author || "",
+                                numberOfPages: fileMeta.numberOfPages || 0,
                                 lastViewedPage: 0
                             } as DbFileMeta);
                         })
@@ -193,13 +201,7 @@ export const DB = (() => {
                     .catch(reject);
             });
         },
-        editFileMeta(fileName: string, data: {
-            title?: string,
-            author?: string,
-            lastViewedAt?: Date,
-            numberOfPages?: number,
-            lastViewedPage?: number
-      }): Promise<void> {
+        editFileMeta(fileName: string, data: EditFileMeta): Promise<void> {
             if (dbIsDisabled) return Promise.reject(new NotEnabledError());
             return new Promise((resolve, reject) => {
                 transaction<DbFileMeta>(FILES_META_STORE, (files) => files.get(fileName))
