@@ -121,7 +121,14 @@ export const DocumentPreview = (() => {
     );
 
     const canvas = document.createElement("canvas");
-    canvas.classList.add("w-full", "max-w-full", "max-h-full");
+    canvas.classList.add(
+        "w-full",
+        "max-w-full",
+        "max-h-full",
+        "opacity-0",
+        "transition-opacity",
+        "duration-500"
+    );
 
     const imgWrapper = document.createElement("div");
     imgWrapper.classList.add(
@@ -166,6 +173,7 @@ export const DocumentPreview = (() => {
             imgWrapper.classList.remove("scale-100");
             if (imgWrapper.childNodes.length > 0) {
                 imgWrapper.removeChild(canvas);
+                canvas.classList.add("opacity-0");
             }
             document.body.removeChild(el);
             isOpen = false;
@@ -196,6 +204,9 @@ export const DocumentPreview = (() => {
                                         hidePreview
                                     )
                                 );
+                                setTimeout(() => {
+                                    canvas.classList.remove("opacity-0");
+                                }, 300);
                             })
                             .catch((error) => {
                                 Toast.error(error);

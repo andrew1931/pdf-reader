@@ -1,4 +1,4 @@
-import { DB } from "../../core/DB";
+import { DB, NotEnabledError } from "../../core/DB";
 import {
     useOutlineToggle,
     useScrollToggle,
@@ -60,7 +60,11 @@ export const Document = (() => {
 
     const saveLastViewedPage = debounce((fileName: string, index: number) => {
         DB.editFileMeta(fileName, { lastViewedPage: index })
-            .catch(console.error);
+            .catch((error) => {
+                if (!(error instanceof NotEnabledError)) {
+                    console.error(error);
+                }
+            });
     }, 1000);
 
     function initSwiper(
