@@ -1,15 +1,21 @@
 const MAX_INPUT_LENGTH = "1000";
 
-const Label = (text: string, inputEl: HTMLElement): HTMLElement => {
-    const labelText = document.createElement("span");
+const Label = (text: string, inputEl: HTMLElement, required: boolean): HTMLElement => {
+    const labelMeta = document.createElement("small");
+    labelMeta.classList.add( "ml-1", "opacity-80");
+    labelMeta.innerText = `(${required ? "required" : "optional"})`;
+
+    const labelText = document.createElement("div");
     labelText.innerText = text;
     labelText.classList.add(
         "label",
         "text-sm",
         "font-semibold",
         "ml-2",
-        "mb-1",
+        "mb-1"
     );
+    labelText.appendChild(labelMeta);
+
     const labelEl = document.createElement("label");
     labelEl.classList.add("mt-2", "flex", "flex-col");
     labelEl.append(labelText, inputEl);
@@ -50,7 +56,8 @@ export const Input = (
       placeholder: string,
       value?: string,
       icon?: string,
-      type?: string
+      type?: string,
+      required?: boolean
    }
 ) => {
     const input = document.createElement("input");
@@ -93,7 +100,7 @@ export const Input = (
     inputWrapper.append(input);
 
     return {
-        target: Label(conf.label, inputWrapper),
+        target: Label(conf.label, inputWrapper, conf.required ?? true),
         value() {
             return input.value.trim();
         },
@@ -115,7 +122,12 @@ export const Input = (
     };
 };
 
-export const Textarea = (conf: { label: string, name: string, placeholder: string }) => {
+export const Textarea = (conf: {
+    label: string,
+    name: string,
+    placeholder: string,
+    required?: boolean
+}) => {
     const textarea = document.createElement("textarea");
     textarea.classList.add(
         "w-full",
@@ -135,7 +147,7 @@ export const Textarea = (conf: { label: string, name: string, placeholder: strin
     textarea.setAttribute("maxlength", MAX_INPUT_LENGTH);
    
     return {
-        target: Label(conf.label, textarea),
+        target: Label(conf.label, textarea, conf.required ?? true),
         value() {
             return textarea.value.trim();
         },

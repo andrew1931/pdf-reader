@@ -49,10 +49,6 @@ html[theme="dark"] {
 
 html[is-touch-device="true"] {
     --swiper-arrows-visibility: none;
-   /* --outline-button-color: transparent; */
-   /* --outline-color: transparent; */
-   /* --link-hover-color: var(--link-color); */
-   /* --card-hover-bg-color: transparent; */
 }
 
 html.no-scroll {
@@ -64,9 +60,15 @@ html.no-scroll {
 .swiper .swiper-button-next {
     display: var(--swiper-arrows-visibility);
     border-radius: 6px;
-    background-color: #303337;
+    color: #767a80;
     padding: 6px;
     box-sizing: content-box;
+}
+
+.swiper .swiper-button-prev:hover,
+.swiper .swiper-button-next:hover {
+    background-color: #767a80;
+    color: #f2f2f2;
 }
 
 .disable-dbl-tap-zoom {
@@ -82,11 +84,6 @@ button, input, textarea, a {
 
 .btn:focus, .toggle:focus, input:focus, textarea:focus {
     outline-color: var(--outline-color) !important;
-}
-
-input[type="range"]:focus + div .knob {
-    /* box-shadow: 0px 0px 0px 1px var(--outline-button-color) !important; */
-    border: 2px solid var(--outline-button-color);
 }
 
 button:focus, a:focus {
@@ -175,6 +172,22 @@ html, body, #app, #layout, .document-view-container  {
 
 .policy-text a {
     color: #127cff;
+}
+
+.bookmarks-list {
+    color: var(--subtitle-color);
+}
+
+.bookmarks-list li {
+    border-bottom: 1px solid var(--link-color);
+}
+
+.bookmarks-list li:hover {
+    background-color: var(--card-hover-bg-color);
+}
+
+.bookmarks-list .btn-icon:hover {
+    color: var(--link-hover-color);
 }
 
 @media (max-width: 640px) {

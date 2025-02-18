@@ -60,7 +60,6 @@ export const DocumentsList = (): HTMLElement => {
     };
 
     function fetchDocuments() {
-        console.log("fetching..", paginationState);
         if (!paginationState) return;
         DB.getAllFilesMeta()
             .then((files) => {

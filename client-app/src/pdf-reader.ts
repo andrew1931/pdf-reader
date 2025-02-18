@@ -1,5 +1,5 @@
-import { ApiClient } from "../../api/api-client";
-import { Theme } from "../../theme";
+import { ApiClient } from "./api/api-client";
+import { Theme } from "./theme";
 
 export type PdfReaderRenderer = (canvas: HTMLCanvasElement, pageNumber: number) => Promise<void>;
 

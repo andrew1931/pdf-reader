@@ -7,7 +7,7 @@ import { Document } from "../DocumentSlider/Document";
 import { DB, type DbFileMeta } from "../../core/DB";
 import { InfoIcon } from "../icons/info";
 import { EditIcon } from "../icons/edit";
-import { type PdfParsedDocument, PdfReader } from "../DocumentSlider/pdf-reader";
+import { type PdfParsedDocument, PdfReader } from "../../pdf-reader";
 import { Toast } from "../Toast";
 
 type DropDownItem = {
@@ -19,9 +19,6 @@ type DropDownItem = {
 
 function showDocument(doc: DbFileMeta, pdf: PdfParsedDocument) {
     Document.show(pdf, doc.fileName, doc.lastViewedPage);
-    DB.editFileMeta(
-        doc.fileName, { lastViewedAt: new Date() }
-    ).catch(Toast.error);
 }
 
 const userMenuItems: (pdf?: PdfParsedDocument) => DropDownItem[] = (pdf) => {
@@ -109,7 +106,6 @@ export const DocumentPreview = (() => {
         "flex",
         "flex-col",
         "rounded-md",
-        "shadow-card",
         "min-w-52",
         "max-w-96",
         "overflow-hidden",

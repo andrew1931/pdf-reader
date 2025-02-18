@@ -1,51 +1,42 @@
-export const Range = (label: string, min: number, max: number, current: number) => {
+export const Range = (min: number, max: number, current: number) => {
     const labelEl = document.createElement("div");
-    labelEl.classList.add("disable-dbl-tap-zoom", "w-full", "flex", "justify-between", "my-2");
-   
-    const labelText = document.createElement("span");
-    labelText.innerText = label + ": " + current;
-    labelText.classList.add("font-medium", "text-xs");
-
-    const rangeVisibleKnob = document.createElement("div");
-    rangeVisibleKnob.classList.add(
-        "knob",
-        "w-5",
-        "h-5",
-        "rounded-full",
-        "bg-blue-500",
-        "absolute",
-        "-right-[2px]",
-        "-top-[7px]"
+    labelEl.classList.add(
+        "disable-dbl-tap-zoom",
+        "w-full",
+        "flex",
+        "flex-col",
+        "justify-center",
+        "items-center",
+        "my-2"
     );
+
+    const labelTextValue = () => rangeValue() + " out of " + max;
 
     const rangeVisibleBody = document.createElement("div");
     rangeVisibleBody.classList.add(
         "w-full",
-        "h-1",
-        "bg-slate-300",
+        "h-full",
+        "bg-slate-400",
         "cursor-pointer",
-        "rounded-full",
     );
 
     const rangeVisibleBodyFilled = document.createElement("div");
     rangeVisibleBodyFilled.classList.add(
-        "h-1",
+        "h-full",
         "bg-blue-500",
         "absolute",
         "left-0",
         "top-0",
-        // "transition-[width]",
-        // "duration-75",
-        "rounded-full",
     );
-
-    rangeVisibleBodyFilled.appendChild(rangeVisibleKnob);
 
     const rangeVisible = document.createElement("div");
     rangeVisible.classList.add(
         "absolute",
         "z-0",
         "w-full",
+        "h-full",
+        "rounded-md",
+        "overflow-hidden"
     );
     rangeVisible.append(rangeVisibleBody, rangeVisibleBodyFilled);
 
@@ -63,20 +54,32 @@ export const Range = (label: string, min: number, max: number, current: number) 
         "cursor-pointer",
         "absolute",
         "left-0",
-        "-top-[16px]",
-        "h-10"
+        "h-full",
     );
-    rangeHidden.oninput = () => {
-        labelText.innerText = label + ": " + rangeValue();
+
+    const labelText = document.createElement("span");
+    labelText.classList.add(
+        "font-medium",
+        "text-xs",
+        "text-white",
+        "absolute",
+        "z-10",
+    );
+
+    function mapInputValueToVisibleRange() {
+        labelText.innerText = labelTextValue();
         rangeVisibleBodyFilled.style.width = calcValuePercent() + "%";
-    };
-    rangeVisibleBodyFilled.style.width = calcValuePercent() + "%";
+    }
+
+    rangeHidden.oninput = mapInputValueToVisibleRange;
+    
+    mapInputValueToVisibleRange();
 
     const rangeWrapper = document.createElement("div");
     rangeWrapper.classList.add(
         "relative",
         "w-52",
-        "my-2"
+        "h-[30px]",
     );
     rangeWrapper.append(rangeHidden, rangeVisible);
 
@@ -93,6 +96,12 @@ export const Range = (label: string, min: number, max: number, current: number) 
         target: labelEl,
         onChange(cb: (page: number) => void): void {
             rangeHidden.onchange = () => cb(rangeValue());
+        },
+        update(val: number) {
+            if (val !== Math.floor(+rangeHidden.value)) {
+                rangeHidden.value = String(val);
+                mapInputValueToVisibleRange();
+            }
         }
     };
 };

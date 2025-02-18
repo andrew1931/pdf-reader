@@ -11,6 +11,7 @@ export type DbFileMeta = {
     numberOfPages: number;
     size: number;
     lastViewedPage: number;
+    bookmarks: { page: number; note: string }[]
 };
 
 type EditFileMeta = {
@@ -18,7 +19,8 @@ type EditFileMeta = {
     author?: string,
     lastViewedAt?: Date,
     numberOfPages?: number,
-    lastViewedPage?: number
+    lastViewedPage?: number,
+    bookmarks?: { page: number; note: string }[];
 };
 
 export type DbFile = {
@@ -41,7 +43,7 @@ export class NotInitError extends Error {
 
 export class NotEnabledError extends Error {
     constructor() {
-        super("Db is not enabled");
+        super("Storage is not enabled, you can enable it settings to use this feature");
     }
 }
 
@@ -187,7 +189,8 @@ export const DB = (() => {
                                 title: fileMeta.title || "",
                                 author: fileMeta.author || "",
                                 numberOfPages: fileMeta.numberOfPages || 0,
-                                lastViewedPage: 0
+                                lastViewedPage: 0,
+                                bookmarks: []
                             } as DbFileMeta);
                         })
                             .then(() => resolve())
@@ -223,6 +226,11 @@ export const DB = (() => {
         },
         getFile(fileName: string): Promise<DbFile> {
             return transaction<DbFile>(FILES_STORE, (files) => {
+                return files.get(fileName);
+            });
+        },
+        getFileMeta(fileName: string): Promise<DbFileMeta> {
+            return transaction<DbFileMeta>(FILES_META_STORE, (files) => {
                 return files.get(fileName);
             });
         },

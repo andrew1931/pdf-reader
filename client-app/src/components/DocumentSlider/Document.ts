@@ -6,7 +6,8 @@ import {
     useDocumentPageChange
 } from "../../core/hooks";
 import { debounce } from "../../core/utils";
-import { type PdfParsedDocument, type PdfReaderRenderer } from "./pdf-reader";
+import { type PdfParsedDocument, type PdfReaderRenderer } from "../../pdf-reader";
+import { Toast } from "../Toast";
 import { ReadingControls } from "./ReadingControls";
 import { createSwiper } from "./Swiper";
 
@@ -53,7 +54,7 @@ export const Document = (() => {
         render(index - 1);
         render(index);
         render(index + 1);
-        controls.updatePageInfo(index + 1, slides.length);
+        controls.update(index + 1, slides.length);
     }
 
     let openPdf: PdfParsedDocument | null = null;
@@ -73,15 +74,22 @@ export const Document = (() => {
         initialPage: number
     ) {
         openPdf = pdf;
-        swiper = createSwiper(pdf.numberOfPages, initialPage || 0);
+        const initialIndex = initialPage || 0;
+        swiper = createSwiper(pdf.numberOfPages, initialIndex);
         swiper.onSlideChange((index) => {
-            controls.hide();
             initSliderContent(pdf.render, index);
             saveLastViewedPage(fileName, index);
         });
-        initSliderContent(pdf.render, initialPage || 0);
+        initSliderContent(pdf.render, initialIndex);
         contentEl.innerHTML = "";
         contentEl.appendChild(swiper.target);
+        showModal(fileName, initialIndex + 1, pdf.numberOfPages);
+        DB.editFileMeta(fileName, { lastViewedAt: new Date() }
+        ).catch((error) => {
+            if (!(error instanceof NotEnabledError)) {
+                Toast.error(error);
+            }
+        });
     }
 
     const wrapper = document.createElement("div");
@@ -109,7 +117,7 @@ export const Document = (() => {
         controls.toggle();
     };
 
-    function showModal() {
+    function showModal(fileName: string, current: number, total: number) {
         if (isOpen) return;
         isOpen = true;
         document.body.appendChild(wrapper);
@@ -121,7 +129,7 @@ export const Document = (() => {
         setTimeout(() => {
             wrapper.classList.remove("opacity-0");
             wrapper.classList.add("opacity-1");
-            controls.show();
+            controls.show(fileName, current, total);
         }, 100);
     };
 
@@ -161,7 +169,6 @@ export const Document = (() => {
             lastViewedPage: number
         ) {
             initSwiper(pdf, fileName, lastViewedPage);
-            showModal();
         },
     };
 })();

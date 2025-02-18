@@ -1,6 +1,7 @@
 import { DB, KeyExistsError, NotEnabledError } from "../core/DB";
+import { errorToString } from "../core/utils";
 import { Document } from "./DocumentSlider/Document";
-import { PdfReader } from "./DocumentSlider/pdf-reader";
+import { PdfReader } from "../pdf-reader";
 import { AttachmentIcon } from "./icons/attachment";
 import { Toast } from "./Toast";
 
@@ -33,7 +34,11 @@ export const LocalFileButton = () => {
                             }
                         });
                 })
-                .catch(Toast.error);
+                .catch((error) => {
+                    Toast.error(
+                        "Oops, we are not able to show this document: " + errorToString(error)
+                    );
+                });
         }
     };
 

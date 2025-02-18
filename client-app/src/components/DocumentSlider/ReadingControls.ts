@@ -1,36 +1,33 @@
-import { useOutlineToggle } from "../../core/hooks";
+import { useDocumentPageChange, useOutlineToggle } from "../../core/hooks";
 import { CloseIcon } from "../icons/close";
-import { SettingsIcon } from "../icons/settings";
+import { BookmarkIcon } from "../icons/bookmark";
 import { Modal } from "../Modal";
-import { ReadingSettings } from "./ReadingSettings";
+import { AddBookmark } from "./AddBookmark";
+import { Range } from "../Range";
 
 export const ReadingControls = () => {
+    const ANIMATION_DURATION = 500;
     let isVisible = true;
     let numberOfPages = 0;
     let currentPage = 0;
+    let fileName = "";
 
     const wrapper = document.createElement("div");
 
-    const closeButton = document.createElement("button");
-    closeButton.setAttribute("aria-label", "Close document");
-    closeButton.innerHTML = CloseIcon;
-    closeButton.classList.add("w-6", "text-slate-100");
+    const buttonsClasslist = [
+        "w-6",
+        "text-slate-400",
+        "my-3",
+    ];
 
-    const pagesInfo = document.createElement("span");
-    pagesInfo.classList.add("text-slate-100", "font-medium", "text-sm");
-
-    const settingsButton = document.createElement("button");
-    settingsButton.setAttribute("aria-label", "Reading settings");
-    settingsButton.innerHTML = SettingsIcon;
-    settingsButton.classList.add("w-6", "text-slate-100");
-    settingsButton.onclick = (e) => {
-        e.stopPropagation();
+    const bookmarkButton = document.createElement("button");
+    bookmarkButton.setAttribute("aria-label", "Add bookmark");
+    bookmarkButton.innerHTML = BookmarkIcon;
+    bookmarkButton.classList.add(...buttonsClasslist);
+    bookmarkButton.onclick = () => {
         Modal.show(
-            "Reading settings",
-            ReadingSettings({
-                numberOfPages, 
-                currentPage,
-            }),
+            "Bookmark",
+            AddBookmark(fileName, currentPage),
             () => useOutlineToggle.emit({
                 value: false,
                 skippedElement: wrapper
@@ -38,38 +35,58 @@ export const ReadingControls = () => {
         );
     };
 
-    const VISIBLE_CONTROLS_BOTTOM_STYLE = "bottom-0";
-    const HIDDEN_CONTROLS_BOTTOM_STYLE = "-bottom-20";
-    const footer = document.createElement("div");
-    footer.classList.add(
-        "flex",
-        "justify-between",
-        "w-full",
+    const closeButton = document.createElement("button");
+    closeButton.setAttribute("aria-label", "Close document");
+    closeButton.innerHTML = CloseIcon;
+    closeButton.classList.add(...buttonsClasslist);
+
+    const buttonsContainer = document.createElement("div");
+    buttonsContainer.classList.add(
         "absolute",
-        "bottom-0",
-        "left-0",
-        "bg-light-opacity",
-        "py-6",
-        "px-8",
-        "transition-[bottom]",
+        "rounded",
         "z-40",
-        VISIBLE_CONTROLS_BOTTOM_STYLE
+        "right-2",
+        "bottom-2",
+        "flex",
+        "flex-col",
+        "items-end",
+        "ml-auto",
+        "p-4",
+        "opacity-0",
+        "transition-opacity",
+        "duration-500"
     );
-    footer.append(closeButton, pagesInfo, settingsButton);
+
+    let pageRange = Range(1, numberOfPages, currentPage);
 
     function hideControls() {
         isVisible = false;
-        footer.classList.remove(VISIBLE_CONTROLS_BOTTOM_STYLE);
-        footer.classList.add(HIDDEN_CONTROLS_BOTTOM_STYLE);
+        buttonsContainer.classList.add("opacity-0");
+        setTimeout(() => {
+            if (!isVisible) {
+                buttonsContainer.innerHTML = "";
+            }
+        }, ANIMATION_DURATION);
     }
 
     function showControls() {
         isVisible = true;
-        footer.classList.add(VISIBLE_CONTROLS_BOTTOM_STYLE);
-        footer.classList.remove(HIDDEN_CONTROLS_BOTTOM_STYLE);
+        buttonsContainer.classList.remove("opacity-0");
+        if (buttonsContainer.childNodes.length === 0) {
+            pageRange = Range(1, numberOfPages, currentPage);
+            pageRange.onChange(useDocumentPageChange.emit);
+            pageRange.target.onclick = (e) => {
+                e.stopPropagation();
+            };
+            buttonsContainer.append(
+                closeButton,
+                bookmarkButton,
+                pageRange.target
+            );
+        }
     }
 
-    wrapper.append(footer);
+    wrapper.append(buttonsContainer);
 
     return {
         target: wrapper,
@@ -79,7 +96,11 @@ export const ReadingControls = () => {
         hide() {
             hideControls();
         },
-        show() {
+        show(name: string, current: number, total: number) {
+            buttonsContainer.innerHTML = "";
+            fileName = name;
+            currentPage = current;
+            numberOfPages = total;
             showControls();
         },
         toggle() {
@@ -89,14 +110,10 @@ export const ReadingControls = () => {
                 showControls();
             }
         },
-        updatePageInfo(current: number, total: number) {
+        update(current: number, total: number) {
             currentPage = current;
             numberOfPages = total;
-            if (total === 0) {
-                pagesInfo.innerText = "";
-            } else {
-                pagesInfo.innerText = current + " of " + total;
-            }
+            pageRange.update(currentPage);
         }
     };
 };
