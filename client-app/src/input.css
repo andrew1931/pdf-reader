@@ -182,11 +182,11 @@ html, body, #app, #layout, .document-view-container  {
     border-bottom: 1px solid var(--link-color);
 }
 
-.bookmarks-list li:hover {
+html[is-touch-device="false"] .bookmarks-list li:hover {
     background-color: var(--card-hover-bg-color);
 }
 
-.bookmarks-list .btn-icon:hover {
+html[is-touch-device="false"] .bookmarks-list .btn-icon:hover {
     color: var(--link-hover-color);
 }
 
