@@ -11,6 +11,8 @@ const pdfWorkerPath = "node_modules/pdfjs-dist/legacy/build";
 
 rmSync(outDir, { recursive: true, force: true });
 
+const buildHash = Date.now().toString();
+
 build({
     entryPoints: [
         resolve(__dirname, baseDir, "app.ts"),
@@ -20,7 +22,8 @@ build({
     define: {
         API_URL: JSON.stringify(
             isProd ? "https://pdf-swiper.com" : "http://" + process.env.HOST + ":" + process.env.PORT 
-        )
+        ),
+        BUILD_VERSION: JSON.stringify(buildHash)
     },
     write: true,
     bundle: true,
@@ -29,10 +32,9 @@ build({
     outdir: outDir,
 })
     .then(() => {
-        const appScriptName = `app-${Date.now().toString()}.js`;
+        const appScriptName = `app-${buildHash}.js`;
         const outputHTMLPath = join(outDir, "index.html");
         cpSync(resolve(__dirname, "public"), outDir, { recursive: true });
-        copyFileSync(join(__dirname, "package.json"), join(outDir, "package.json"));
         copyFileSync(join(outDir, pdfWorkerPath, "pdf.worker.min.js"), join(outDir, "pdf.worker.js"));
         copyFileSync(join(outDir, pdfWorkerPath, "pdf.min.js"), join(outDir, "pdf.min.js"));
         copyFileSync(join(outDir, baseDir, "app.js"), join(outDir, appScriptName));
@@ -46,6 +48,11 @@ build({
         writeFileSync(
             outputHTMLPath,
             indexHTML.toString().replace("{SCRIPT_PATH}", appScriptName)
+        );
+
+        writeFileSync(
+            join(outDir, "version.json"),
+            JSON.stringify({ buildHash })
         );
 
         rmSync(join(outDir, baseDir), { recursive: true, force: true });

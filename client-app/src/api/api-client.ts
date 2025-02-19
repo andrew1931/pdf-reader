@@ -21,7 +21,6 @@ export const USER_ROLES = {
 };
 
 export const ApiClient = (() => {
-    // @ts-expect-error API_URL is defined in esbuild config
     const httpClient = HttpClient(API_URL + "/api");
 
     return {
@@ -34,8 +33,8 @@ export const ApiClient = (() => {
         reportIssue(description: string): Promise<ReportIssueResponse> {
             return httpClient.post("reports/issue", { description });
         },
-        getVersion(): Promise<{ version: string }> {
-            return httpClient.getLocal("/package.json");
+        getVersion(): Promise<{ buildHash: string }> {
+            return httpClient.getLocal("/version.json");
         },
         getPolicy(): Promise<string> {
             return httpClient.getLocal("/policy.txt");

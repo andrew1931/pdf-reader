@@ -1,7 +1,6 @@
 import { ApiClient } from "../../api/api-client";
 import { errorToString } from "../../core/utils";
 import { Modal } from "../Modal";
-import packageJson from "../../../package.json";
 import { ActionButton } from "../Button";
 
 export const CheckUpdatesModal = () => {
@@ -20,11 +19,11 @@ export const CheckUpdatesModal = () => {
     );
     ApiClient.getVersion()
         .then((res) => {
-            if (packageJson.version === res.version) {
+            if (BUILD_VERSION === res.buildHash) {
                 description.innerText = "You have the latest version of PDF swiper";
                 button.onclick = Modal.hide;
             } else {
-                description.innerText = "New version " + res.version + " of PDF swiper is available";
+                description.innerText = "New version of PDF swiper is available";
                 button.innerText = "Update";
                 button.onclick = () => {
                     window.location.reload();
