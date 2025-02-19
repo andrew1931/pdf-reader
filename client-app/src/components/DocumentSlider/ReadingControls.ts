@@ -57,7 +57,7 @@ export const ReadingControls = () => {
         "duration-500"
     );
 
-    let pageRange = Range(1, numberOfPages, currentPage);
+    let pageRange = Range(numberOfPages, currentPage);
 
     function hideControls() {
         isVisible = false;
@@ -73,7 +73,7 @@ export const ReadingControls = () => {
         isVisible = true;
         buttonsContainer.classList.remove("opacity-0");
         if (buttonsContainer.childNodes.length === 0) {
-            pageRange = Range(1, numberOfPages, currentPage);
+            pageRange = Range(numberOfPages, currentPage);
             pageRange.onChange(useDocumentPageChange.emit);
             pageRange.target.onclick = (e) => {
                 e.stopPropagation();

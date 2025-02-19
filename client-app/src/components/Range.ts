@@ -1,4 +1,4 @@
-export const Range = (min: number, max: number, current: number) => {
+export const Range = (max: number, current: number) => {
     const labelEl = document.createElement("div");
     labelEl.classList.add(
         "disable-dbl-tap-zoom",
@@ -43,7 +43,7 @@ export const Range = (min: number, max: number, current: number) => {
     const rangeHidden = document.createElement("input");
     rangeHidden.setAttribute("type", "range");
     rangeHidden.setAttribute("step", "any");
-    rangeHidden.setAttribute("min", String(min));
+    rangeHidden.setAttribute("min", String(0));
     rangeHidden.setAttribute("max", String(max));
     rangeHidden.value = String(current);
     rangeHidden.classList.add(
@@ -88,7 +88,7 @@ export const Range = (min: number, max: number, current: number) => {
     }
 
     function rangeValue(): number {
-        return Math.floor(Number(rangeHidden.value));
+        return Math.floor(Number(rangeHidden.value)) || 1; // prevent 0
     }
 
     labelEl.append(labelText, rangeWrapper);
