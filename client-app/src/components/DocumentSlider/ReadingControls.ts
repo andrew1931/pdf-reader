@@ -26,7 +26,7 @@ export const ReadingControls = () => {
     bookmarkButton.classList.add(...buttonsClasslist);
     bookmarkButton.onclick = () => {
         Modal.show(
-            "Bookmark",
+            "Bookmarks",
             AddBookmark(fileName, currentPage),
             () => useOutlineToggle.emit({
                 value: false,

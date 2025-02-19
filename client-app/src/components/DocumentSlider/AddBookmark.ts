@@ -6,7 +6,11 @@ import { DeleteIcon } from "../icons/delete";
 import { Modal } from "../Modal";
 import { Toast } from "../Toast";
 
-const BookmarksList = (bookmarks: DbFileMeta["bookmarks"], fileName: string) => {
+const BookmarksList = (
+    bookmarks: DbFileMeta["bookmarks"],
+    fileName: string,
+    updateListData: () => void
+) => {
     const list = document.createElement("ul");
     list.classList.add("bookmarks-list");
 
@@ -30,7 +34,7 @@ const BookmarksList = (bookmarks: DbFileMeta["bookmarks"], fileName: string) => 
                 const newBookmarks = [...bookmarks];
                 newBookmarks.splice(index, 1);
                 DB.editFileMeta(fileName, { bookmarks: newBookmarks })
-                    .then(() => renderList(newBookmarks))
+                    .then(updateListData)
                     .catch(Toast.error);
             };
 
@@ -72,7 +76,7 @@ export const AddBookmark = (fileName: string, currentPage: number): HTMLElement 
     const button = SubmitButton("Add");
     button.classList.add("mt-3");
 
-    const bookmarksList = BookmarksList(bookmarks, fileName);   
+    const bookmarksList = BookmarksList(bookmarks, fileName, updateListData);   
     
     const bookmarkInput = Input({
         label: "Add a bookmark note",
@@ -104,18 +108,22 @@ export const AddBookmark = (fileName: string, currentPage: number): HTMLElement 
     const wrapper = document.createElement("div");
     wrapper.append(form, bookmarksList.target);
 
-    DB.getFileMeta(fileName)
-        .then((res) => {
-            if (res.bookmarks && Array.isArray(res.bookmarks)) {
-                bookmarks = res.bookmarks;
-            } else {
-                bookmarks = [];
-            }
-            bookmarksList.update(bookmarks);
-        })
-        .catch((error) => {
-            Toast.error(error);
-        });
+    function updateListData() {
+        DB.getFileMeta(fileName)
+            .then((res) => {
+                if (res.bookmarks && Array.isArray(res.bookmarks)) {
+                    bookmarks = res.bookmarks;
+                } else {
+                    bookmarks = [];
+                }
+                bookmarksList.update(bookmarks);
+            })
+            .catch((error) => {
+                Toast.error(error);
+            });
+    }
+
+    updateListData();
 
     return wrapper;
 };
