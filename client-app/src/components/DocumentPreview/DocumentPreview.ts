@@ -30,7 +30,7 @@ const userMenuItems: (pdf?: PdfParsedDocument) => DropDownItem[] = (pdf) => {
             cb: (doc) => showDocument(doc, pdf as PdfParsedDocument)
         },
         { label: "Details", icon: InfoIcon, iconColor: "text-blue-500", cb: viewDetailsModal },
-        { label: "Edit", icon: EditIcon, iconColor: "text-green-500", cb: editDocumentModal },
+        { label: "Edit title/author", icon: EditIcon, iconColor: "text-green-500", cb: editDocumentModal },
         { label: "Remove", icon: DeleteIcon, iconColor: "text-red-500", cb: deleteDocument },
     ];
     if (!pdf) {

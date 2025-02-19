@@ -8,43 +8,33 @@
 }
 
 html {
-    --outline-color: #eab308;
-    --outline-button-color: #eab308;
-    --active-color: #eab308;
-    --tabs-bg-color: #e5e7eb;
-    --tabs-color: #303337;
-    --active-tab-bg: #ffffff;
-    --active-tab-color: #127cff;
-    --link-color: #475569;
-    --link-hover-color: #243043;
-    --bg-color: #f8fafc;
-    --input-bg-color: #f8fafc;
-    --bg-color-modal: #f8fafc;
-    --title-color: #475569;
-    --subtitle-color: #64748b;
-    --card-bg-color: #ffffff;
-    --card-hover-bg-color: #f1f5f9;
-    --card-active-bg-color: #e2e8f0;
+    --color-yellow-blue: #eab308;
+    --color-white-gray: #e5e7eb;
+    --color-white-blue: #ffffff;
+    --color-blue-white: #127cff;
+    --color-darkblue-gray: #101823; 
+    --color-light-dark: #f8fafc;
+    --color-light-dark-1: #f8fafc;
+    --color-gray-white: #475569;
+    --color-lightgrey-white: #64748b;
+    --color-white-darkblue: #ffffff;
+    --color-white-darkblue-1: #f1f5f9;
+    --color-white-darkblue-2: #e2e8f0;
 }
 
 html[theme="dark"] {
-    --outline-color: #127cff;
-    --outline-button-color: #eab308;
-    --active-color: #127cff;
-    --tabs-bg-color: #303337;
-    --tabs-color: #cbd5e1;
-    --active-tab-bg: #127cff; 
-    --active-tab-color: #ffffff;
-    --link-color: #cbd5e1;
-    --link-hover-color: #94a3b8;
-    --bg-color: #242629;
-    --input-bg-color: #303337;
-    --bg-color-modal: #1d1d20;
-    --title-color: #f1f5f9;
-    --subtitle-color: #e2e8f0;
-    --card-bg-color: #102339;
-    --card-hover-bg-color: #112e4b;
-    --card-active-bg-color: #1f4164;
+    --color-yellow-blue: #127cff;
+    --color-white-gray: #303337;
+    --color-white-blue: #127cff;
+    --color-blue-white: #ffffff;
+    --color-darkblue-gray: #94a3b8;
+    --color-light-dark: #242629;
+    --color-light-dark-1: #303337;
+    --color-gray-white: #f1f5f9;
+    --color-lightgrey-white: #e2e8f0;
+    --color-white-darkblue: #102339;
+    --color-white-darkblue-1: #112e4b; 
+    --color-white-darkblue-2: #1f4164;
 }
 
 html[is-touch-device="true"] {
@@ -76,93 +66,93 @@ html.no-scroll {
 }
 
 button, input, textarea, a {
-    outline-offset: 3px !important;
+    outline-offset: 2px !important;
     outline-width: 2px !important;
     outline-color: transparent !important;
     outline-style: solid !important;
 }
 
 .btn:focus, .toggle:focus, input:focus, textarea:focus {
-    outline-color: var(--outline-color) !important;
+    outline-color: var(--color-yellow-blue) !important;
 }
 
 button:focus, a:focus {
-    color: var(--outline-button-color) !important;
+    color: #eab308 !important;
 }
 
 input, textarea, .progress-text {
-    background-color: var(--input-bg-color);
-    color: var(--subtitle-color);
+    background-color: var(--color-light-dark-1);
+    color: var(--color-lightgrey-white);
 }
 
 .input-icon {
-    color: var(--subtitle-color);
+    color: var(--color-lightgrey-white);
 }
 
 .file-attached {
-    background-color: var(--card-active-bg-color);
-    color: var(--subtitle-color);
+    background-color: var(--color-white-darkblue-2);
+    color: var(--color-lightgrey-white);
 }
 
 html, body, #app, #layout, .document-view-container  {
     height: 100%;
-    background-color: var(--bg-color);
+    background-color: var(--color-light-dark);
 }
 
 .card, .header {
-    background-color: var(--card-bg-color);
-    color: var(--title-color);
+    background-color: var(--color-white-darkblue);
+    color: var(--color-gray-white);
 }
 
 .modal, .preview {
-    background-color: var(--bg-color-modal);
-    color: var(--title-color);
+    background-color: var(--color-light-dark);
+    color: var(--color-gray-white);
 }
 
 .card:active {
-    background-color: var(--card-active-bg-color) !important;
+    background-color: var(--color-white-darkblue-2) !important;
 }
 
 .card:hover {
-    background-color: var(--card-hover-bg-color);
+    background-color: var(--color-white-darkblue-1);
 }
 
 .title {
-    color: var(--title-color);
+    color: var(--color-gray-white);
 }
 
 .subtitle {
-    color: var(--subtitle-color);
+    color: var(--color-lightgrey-white);
 }
 
 .link, .label {
-    color: var(--link-color);
+    color: var(--color-gray-white);
 }
 
 .link:active {
-    color: var(--active-color) !important;
+    color: var(--color-yellow-blue) !important;
 }
 
 .link:hover {
-    color: var(--link-hover-color);
+    color: var(--color-darkblue-gray);
 }
 
 .header button:active {
-    background-color: var(--card-active-bg-color);
-    color: var(--active-tab-color);
+    background-color: var(--color-white-darkblue-2);
+    color: var(--color-blue-white);
 }
 
 .tabs {
-    background-color: var(--tabs-bg-color);
-    color: var(--tabs-color);
+    background-color: var(--color-white-gray);
+    color: var(--color-gray-white);
 }
 
 .active-tab {
-    color: var(--active-tab-color);
+    color: var(--color-blue-white);
 }
 
 .tabs-active {
-    background-color: var(--active-tab-bg);
+    background-color: var(--color-white-blue);
 }
 
 .policy-text h2 {
@@ -175,19 +165,15 @@ html, body, #app, #layout, .document-view-container  {
 }
 
 .bookmarks-list {
-    color: var(--subtitle-color);
-}
-
-.bookmarks-list li {
-    border-bottom: 1px solid var(--link-color);
+    color: var(--color-lightgrey-white);
 }
 
 html[is-touch-device="false"] .bookmarks-list li:hover {
-    background-color: var(--card-hover-bg-color);
+    background-color: var(--color-white-darkblue-1);
 }
 
 html[is-touch-device="false"] .bookmarks-list .btn-icon:hover {
-    color: var(--link-hover-color);
+    color: var(--color-darkblue-gray);
 }
 
 @media (max-width: 640px) {

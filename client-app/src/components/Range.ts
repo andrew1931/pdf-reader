@@ -95,7 +95,12 @@ export const Range = (min: number, max: number, current: number) => {
     return {
         target: labelEl,
         onChange(cb: (page: number) => void): void {
-            rangeHidden.onchange = () => cb(rangeValue());
+            rangeHidden.onchange = () => {
+                const floorValue = rangeValue();
+                rangeHidden.value = String(floorValue);
+                mapInputValueToVisibleRange(); 
+                cb(floorValue);
+            };
         },
         update(val: number) {
             if (val !== Math.floor(+rangeHidden.value)) {

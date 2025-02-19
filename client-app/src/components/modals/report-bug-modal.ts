@@ -10,9 +10,9 @@ export function reportBugModal() {
     const button = SubmitButton("Report");
     button.classList.add("mt-4");
     const descriptionInput = Textarea({
-        label: "Describe an issue and we'll try to fix it",
+        label: "Description",
         name: "description",
-        placeholder: "Enter reproduction steps"
+        placeholder: "Enter reproduction steps of the issue if possible ;)"
     });
     const form = Form(
         descriptionInput.target,

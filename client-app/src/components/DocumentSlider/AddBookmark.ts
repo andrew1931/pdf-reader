@@ -3,6 +3,7 @@ import { useDocumentPageChange } from "../../core/hooks";
 import { SubmitButton } from "../Button";
 import { Form, FormError, Input } from "../Form";
 import { DeleteIcon } from "../icons/delete";
+import { InfoIcon } from "../icons/info";
 import { Modal } from "../Modal";
 import { Toast } from "../Toast";
 
@@ -12,7 +13,7 @@ const BookmarksList = (
     updateListData: () => void
 ) => {
     const list = document.createElement("ul");
-    list.classList.add("bookmarks-list");
+    list.classList.add("bookmarks-list", "mb-2");
 
     const renderList = (bookmarks: DbFileMeta["bookmarks"]) => {
         list.innerHTML = "";
@@ -46,6 +47,7 @@ const BookmarksList = (
                 "p-2",
                 "w-full",
                 "text-left",
+                "shadow-card"
             );
             listButton.onclick = () => {
                 useDocumentPageChange.emit(el.page);
@@ -82,6 +84,7 @@ export const AddBookmark = (fileName: string, currentPage: number): HTMLElement 
         label: "Add a bookmark note",
         name: "bookmark",
         placeholder: "Enter a note",
+        icon: InfoIcon,
         required: false
     });
     const form = Form(
@@ -96,6 +99,16 @@ export const AddBookmark = (fileName: string, currentPage: number): HTMLElement 
             page: currentPage,
             note: bookmarkInput.value() || "page " + currentPage
         };
+
+        const bookmarkExists = bookmarks.findIndex((el) => {
+            return el.page === bookmark.page && el.note === bookmark.note;
+        }) > -1;
+
+        if (bookmarkExists) {
+            Toast.error(`Bookmark with such text for page ${bookmark.page} already exists`);
+            return;
+        }
+
         bookmarks = [...bookmarks, bookmark];
         DB.editFileMeta(fileName, { bookmarks })
             .then(() => {

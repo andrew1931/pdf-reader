@@ -80,7 +80,7 @@ export function editDocumentModal(doc: DbFileMeta) {
 
 export function deleteDocument(doc: DbFileMeta) {
     ConfirmModal(
-        "Are you positive you want to delete this document?",
+        "Are you positive you want to delete this document? This action cannot be undone :(",
         { label: "Cancel", fn: () => Modal.hide() },
         {
             label: "Delete", 
