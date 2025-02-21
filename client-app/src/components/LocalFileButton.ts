@@ -21,14 +21,14 @@ export const LocalFileButton = () => {
                         author: pdf.author,
                         numberOfPages: pdf.numberOfPages,
                     })
-                        .then(() => Document.show(pdf, file.name, 0))
+                        .then(() => Document(pdf, file.name, 0))
                         .catch((error) => {
                             if (
                                 error instanceof KeyExistsError ||
                                 error instanceof NotEnabledError
                             ) {
                                 console.warn(error);
-                                Document.show(pdf, file.name, 0);
+                                Document(pdf, file.name, 0);
                             } else {
                                 Toast.error(error);
                             }

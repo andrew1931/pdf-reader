@@ -5,19 +5,27 @@ import {
     usePageUpdate,
     useDocumentPageChange
 } from "../../core/hooks";
-import { debounce } from "../../core/utils";
-import { type PdfParsedDocument, type PdfReaderRenderer } from "../../pdf-reader";
+import { debounce, isTouchDevice } from "../../core/utils";
+import { type PdfParsedDocument } from "../../pdf-reader";
 import { Toast } from "../Toast";
 import { ReadingControls } from "./ReadingControls";
 import { createSwiper } from "./Swiper";
 
-const ANIMATION_DURATION = 300;
-export const Document = (() => {
-    const canvases: HTMLCanvasElement[] = [];
+export const Document = (
+    pdf: PdfParsedDocument,
+    fileName: string,
+    lastViewedPage = 0
+) => {
+    const ANIMATION_DURATION = 300;
+    const INACTIVITY_TIMEOUT = 5000;
     const CANVASES_CAPACITY = 30;
 
-    let swiper;
+    const canvases: HTMLCanvasElement[] = [];
+    let swiper: ReturnType<typeof createSwiper> | null = null;
     let isOpen = false;
+
+    const controls = ReadingControls(fileName, lastViewedPage, pdf);
+    controls.onCloseButtonClick(hideModal);
 
     const contentEl = document.createElement("div");
     contentEl.classList.add(
@@ -26,72 +34,6 @@ export const Document = (() => {
         "w-full",
         "max-w-2xl"
     );
-
-    const controls = ReadingControls();
-    controls.onClose(hideModal);
-
-    function initSliderContent(renderer: PdfReaderRenderer, index: number) {
-        if (!swiper) return;
-        const slides = swiper.slides as HTMLElement[];
-        const render = (index) => {
-            if (!slides[index] || slides[index].querySelector("canvas")) {
-                return;
-            }
-            const canvas = document.createElement("canvas");
-            canvas.classList.add("max-w-full", "max-h-dvh", "bg-inherit",);
-            canvases.push(canvas);
-            renderer(canvas, index + 1).catch(console.error);
-            slides[index].appendChild(canvas);
-            if (canvases.length > CANVASES_CAPACITY) {
-                for (let i = 0; i < canvases.length - CANVASES_CAPACITY; i++) {
-                    const el = canvases[i];
-                    el.remove();
-                    canvases.splice(0, i);
-                }
-            }
-        };
-
-        render(index - 1);
-        render(index);
-        render(index + 1);
-        controls.update(index + 1, slides.length);
-    }
-
-    let openPdf: PdfParsedDocument | null = null;
-
-    const saveLastViewedPage = debounce((fileName: string, index: number) => {
-        DB.editFileMeta(fileName, { lastViewedPage: index })
-            .catch((error) => {
-                if (!(error instanceof NotEnabledError)) {
-                    console.error(error);
-                }
-            });
-    }, 1000);
-
-    function initSwiper(
-        pdf: PdfParsedDocument,
-        fileName: string,
-        initialPage: number
-    ) {
-        openPdf = pdf;
-        const initialIndex = initialPage || 0;
-        swiper = createSwiper(pdf.numberOfPages, initialIndex);
-        swiper.onSlideChange((index) => {
-            initSliderContent(pdf.render, index);
-            saveLastViewedPage(fileName, index);
-        });
-        initSliderContent(pdf.render, initialIndex);
-        contentEl.innerHTML = "";
-        contentEl.appendChild(swiper.target);
-        showModal();
-        controls.show(fileName, initialIndex + 1, pdf);
-        DB.editFileMeta(fileName, { lastViewedAt: new Date() }
-        ).catch((error) => {
-            if (!(error instanceof NotEnabledError)) {
-                Toast.error(error);
-            }
-        });
-    }
 
     const wrapper = document.createElement("div");
     wrapper.classList.add(
@@ -109,14 +51,63 @@ export const Document = (() => {
         "opacity-0",
     );
     wrapper.append(contentEl, controls.target);
-    wrapper.onclick = (e: MouseEvent) => {
-        if (
-            !isOpen ||
-            (e.target as HTMLElement).matches(".swiper-button-next") ||
-            (e.target as HTMLElement).matches(".swiper-button-prev")
-        ) return;
-        controls.toggle();
-    };
+
+    function initSliderContent(index: number) {
+        if (!swiper) return;
+        const slides = swiper.slides as HTMLElement[];
+        const render = (index) => {
+            if (!slides[index] || slides[index].querySelector("canvas")) {
+                return;
+            }
+            const canvas = document.createElement("canvas");
+            canvas.classList.add("max-w-full", "max-h-dvh", "bg-inherit",);
+            canvases.push(canvas);
+            pdf.render(canvas, index + 1).catch(console.error);
+            slides[index].appendChild(canvas);
+            if (canvases.length > CANVASES_CAPACITY) {
+                for (let i = 0; i < canvases.length - CANVASES_CAPACITY; i++) {
+                    const el = canvases[i];
+                    el.remove();
+                    canvases.splice(0, i);
+                }
+            }
+        };
+
+        render(index - 1);
+        render(index);
+        render(index + 1);
+        controls.update(index + 1);
+    }
+
+    const saveLastViewedPage = debounce((fileName: string, index: number) => {
+        DB.editFileMeta(fileName, { lastViewedPage: index })
+            .catch((error) => {
+                if (!(error instanceof NotEnabledError)) {
+                    console.error(error);
+                }
+            });
+    }, 1000);
+
+    function initSwiper() {
+        swiper = createSwiper(pdf.numberOfPages, lastViewedPage);
+        swiper.onSlideChange((index) => {
+            initSliderContent(index);
+            saveLastViewedPage(fileName, index);
+        });
+        initSliderContent(lastViewedPage);
+        
+        contentEl.innerHTML = "";
+        contentEl.appendChild(swiper.target);
+
+        showModal();
+
+        DB.editFileMeta(fileName, { lastViewedAt: new Date() }
+        ).catch((error) => {
+            if (!(error instanceof NotEnabledError)) {
+                Toast.error(error);
+            }
+        });
+    }
 
     function showModal() {
         if (isOpen) return;
@@ -135,14 +126,14 @@ export const Document = (() => {
 
     function hideModal() {
         if (!isOpen) return;
-        if (openPdf) {
-            openPdf.cleanUp();
-        }
+        pdf.cleanUp();
         canvases.forEach((el) => el.remove());
         canvases.length = 0;
+        swiper = null;
+
+        wrapper.removeChild(controls.target);
         wrapper.classList.add("opacity-0");
         wrapper.classList.remove("opacity-1");
-        controls.hide();
         useOutlineToggle.emit({ value: true });
         useScrollToggle.emit({ value: true });
         usePageUpdate.emit();
@@ -162,13 +153,23 @@ export const Document = (() => {
         }
     });
 
-    return {
-        show(
-            pdf: PdfParsedDocument,
-            fileName: string,
-            lastViewedPage: number
-        ) {
-            initSwiper(pdf, fileName, lastViewedPage);
-        },
-    };
-})();
+    initSwiper();
+
+    if (isTouchDevice()) {
+        wrapper.onclick = (e: MouseEvent) => {
+            if (
+                !isOpen ||
+                (e.target as HTMLElement).matches(".swiper-button-next") ||
+                (e.target as HTMLElement).matches(".swiper-button-prev")
+            ) return;
+            controls.toggle();
+        };    
+    } else {
+        const hideControlsDelayed = debounce(controls.hide, INACTIVITY_TIMEOUT);
+        hideControlsDelayed();
+        wrapper.onmousemove = () => {
+            controls.show();
+            hideControlsDelayed();
+        };
+    }
+};

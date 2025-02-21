@@ -8,13 +8,15 @@ import { SearchIcon } from "../icons/search";
 import { Search } from "./Search";
 import { type PdfParsedDocument } from "../../pdf-reader";
 
-export const ReadingControls = () => {
+export const ReadingControls = (
+    fileName: string,
+    currentPage: number,
+    pdfRef: PdfParsedDocument
+) => {
+    const numberOfPages = pdfRef.numberOfPages;
     const ANIMATION_DURATION = 500;
-    let isVisible = true;
-    let numberOfPages = 0;
-    let currentPage = 0;
-    let fileName = "";
-    let pdfRef: PdfParsedDocument;
+
+    let isVisible = false;
 
     const wrapper = document.createElement("div");
 
@@ -73,6 +75,7 @@ export const ReadingControls = () => {
     let pageRange = Range(numberOfPages, currentPage);
 
     function hideControls() {
+        if (!isVisible) return;
         isVisible = false;
         buttonsContainer.classList.add("opacity-0");
         setTimeout(() => {
@@ -83,6 +86,7 @@ export const ReadingControls = () => {
     }
 
     function showControls() {
+        if (isVisible) return;
         isVisible = true;
         buttonsContainer.classList.remove("opacity-0");
         if (buttonsContainer.childNodes.length === 0) {
@@ -110,21 +114,18 @@ export const ReadingControls = () => {
         useScrollToggle.emit({ value: false });
     }
 
+    showControls();
+
     return {
         target: wrapper,
-        onClose(cb) {
+        onCloseButtonClick(cb) {
             closeButton.onclick = cb;
+        },
+        show() {
+            showControls();
         },
         hide() {
             hideControls();
-        },
-        show(name: string, current: number, pdf: PdfParsedDocument) {
-            buttonsContainer.innerHTML = "";
-            fileName = name;
-            currentPage = current;
-            numberOfPages = pdf.numberOfPages;
-            pdfRef = pdf;
-            showControls();
         },
         toggle() {
             if (isVisible) {
@@ -133,9 +134,8 @@ export const ReadingControls = () => {
                 showControls();
             }
         },
-        update(current: number, total: number) {
+        update(current: number) {
             currentPage = current;
-            numberOfPages = total;
             pageRange.update(currentPage);
         }
     };

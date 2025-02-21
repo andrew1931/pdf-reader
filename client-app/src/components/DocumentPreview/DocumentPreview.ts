@@ -24,7 +24,7 @@ const userMenuItems: (pdf?: PdfParsedDocument) => DropDownItem[] = (pdf) => {
             icon: BookOpenIcon,
             iconColor: "text-yellow-500",
             cb: (doc) => {
-                Document.show(pdf as PdfParsedDocument, doc.fileName, doc.lastViewedPage);
+                Document(pdf as PdfParsedDocument, doc.fileName, doc.lastViewedPage);
             }
         },
         { label: "Details", icon: InfoIcon, iconColor: "text-blue-500", cb: viewDetailsModal },
