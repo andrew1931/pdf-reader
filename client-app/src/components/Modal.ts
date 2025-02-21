@@ -89,9 +89,10 @@ export const Modal = (() => {
             contentWrapper.style.transform = `translateY(${window.innerHeight}px)`;
             setTimeout(() => {
                 el.classList.add("hidden");
+                body.innerHTML = "";
             }, MODAL_ANIMATION_TIME);
             useOutlineToggle.emit({ value: true });
-            useScrollToggle.emit(true);
+            useScrollToggle.emit({ value: true });
             onCloseCb();
         }
     }
@@ -118,7 +119,7 @@ export const Modal = (() => {
                 contentWrapper.style.transform = "translateY(0px)";
             }, 100);
             useOutlineToggle.emit({ value: false, skippedElement: el });
-            useScrollToggle.emit(false);
+            useScrollToggle.emit({ value: false });
         }
     }
 

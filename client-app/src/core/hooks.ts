@@ -1,4 +1,4 @@
-type ToggleOutlineProps = { skippedElement?: HTMLElement, value: boolean };
+type ToggleHTMLProps = { skippedElement?: HTMLElement, value: boolean };
 
 type UnsubscribeFn = () => void;
 
@@ -66,9 +66,9 @@ export const usePageUpdate = createHook<void>(EVENTS.UPDATE_PAGE);
 
 export const useDocumentPageChange = createHook<number>(EVENTS.CHANGE_DOC_PAGE);
 
-export const useScrollToggle = createHook<boolean>(EVENTS.TOGGLE_SCROLL);
+export const useScrollToggle = createHook<ToggleHTMLProps>(EVENTS.TOGGLE_SCROLL);
 
-export const useOutlineToggle = createHook<ToggleOutlineProps>(EVENTS.TOGGLE_OUTLINE);
+export const useOutlineToggle = createHook<ToggleHTMLProps>(EVENTS.TOGGLE_OUTLINE);
 
 export const useDocumentsFetch = createHook<void>(EVENTS.FETCH_DOCUMENTS);
 

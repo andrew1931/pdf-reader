@@ -17,17 +17,15 @@ type DropDownItem = {
     cb: (doc: DbFileMeta) => void;
 };
 
-function showDocument(doc: DbFileMeta, pdf: PdfParsedDocument) {
-    Document.show(pdf, doc.fileName, doc.lastViewedPage);
-}
-
 const userMenuItems: (pdf?: PdfParsedDocument) => DropDownItem[] = (pdf) => {
     const result = [
         {
             label: "Open",
             icon: BookOpenIcon,
             iconColor: "text-yellow-500",
-            cb: (doc) => showDocument(doc, pdf as PdfParsedDocument)
+            cb: (doc) => {
+                Document.show(pdf as PdfParsedDocument, doc.fileName, doc.lastViewedPage);
+            }
         },
         { label: "Details", icon: InfoIcon, iconColor: "text-blue-500", cb: viewDetailsModal },
         { label: "Edit title/author", icon: EditIcon, iconColor: "text-green-500", cb: editDocumentModal },
@@ -161,7 +159,7 @@ export const DocumentPreview = (() => {
     function hidePreview() {
         if (isOpen) {
             useOutlineToggle.emit({ value: true });
-            useScrollToggle.emit(true);
+            useScrollToggle.emit({ value: true });
             menu.classList.remove("scale-100");
             menu.classList.add("scale-0");
             menu.innerHTML = "";
@@ -181,10 +179,9 @@ export const DocumentPreview = (() => {
             if (!isOpen) {
                 useOutlineToggle.emit({
                     value: false,
-                    skippedElement:
-               wrapper
+                    skippedElement: wrapper
                 });
-                useScrollToggle.emit(false);
+                useScrollToggle.emit({ value: false });
                 document.body.appendChild(el);
 
                 DB.getFile(doc.fileName)

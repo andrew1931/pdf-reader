@@ -83,7 +83,8 @@ export const Document = (() => {
         initSliderContent(pdf.render, initialIndex);
         contentEl.innerHTML = "";
         contentEl.appendChild(swiper.target);
-        showModal(fileName, initialIndex + 1, pdf.numberOfPages);
+        showModal();
+        controls.show(fileName, initialIndex + 1, pdf);
         DB.editFileMeta(fileName, { lastViewedAt: new Date() }
         ).catch((error) => {
             if (!(error instanceof NotEnabledError)) {
@@ -117,7 +118,7 @@ export const Document = (() => {
         controls.toggle();
     };
 
-    function showModal(fileName: string, current: number, total: number) {
+    function showModal() {
         if (isOpen) return;
         isOpen = true;
         document.body.appendChild(wrapper);
@@ -125,11 +126,10 @@ export const Document = (() => {
             value: false,
             skippedElement: wrapper
         });
-        useScrollToggle.emit(false);
+        useScrollToggle.emit({ value: false });
         setTimeout(() => {
             wrapper.classList.remove("opacity-0");
             wrapper.classList.add("opacity-1");
-            controls.show(fileName, current, total);
         }, 100);
     };
 
@@ -144,7 +144,7 @@ export const Document = (() => {
         wrapper.classList.remove("opacity-1");
         controls.hide();
         useOutlineToggle.emit({ value: true });
-        useScrollToggle.emit(true);
+        useScrollToggle.emit({ value: true });
         usePageUpdate.emit();
         setTimeout(() => {
             try {

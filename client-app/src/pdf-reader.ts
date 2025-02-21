@@ -3,11 +3,14 @@ import { Theme } from "./theme";
 
 export type PdfReaderRenderer = (canvas: HTMLCanvasElement, pageNumber: number) => Promise<void>;
 
+export type DocumentText = { text: string; pageNumber: number }[];
+
 export type PdfParsedDocument = {
     title: string;
     author: string;
     numberOfPages: number;
     render: PdfReaderRenderer;
+    getDocumentText: () => Promise<DocumentText>;
     cleanUp: () => void;
 };
 
@@ -82,8 +85,28 @@ export const PdfReader = (() => {
                                                     reject();
                                                 }
                                             );
-                                        });
+                                        })
+                                        .catch(reject);
                                 });
+                            },
+                            async getDocumentText() {
+                                const result: DocumentText = [];
+                                for (let i = 1; i <= pdf.numPages; i++) {
+                                    try {
+                                        const page = await pdf.getPage(i);
+                                        const textContent = await page.getTextContent();
+                                        textContent.items.forEach((item) => {
+                                            result.push({
+                                                pageNumber: i,
+                                                text: item.str.trim()
+                                            });
+                                        });
+                                        page.cleanup();
+                                    } catch (error) {
+                                        console.error(error);
+                                    }
+                                }
+                                return result;
                             }
                         });
                     },

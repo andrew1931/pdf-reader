@@ -164,15 +164,15 @@ html, body, #app, #layout, .document-view-container  {
     color: #127cff;
 }
 
-.bookmarks-list {
+.list {
     color: var(--color-lightgrey-white);
 }
 
-html[is-touch-device="false"] .bookmarks-list li:hover {
+html[is-touch-device="false"] .list li:hover {
     background-color: var(--color-white-darkblue-1);
 }
 
-html[is-touch-device="false"] .bookmarks-list .btn-icon:hover {
+html[is-touch-device="false"] .list .btn-icon:hover {
     color: var(--color-darkblue-gray);
 }
 

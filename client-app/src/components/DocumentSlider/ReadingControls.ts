@@ -1,9 +1,12 @@
-import { useDocumentPageChange, useOutlineToggle } from "../../core/hooks";
+import { useDocumentPageChange, useOutlineToggle, useScrollToggle } from "../../core/hooks";
 import { CloseIcon } from "../icons/close";
 import { BookmarkIcon } from "../icons/bookmark";
 import { Modal } from "../Modal";
 import { AddBookmark } from "./AddBookmark";
 import { Range } from "../Range";
+import { SearchIcon } from "../icons/search";
+import { Search } from "./Search";
+import { type PdfParsedDocument } from "../../pdf-reader";
 
 export const ReadingControls = () => {
     const ANIMATION_DURATION = 500;
@@ -11,6 +14,7 @@ export const ReadingControls = () => {
     let numberOfPages = 0;
     let currentPage = 0;
     let fileName = "";
+    let pdfRef: PdfParsedDocument;
 
     const wrapper = document.createElement("div");
 
@@ -28,10 +32,19 @@ export const ReadingControls = () => {
         Modal.show(
             "Bookmarks",
             AddBookmark(fileName, currentPage),
-            () => useOutlineToggle.emit({
-                value: false,
-                skippedElement: wrapper
-            })
+            closeReadingModalCb
+        );
+    };
+
+    const searchButton = document.createElement("button");
+    searchButton.setAttribute("aria-label", "Search document");
+    searchButton.innerHTML = SearchIcon;
+    searchButton.classList.add(...buttonsClasslist);
+    searchButton.onclick = () => {
+        Modal.show(
+            "Search in document",
+            Search(pdfRef),
+            closeReadingModalCb
         );
     };
 
@@ -80,6 +93,7 @@ export const ReadingControls = () => {
             };
             buttonsContainer.append(
                 closeButton,
+                searchButton,
                 bookmarkButton,
                 pageRange.target
             );
@@ -87,6 +101,14 @@ export const ReadingControls = () => {
     }
 
     wrapper.append(buttonsContainer);
+
+    function closeReadingModalCb() {
+        useOutlineToggle.emit({
+            value: false,
+            skippedElement: wrapper
+        });
+        useScrollToggle.emit({ value: false });
+    }
 
     return {
         target: wrapper,
@@ -96,11 +118,12 @@ export const ReadingControls = () => {
         hide() {
             hideControls();
         },
-        show(name: string, current: number, total: number) {
+        show(name: string, current: number, pdf: PdfParsedDocument) {
             buttonsContainer.innerHTML = "";
             fileName = name;
             currentPage = current;
-            numberOfPages = total;
+            numberOfPages = pdf.numberOfPages;
+            pdfRef = pdf;
             showControls();
         },
         toggle() {

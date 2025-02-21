@@ -27,10 +27,10 @@ import { Theme } from "./theme";
             skippedElement.querySelectorAll(elements).forEach((el) => {
                 el.setAttribute("tabindex", !value ?  "0" : "-1");
             });
-        } 
+        }
     });
 
-    useScrollToggle.on((value) => {
+    useScrollToggle.on(({ value }) => {
         if (value) {
             htmlEl.classList.remove("no-scroll");
         } else {

@@ -13,7 +13,7 @@ const BookmarksList = (
     updateListData: () => void
 ) => {
     const list = document.createElement("ul");
-    list.classList.add("bookmarks-list", "mb-2");
+    list.classList.add("list", "mb-2");
 
     const renderList = (bookmarks: DbFileMeta["bookmarks"]) => {
         list.innerHTML = "";

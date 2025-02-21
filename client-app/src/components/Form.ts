@@ -3,7 +3,7 @@ const MAX_INPUT_LENGTH = "1000";
 const Label = (text: string, inputEl: HTMLElement, required: boolean): HTMLElement => {
     const labelMeta = document.createElement("small");
     labelMeta.classList.add( "ml-1", "opacity-80");
-    labelMeta.innerText = `(${required ? "required" : "optional"})`;
+    labelMeta.innerText = !required ? "(optional)" : "";
 
     const labelText = document.createElement("div");
     labelText.innerText = text;
@@ -51,13 +51,13 @@ export const Form = (...inputs: HTMLElement[]): HTMLFormElement => {
 
 export const Input = (
     conf: {
-      label: string,
-      name: string,
-      placeholder: string,
-      value?: string,
-      icon?: string,
-      type?: string,
-      required?: boolean
+        label: string,
+        name: string,
+        placeholder: string,
+        value?: string,
+        icon?: string,
+        type?: string,
+        required?: boolean
    }
 ) => {
     const input = document.createElement("input");
