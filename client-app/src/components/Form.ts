@@ -18,7 +18,10 @@ const Label = (text: string, inputEl: HTMLElement, required: boolean): HTMLEleme
 
     const labelEl = document.createElement("label");
     labelEl.classList.add("mt-2", "flex", "flex-col");
-    labelEl.append(labelText, inputEl);
+    if (text) {
+        labelEl.appendChild(labelText); 
+    }
+    labelEl.appendChild(inputEl);
     return labelEl;
 };
 
@@ -51,9 +54,9 @@ export const Form = (...inputs: HTMLElement[]): HTMLFormElement => {
 
 export const Input = (
     conf: {
-        label: string,
-        name: string,
+        name?: string,
         placeholder: string,
+        label?: string,
         value?: string,
         icon?: string,
         type?: string,
@@ -73,7 +76,7 @@ export const Input = (
         "rounded-[inherit]"
     );
     input.setAttribute("type", conf.type || "text");
-    input.setAttribute("name", conf.name);
+    input.setAttribute("name", conf.name || "");
     input.setAttribute("placeholder", conf.placeholder);
     input.setAttribute("maxlength", MAX_INPUT_LENGTH);
     input.value = conf.value || "";
@@ -100,7 +103,7 @@ export const Input = (
     inputWrapper.append(input);
 
     return {
-        target: Label(conf.label, inputWrapper, conf.required ?? true),
+        target: Label(conf.label || "", inputWrapper, conf.required ?? true),
         value() {
             return input.value.trim();
         },

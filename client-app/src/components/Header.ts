@@ -29,6 +29,7 @@ export const Header = (): HTMLElement => {
         const isActive = item.pathname === normalizedPath();
         const link = Link(item.pathname + item.search);
         link.classList.add(
+            "btn-icon",
             "flex",
             "flex-col",
             "justify-center",

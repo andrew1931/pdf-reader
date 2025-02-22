@@ -57,7 +57,7 @@ html.no-scroll {
 
 .swiper .swiper-button-prev:hover,
 .swiper .swiper-button-next:hover {
-    background-color: #767a80;
+    background-color: var(--color-darkblue-gray);
     color: #f2f2f2;
 }
 
@@ -72,7 +72,7 @@ button, input, textarea, a {
     outline-style: solid !important;
 }
 
-.btn:focus, .toggle:focus, input:focus, textarea:focus {
+.btn-card:focus, .toggle:focus, input:focus, textarea:focus {
     outline-color: var(--color-yellow-blue) !important;
 }
 
@@ -172,8 +172,19 @@ html[is-touch-device="false"] .list li:hover {
     background-color: var(--color-white-darkblue-1);
 }
 
-html[is-touch-device="false"] .list .btn-icon:hover {
+html[is-touch-device="false"] .btn-icon:hover {
     color: var(--color-darkblue-gray);
+}
+
+html[is-touch-device="false"] .btn-card:hover,
+html[is-touch-device="false"] .btn:hover
+{
+    opacity: .9;
+}
+
+html.keyboard, html.keyboard body {
+    height: 50%;
+    overflow: hidden;
 }
 
 @media (max-width: 640px) {

@@ -53,6 +53,7 @@ export const LocalFileButton = () => {
     fileBtn.setAttribute("aria-label", "Choose local file");
     fileBtn.append(buttonIcon, buttonText);
     fileBtn.classList.add(
+        "btn",
         "flex",
         "items-center",
         "justify-center", 
@@ -66,7 +67,6 @@ export const LocalFileButton = () => {
         "bg-button-500",
         "active:bg-button-600",
         "md:active:bg-button-600",
-        "md:hover:bg-button-400",
         "disabled:bg-button-400",
     );
     fileBtn.setAttribute("type", "button");

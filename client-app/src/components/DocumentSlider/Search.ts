@@ -1,6 +1,6 @@
 import { useDocumentPageChange } from "../../core/hooks";
+import { debounce } from "../../core/utils";
 import { type PdfParsedDocument, type DocumentText } from "../../pdf-reader";
-import { SubmitButton } from "../Button";
 import { Form, Input } from "../Form";
 import { SearchIcon } from "../icons/search";
 import { Modal } from "../Modal";
@@ -17,9 +17,10 @@ const renderSearchList = (
             "w-full",
             "text-sm",
             "font-semibold",
-            "text-center"
+            "text-center",
+            "mt-4"
         );
-        emptyResult.innerText = "Nothing found for your search :(";
+        emptyResult.innerText = "Nothing found for your search string :(";
         list.appendChild(emptyResult);
         return;
     }
@@ -58,26 +59,17 @@ const renderSearchList = (
 
 
 export const Search = (pdf: PdfParsedDocument): HTMLElement => {
-    const BUTTON_INITIAL_TEXT = "Search";
-    const BUTTON_LOADING_TEXT = "Searching...";
     let documentText: DocumentText = [];
 
     const list = document.createElement("ul");
     list.classList.add("list", "mb-2");
 
-    const button = SubmitButton(BUTTON_INITIAL_TEXT);
-    button.classList.add("mt-2");
-
     const searchInput = Input({
-        label: "Search in document",
-        name: "search",
-        placeholder: "Search",
+        placeholder: "Search string...",
         icon: SearchIcon,
     });
-    const form = Form(
-        searchInput.target,
-        button
-    );
+    searchInput.target.classList.add("mb-2");
+    const form = Form(searchInput.target);
 
     const applySearch = (searchVal: string) => {
         if (searchVal.length > 0) {
@@ -87,12 +79,9 @@ export const Search = (pdf: PdfParsedDocument): HTMLElement => {
         } else {
             list.innerHTML = "";
         }
-        button.innerText = BUTTON_INITIAL_TEXT;
     };
 
-    form.onsubmit = (e) => {
-        e.preventDefault();
-        button.innerText = BUTTON_LOADING_TEXT;
+    const searchHandler = debounce(() => {
         const searchVal = searchInput.value();
         if (searchVal.length > 0) {
             if (documentText.length === 0) {
@@ -105,6 +94,13 @@ export const Search = (pdf: PdfParsedDocument): HTMLElement => {
         } else {
             applySearch("");
         }
+    }, 500);
+
+    searchInput.target.oninput = searchHandler;
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        searchHandler();
     };
 
     const wrapper = document.createElement("div");

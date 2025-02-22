@@ -1,6 +1,7 @@
 export const ActionButtonSm = (text: string): HTMLButtonElement => {
     const el = document.createElement("button");
     el.classList.add(
+        "btn",
         "text-sm",
         "md:text-xs",
         "font-medium",
@@ -12,10 +13,8 @@ export const ActionButtonSm = (text: string): HTMLButtonElement => {
         "bg-white",
         "active:bg-slate-100",
         "md:active:bg-slate-100",
-        "md:hover:text-slate-900",
         "disabled:bg-slate-50",
         "disabled:text-slate-400",
-        "disabled:hover:text-slate-400",
         "shadow-card"
     );
     el.innerText = text;
@@ -53,11 +52,11 @@ const Button = (text: string) => {
 export const SubmitButton = (text: string) => {
     const el = Button(text);
     el.classList.add(
+        "btn",
         "text-slate-50",
         "bg-button-500",
         "active:bg-button-600",
         "md:active:bg-button-600",
-        "md:hover:bg-button-400",
         "disabled:bg-button-400",
     );
     el.setAttribute("type", "submit");
@@ -67,6 +66,7 @@ export const SubmitButton = (text: string) => {
 export const ActionButton = (text: string) => {
     const el = Button(text);
     el.classList.add(
+        "btn",
         "bg-slate-50",
         "border",
         "border-slate-200",
@@ -74,7 +74,6 @@ export const ActionButton = (text: string) => {
         "active:bg-slate-300",
         "active:bg-slate-300",
         "md:active:bg-slate-300",
-        "md:hover:bg-slate-200",
         "disabled:bg-slate-100",
     );
     el.setAttribute("type", "button");

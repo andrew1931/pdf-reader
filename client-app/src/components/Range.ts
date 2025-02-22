@@ -16,7 +16,7 @@ export const Range = (max: number, current: number) => {
     rangeVisibleBody.classList.add(
         "w-full",
         "h-full",
-        "bg-slate-400",
+        "bg-slate-500",
         "cursor-pointer",
     );
 

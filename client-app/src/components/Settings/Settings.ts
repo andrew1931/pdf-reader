@@ -52,18 +52,18 @@ export const Settings = () => {
         return el;
     };
 
-    // const joinedDateInfo = (date: string) => {
-    //    const el = document.createElement("span");
-    //    el.classList.add(
-    //       "text-slate-400",
-    //       "text-xs",
-    //       "mb-2",
-    //       "inline-flex",
-    //       "justify-center",
-    //    );
-    //    el.innerText = "Joined on " + new Date(date).toLocaleString();
-    //    return el;
-    // }
+    const joinedDateInfo = () => {
+        const el = document.createElement("span");
+        el.classList.add(
+            "text-slate-400",
+            "text-xs",
+            "my-3",
+            "inline-flex",
+            "justify-center",
+        );
+        el.innerText = "App released on " + new Date(Number(BUILD_VERSION)).toDateString();
+        return el;
+    };
 
     const usedStorageEl = document.createElement("span");
     usedStorageEl.classList.add(
@@ -97,7 +97,7 @@ export const Settings = () => {
         wrapper.innerHTML = "";
         wrapper.append(
             userEmailInfo("Anonym guest"),
-            // joinedDateInfo(new Date().toString()),
+            joinedDateInfo(),
             themeToggle.target,
             DbToggle(),
             settingsButtons.storage(usedStorageEl),

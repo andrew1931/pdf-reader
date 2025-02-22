@@ -74,7 +74,7 @@ export const DocumentCard = (doc: DbFileMeta) => {
     const button = document.createElement("button");
     button.setAttribute("aria-label", "Document card");
     button.classList.add(
-        "btn",
+        "btn-card",
         "cursor-pointer",
         "relative",
         "flex",
