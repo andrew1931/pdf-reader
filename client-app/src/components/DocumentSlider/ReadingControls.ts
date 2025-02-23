@@ -16,6 +16,7 @@ import { ZoomInIcon } from "../icons/zoom-in";
 import { ZoomOutIcon } from "../icons/zoom-out";
 import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL, zoomHandler } from "./zoom-handler";
 import { SWIPER_ACTIVE_CLASS, SWIPER_CLASS } from "./Swiper";
+import { RotateIcon } from "../icons/rotate";
 
 export const ReadingControls = (
     fileName: string,
@@ -25,6 +26,7 @@ export const ReadingControls = (
     const ANIMATION_DURATION = 500;
     const numberOfPages = pdfRef.numberOfPages;
 
+    let currentRotate = 0;
     let currentPage = initialPage;
     let isVisible = false;
 
@@ -68,17 +70,34 @@ export const ReadingControls = (
     pageRange.target.classList.add(...animatedElementClasslist);
     pageRange.target.onclick = (e) => e.stopPropagation();
 
+    const rotateButton = IconButton(RotateIcon, "Rotate document");
+    rotateButton.onclick = () => {
+        const target = activeSlideCanvas();
+        if (!target) return;
+        currentRotate += 90;
+        if (currentRotate === 360) {
+            currentRotate = 0;
+        }
+        pdfRef.render(
+            target,
+            currentPage,
+            currentRotate,
+            zoomHandlerInstance.isActiveZoom() ? zoomHandlerInstance.level() : undefined
+        )
+            .finally(() => zoomHandlerInstance.update(target));
+    };
+
     const zoomInButton = IconButton(ZoomInIcon, "Zoom in document");
     zoomInButton.onclick = () => {
         zoomInButton.disabled = true;
-        zoomHandlerInstance.zoomIn(activeSlideCanvas(), currentPage)
+        zoomHandlerInstance.zoomIn(activeSlideCanvas(), currentPage, currentRotate)
             .finally(handleZoomControlsDisabled);
     };
 
     const zoomOutButton = IconButton(ZoomOutIcon, "Zoom out document");
     zoomOutButton.onclick = () => {
         zoomOutButton.disabled = true;
-        zoomHandlerInstance.zoomOut(activeSlideCanvas(), currentPage)
+        zoomHandlerInstance.zoomOut(activeSlideCanvas(), currentPage, currentRotate)
             .finally(handleZoomControlsDisabled);
     };
 
@@ -140,6 +159,7 @@ export const ReadingControls = (
             handleZoomControlsDisabled();
             buttonsContainer.append(
                 closeButton,
+                rotateButton,
                 zoomInButton,
                 zoomOutButton,
                 searchButton,
@@ -162,7 +182,7 @@ export const ReadingControls = (
     }
 
     function handleButtonsDisabled() {
-        if (zoomHandlerInstance.level() > MIN_ZOOM_LEVEL) {
+        if (zoomHandlerInstance.isActiveZoom()) {
             pageRange.disable();
             searchButton.disabled = true;
             bookmarkButton.disabled = true;
@@ -185,6 +205,9 @@ export const ReadingControls = (
 
     return {
         target: wrapper,
+        rotationValue() {
+            return currentRotate;
+        },
         onCloseButtonClick(cb) {
             closeButton.onclick = cb;
         },

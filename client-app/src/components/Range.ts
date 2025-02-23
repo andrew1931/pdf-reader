@@ -96,6 +96,7 @@ export const Range = (max: number, current: number) => {
         target: labelEl,
         onChange(cb: (page: number) => void): void {
             rangeHidden.onchange = () => {
+                rangeHidden.blur(); // if focus stays - left/right keys conflict with input accessibility left/right
                 const floorValue = rangeValue();
                 rangeHidden.value = String(floorValue);
                 mapInputValueToVisibleRange(); 

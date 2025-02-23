@@ -7,7 +7,7 @@ import {
     useZoom
 } from "../../core/hooks";
 import { debounce, isTouchDevice } from "../../core/utils";
-import { type PdfParsedDocument } from "../../pdf-reader";
+import { ROTATION_ATTRIBUTE, type PdfParsedDocument } from "../../pdf-reader";
 import { Toast } from "../Toast";
 import { ReadingControls } from "./ReadingControls";
 import { createSwiper, SWIPER_BUTTON_NEXT_CLASS } from "./Swiper";
@@ -76,13 +76,22 @@ export const Document = (
         if (!swiper) return;
         const slides = swiper.slides as HTMLElement[];
         const render = (index) => {
-            if (!slides[index] || slides[index].querySelector("canvas")) {
-                return;
+            if (!slides[index]) return;
+
+            const targetCanvas = slides[index].querySelector("canvas");
+            if (targetCanvas) {
+                const slideRotation = Number(targetCanvas.getAttribute(ROTATION_ATTRIBUTE));
+                if (slideRotation === controls.rotationValue()) {
+                    return;
+                } else {
+                    targetCanvas.remove(); // remove to rerender with new rotation value
+                }
             }
+
             const canvas = document.createElement("canvas");
             canvas.classList.add("max-w-full", "max-h-dvh", "bg-inherit", "absolute");
             canvases.push(canvas);
-            pdf.render(canvas, index + 1);
+            pdf.render(canvas, index + 1, controls.rotationValue());
             slides[index].appendChild(canvas);
             if (canvases.length > CANVASES_CAPACITY) {
                 for (let i = 0; i < canvases.length - CANVASES_CAPACITY; i++) {

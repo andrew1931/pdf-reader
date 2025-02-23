@@ -63,15 +63,13 @@ export const zoomHandler = (pdfRef: PdfParsedDocument) => {
     }
 
     function handleTouchMove(e) {
-        const coords = mapTouchCoords(e);
-        if (mouseIsDown) {
-            if (activeElement) {
-                const diffX = mouseDownCords.x - coords.x;
-                const diffY = mouseDownCords.y - coords.y;
-                const nextLeft = elementCoords.x - diffX;
-                const nextTop = elementCoords.y - diffY;
-                setElementPosition(activeElement, nextLeft, nextTop);
-            }
+        if (mouseIsDown && activeElement) {
+            const coords = mapTouchCoords(e);
+            const diffX = mouseDownCords.x - coords.x;
+            const diffY = mouseDownCords.y - coords.y;
+            const nextLeft = elementCoords.x - diffX;
+            const nextTop = elementCoords.y - diffY;
+            setElementPosition(activeElement, nextLeft, nextTop);
         }
     }
 
@@ -94,7 +92,7 @@ export const zoomHandler = (pdfRef: PdfParsedDocument) => {
         } else {
             element.style.left = nextLeft + "px";
         }
-        if (elementCoords.maxY > 0)  {// wrapper height > canvas height
+        if (elementCoords.maxY > 0)  { // wrapper height > canvas height
             element.style.top = "initial";
         } else {
             element.style.top = nextTop + "px"; 
@@ -125,17 +123,30 @@ export const zoomHandler = (pdfRef: PdfParsedDocument) => {
         setElementPosition(activeElement, currentRect.left, currentRect.top);
     });
 
+    function updateCoords(element: HTMLCanvasElement) {
+        updateElementCoords(element);
+        const currentRect = element.getBoundingClientRect();
+        setElementPosition(element, currentRect.left, currentRect.top);
+    }
+
     return {
+        isActiveZoom() {
+            return zoomLevel > MIN_ZOOM_LEVEL;
+        },
         level() {
             return zoomLevel;
         },
-        async zoomIn(element: HTMLCanvasElement | null, activeIndex: number) {
+        async zoomIn(
+            element: HTMLCanvasElement | null,
+            activeIndex: number,
+            currentRotate: number
+        ) {
             if (element && zoomLevel < MAX_ZOOM_LEVEL) {
                 zoomLevel += ZOOM_STEP;
                 element.classList.add(ACTIVE_ZOOM_CLASS);
                 useZoom.emit(true);
 
-                await pdfRef.render(element, activeIndex, zoomLevel);
+                await pdfRef.render(element, activeIndex, currentRotate, zoomLevel);
                 updateElementCoords(element);
 
                 if (element === activeElement) return;
@@ -152,30 +163,36 @@ export const zoomHandler = (pdfRef: PdfParsedDocument) => {
             }
             activeElement = element;
         },
-        async zoomOut(element: HTMLCanvasElement | null, activeIndex: number) {
+        async zoomOut(
+            element: HTMLCanvasElement | null,
+            activeIndex: number,
+            currentRotate: number
+        ) {
             activeElement = element;
             if (element && zoomLevel > MIN_ZOOM_LEVEL) {
                 zoomLevel -= ZOOM_STEP;
                 if (zoomLevel > MIN_ZOOM_LEVEL) {
-                    await pdfRef.render(element, activeIndex, zoomLevel);
+                    await pdfRef.render(element, activeIndex, currentRotate, zoomLevel);
+                    updateCoords(element);
                 }
 
                 if (zoomLevel === MIN_ZOOM_LEVEL) {
-                    await pdfRef.render(element, activeIndex); // render initial scale
+                    await pdfRef.render(element, activeIndex, currentRotate); // render initial scale
                     element.classList.remove(ACTIVE_ZOOM_CLASS);
                     useZoom.emit(false);
                     activeElement = null;
                     removeEventListeners(element);
+                    element.style.left = "initial";
+                    element.style.top = "initial";
                 }
-
-                updateElementCoords(element);
-                const currentRect = element.getBoundingClientRect();
-                setElementPosition(element, currentRect.left, currentRect.top);
             }
         },
         unsubscribe() {
             removeEventListeners(activeElement);
             windowSizeSub();
+        },
+        update(element: HTMLCanvasElement) {
+            updateCoords(element);
         }
     };
 };

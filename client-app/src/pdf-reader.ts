@@ -4,7 +4,8 @@ import { Theme } from "./theme";
 export type PdfReaderRenderer = (
     canvas: HTMLCanvasElement,
     pageNumber: number,
-    zoomLevel?: number
+    rotation?: number,
+    zoomLevel?: number,
 ) => Promise<void>;
 
 export type DocumentText = { text: string; pageNumber: number }[];
@@ -17,6 +18,8 @@ export type PdfParsedDocument = {
     getDocumentText: () => Promise<DocumentText>;
     cleanUp: () => void;
 };
+
+export const ROTATION_ATTRIBUTE = "rotation";
 
 export const PdfReader = (() => {
     const INITIAL_PDF_SCALE = 2;
@@ -55,20 +58,25 @@ export const PdfReader = (() => {
                                 pdf.cleanup();
                                 pdf.destroy();
                             },
-                            render(canvas, pageNumber, zoomLevel) {
+                            render(canvas, pageNumber, rotation = 0, zoomLevel = INITIAL_PDF_SCALE) {
                                 return new Promise((resolve) => {
                                     pdf
                                         .getPage(pageNumber)
                                         .then((page) => {
                                             const viewport = page.getViewport({
-                                                scale: zoomLevel || INITIAL_PDF_SCALE
+                                                scale: zoomLevel,
+                                                rotation
                                             });
                                             canvas.height = viewport.height;
                                             canvas.width = viewport.width;
+                                            canvas.setAttribute(
+                                                ROTATION_ATTRIBUTE,
+                                                String(rotation)
+                                            );
    
                                             const renderContext = {
                                                 canvasContext: canvas.getContext("2d"),
-                                                viewport: viewport,
+                                                viewport,
                                             };
 
                                             if (Theme.isDarkTheme()) {
