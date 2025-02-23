@@ -17,7 +17,6 @@ export const Range = (max: number, current: number) => {
         "w-full",
         "h-full",
         "bg-slate-500",
-        "cursor-pointer",
     );
 
     const rangeVisibleBodyFilled = document.createElement("div");
@@ -92,6 +91,7 @@ export const Range = (max: number, current: number) => {
     }
 
     labelEl.append(labelText, rangeWrapper);
+
     return {
         target: labelEl,
         onChange(cb: (page: number) => void): void {
@@ -107,6 +107,12 @@ export const Range = (max: number, current: number) => {
                 rangeHidden.value = String(val);
                 mapInputValueToVisibleRange();
             }
+        },
+        disable() {
+            rangeHidden.disabled = true;
+        },
+        enable() {
+            rangeHidden.disabled = false;
         }
     };
 };

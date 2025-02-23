@@ -1,4 +1,9 @@
-import { useDocumentPageChange, useOutlineToggle, useScrollToggle } from "../../core/hooks";
+import {
+    useDocumentPageChange,
+    useOutlineToggle,
+    useScrollToggle,
+    useZoom
+} from "../../core/hooks";
 import { CloseIcon } from "../icons/close";
 import { BookmarkIcon } from "../icons/bookmark";
 import { Modal } from "../Modal";
@@ -7,39 +12,77 @@ import { Range } from "../Range";
 import { SearchIcon } from "../icons/search";
 import { Search } from "./Search";
 import { type PdfParsedDocument } from "../../pdf-reader";
+import { ZoomInIcon } from "../icons/zoom-in";
+import { ZoomOutIcon } from "../icons/zoom-out";
+import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL, zoomHandler } from "./zoom-handler";
+import { SWIPER_ACTIVE_CLASS, SWIPER_CLASS } from "./Swiper";
 
 export const ReadingControls = (
     fileName: string,
-    currentPage: number,
-    pdfRef: PdfParsedDocument
+    initialPage: number,
+    pdfRef: PdfParsedDocument,
 ) => {
-    const numberOfPages = pdfRef.numberOfPages;
     const ANIMATION_DURATION = 500;
+    const numberOfPages = pdfRef.numberOfPages;
 
+    let currentPage = initialPage;
     let isVisible = false;
 
-    const wrapper = document.createElement("div");
+    const activeSlideCanvas = (): HTMLCanvasElement | null => {
+        return document.querySelector(`.${SWIPER_CLASS} .${SWIPER_ACTIVE_CLASS} canvas`);
+    };
+
+    const zoomHandlerInstance = zoomHandler(pdfRef);
+
+    const zoomSub = useZoom.on(() => {
+        handleButtonsDisabled();
+    });
 
     const buttonsClasslist = [
         "btn-icon",
-        "w-6",
+        "w-12",
         "text-slate-500",
-        "my-3",
+        "p-3",
     ];
     const animatedElementClasslist = [
         "z-40",
-        "opacity-0",
-        "transition-opacity",
+        "scale-0",
+        "origin-right",
+        "transition-[transform]",
         "duration-500"
     ];
 
-    const bookmarkButton = document.createElement("button");
-    bookmarkButton.setAttribute("aria-label", "Add bookmark");
-    bookmarkButton.innerHTML = BookmarkIcon;
-    bookmarkButton.classList.add(
-        ...buttonsClasslist,
-        ...animatedElementClasslist
-    );
+    const IconButton = (icon: string, label: string) => {
+        const buttonIcon = document.createElement("button");
+        buttonIcon.setAttribute("aria-label", label);
+        buttonIcon.innerHTML = icon;
+        buttonIcon.classList.add(
+            ...buttonsClasslist,
+            ...animatedElementClasslist
+        );
+        return buttonIcon;
+    };
+
+    const pageRange = Range(numberOfPages, currentPage);
+    pageRange.onChange(useDocumentPageChange.emit);
+    pageRange.target.classList.add(...animatedElementClasslist);
+    pageRange.target.onclick = (e) => e.stopPropagation();
+
+    const zoomInButton = IconButton(ZoomInIcon, "Zoom in document");
+    zoomInButton.onclick = () => {
+        zoomInButton.disabled = true;
+        zoomHandlerInstance.zoomIn(activeSlideCanvas(), currentPage)
+            .finally(handleZoomControlsDisabled);
+    };
+
+    const zoomOutButton = IconButton(ZoomOutIcon, "Zoom out document");
+    zoomOutButton.onclick = () => {
+        zoomOutButton.disabled = true;
+        zoomHandlerInstance.zoomOut(activeSlideCanvas(), currentPage)
+            .finally(handleZoomControlsDisabled);
+    };
+
+    const bookmarkButton = IconButton(BookmarkIcon, "Add bookmark");
     bookmarkButton.onclick = () => {
         Modal.show(
             "Bookmarks",
@@ -48,13 +91,7 @@ export const ReadingControls = (
         );
     };
 
-    const searchButton = document.createElement("button");
-    searchButton.setAttribute("aria-label", "Search document");
-    searchButton.innerHTML = SearchIcon;
-    searchButton.classList.add(
-        ...buttonsClasslist,
-        ...animatedElementClasslist
-    );
+    const searchButton = IconButton(SearchIcon, "Search in document");
     searchButton.onclick = () => {
         Modal.show(
             "Search in document",
@@ -63,13 +100,7 @@ export const ReadingControls = (
         );
     };
 
-    const closeButton = document.createElement("button");
-    closeButton.setAttribute("aria-label", "Close document");
-    closeButton.innerHTML = CloseIcon;
-    closeButton.classList.add(
-        ...buttonsClasslist,
-        ...animatedElementClasslist
-    );
+    const closeButton = IconButton(CloseIcon, "Close document");
 
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add(
@@ -84,13 +115,14 @@ export const ReadingControls = (
         "p-4"
     );
 
-    let pageRange = Range(numberOfPages, currentPage);
+    const wrapper = document.createElement("div");
+    wrapper.append(buttonsContainer);
 
     function hideControls() {
         if (!isVisible) return;
         isVisible = false;
         buttonsContainer.childNodes.forEach((child) => {
-            (child as HTMLElement).classList.add("opacity-0");
+            (child as HTMLElement).classList.remove("scale-100");
         });
         setTimeout(() => {
             if (!isVisible) {
@@ -104,25 +136,42 @@ export const ReadingControls = (
         isVisible = true;
 
         if (buttonsContainer.childNodes.length === 0) {
-            pageRange = Range(numberOfPages, currentPage);
-            pageRange.onChange(useDocumentPageChange.emit);
-            pageRange.target.classList.add(...animatedElementClasslist);
-            pageRange.target.onclick = (e) => {
-                e.stopPropagation();
-            };
+            handleButtonsDisabled();
+            handleZoomControlsDisabled();
             buttonsContainer.append(
                 closeButton,
+                zoomInButton,
+                zoomOutButton,
                 searchButton,
                 bookmarkButton,
                 pageRange.target
             );
         }
-        buttonsContainer.childNodes.forEach((child) => {
-            (child as HTMLElement).classList.remove("opacity-0");
-        });
+        setTimeout(() => {
+            if (isVisible) {
+                buttonsContainer.childNodes.forEach((child) => {
+                    (child as HTMLElement).classList.add("scale-100");
+                });
+            }
+        }, 100);
     }
 
-    wrapper.append(buttonsContainer);
+    function handleZoomControlsDisabled() {
+        zoomOutButton.disabled = zoomHandlerInstance.level() <= MIN_ZOOM_LEVEL;
+        zoomInButton.disabled = zoomHandlerInstance.level() >= MAX_ZOOM_LEVEL;
+    }
+
+    function handleButtonsDisabled() {
+        if (zoomHandlerInstance.level() > MIN_ZOOM_LEVEL) {
+            pageRange.disable();
+            searchButton.disabled = true;
+            bookmarkButton.disabled = true;
+        } else {
+            pageRange.enable();
+            searchButton.disabled = false;
+            bookmarkButton.disabled = false;
+        }
+    }
 
     function closeReadingModalCb() {
         useOutlineToggle.emit({
@@ -155,6 +204,10 @@ export const ReadingControls = (
         update(current: number) {
             currentPage = current;
             pageRange.update(currentPage);
+        },
+        unsubscribe() {
+            zoomSub();
+            zoomHandlerInstance.unsubscribe();
         }
     };
 };

@@ -26,7 +26,9 @@ export function viewDetailsModal(doc: DbFileMeta) {
         detail("Author", doc.author),
         detail("File size", bytesToMb(doc.size) + " mb"),
         detail("Number of pages", String(doc.numberOfPages)),
-        detail("Published", doc.createdAt.toLocaleString()),
+        detail("Number of bookmarks", String(doc.bookmarks.length)),
+        detail("Last viewed", doc.lastViewedAt.toDateString()),
+        detail("Added", doc.createdAt.toLocaleString()),
     );
     Modal.show("Document details", details);
 }

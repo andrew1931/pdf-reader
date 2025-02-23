@@ -3,16 +3,21 @@ import { Navigation, Keyboard } from "swiper/modules";
 
 type SwipeSubscriber = (index: number) => void;
 
+export const SWIPER_CLASS = "swiper";
+export const SWIPER_ACTIVE_CLASS = "swiper-slide-active";
+export const SWIPER_BUTTON_PREV_CLASS = "swiper-button-prev";
+export const SWIPER_BUTTON_NEXT_CLASS = "swiper-button-next";
+
 export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
     const el = document.createElement("div");
-    el.classList.add("swiper", "h-full", "w-full");
+    el.classList.add(SWIPER_CLASS, "h-full", "w-full");
     const wrapper = document.createElement("div");
     wrapper.classList.add("swiper-wrapper", "h-full", "w-full");
 
     const buttonPrev = document.createElement("div");
-    buttonPrev.classList.add("swiper-button-prev");
+    buttonPrev.classList.add(SWIPER_BUTTON_PREV_CLASS);
     const buttonNext = document.createElement("div");
-    buttonNext.classList.add("swiper-button-next");
+    buttonNext.classList.add(SWIPER_BUTTON_NEXT_CLASS);
 
     const slides: HTMLElement[] = [];
     for (let i = 0; i < numberOfSlides; i++) {
@@ -36,7 +41,7 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
     let swipesSub: SwipeSubscriber = () => {};
     let swiper: Swiper | undefined;
     setTimeout(() => {
-        swiper = new Swiper(".swiper", {
+        swiper = new Swiper("." + SWIPER_CLASS, {
             // autoHeight: true,
             grabCursor: true,
             initialSlide: initialSlide <= numberOfSlides ? initialSlide : 0,
@@ -57,8 +62,8 @@ export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
             // },
             keyboard: true,
             navigation: {
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
+                nextEl: "." + SWIPER_BUTTON_NEXT_CLASS,
+                prevEl: "." + SWIPER_BUTTON_PREV_CLASS,
             }
         }).init();
         swiper.on("slideChange", (e) => {

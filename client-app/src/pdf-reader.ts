@@ -1,7 +1,11 @@
 import { ApiClient } from "./api/api-client";
 import { Theme } from "./theme";
 
-export type PdfReaderRenderer = (canvas: HTMLCanvasElement, pageNumber: number) => Promise<void>;
+export type PdfReaderRenderer = (
+    canvas: HTMLCanvasElement,
+    pageNumber: number,
+    zoomLevel?: number
+) => Promise<void>;
 
 export type DocumentText = { text: string; pageNumber: number }[];
 
@@ -15,10 +19,10 @@ export type PdfParsedDocument = {
 };
 
 export const PdfReader = (() => {
+    const INITIAL_PDF_SCALE = 2;
     const PDF_JS_BASE = "../../../node_modules/pdfjs-dist";
     const C_MAP_URL = PDF_JS_BASE + "/cmaps/";
-    // const STANDARD_FONT_DATA_URL = PDF_JS_BASE + "standard_fonts/";
-    const SCALE = 2.0;
+    // const STANDARD_FONT_DATA_URL = PDF_JS_BASE + "/standard_fonts/";
 
     return {
         read(file: File): Promise<PdfParsedDocument> {
@@ -36,6 +40,7 @@ export const PdfReader = (() => {
                 const loadingTask = window.pdfjsLib.getDocument({
                     url,
                     cMapUrl: C_MAP_URL,
+                    // standardFontDataUrl: STANDARD_FONT_DATA_URL,
                     cMapPacked: true,
                 }).promise;
                 loadingTask.then(
@@ -50,12 +55,14 @@ export const PdfReader = (() => {
                                 pdf.cleanup();
                                 pdf.destroy();
                             },
-                            render(canvas: HTMLCanvasElement, pageNumber: number) {
-                                return new Promise((resolve, reject) => {
+                            render(canvas, pageNumber, zoomLevel) {
+                                return new Promise((resolve) => {
                                     pdf
                                         .getPage(pageNumber)
                                         .then((page) => {
-                                            const viewport = page.getViewport({ scale: SCALE });
+                                            const viewport = page.getViewport({
+                                                scale: zoomLevel || INITIAL_PDF_SCALE
+                                            });
                                             canvas.height = viewport.height;
                                             canvas.width = viewport.width;
    
@@ -80,13 +87,12 @@ export const PdfReader = (() => {
                                                 },
                                                 (error) => {
                                                     ApiClient.logError("[renderTask.promise]", error);
-                                                    console.log("Error rendering page: ", error);
+                                                    console.error("Error rendering page: ", error);
                                                     page.cleanup();
-                                                    reject();
                                                 }
                                             );
                                         })
-                                        .catch(reject);
+                                        .catch(console.error);
                                 });
                             },
                             async getDocumentText() {

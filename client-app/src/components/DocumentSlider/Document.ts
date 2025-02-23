@@ -3,13 +3,14 @@ import {
     useOutlineToggle,
     useScrollToggle,
     usePageUpdate,
-    useDocumentPageChange
+    useDocumentPageChange,
+    useZoom
 } from "../../core/hooks";
 import { debounce, isTouchDevice } from "../../core/utils";
 import { type PdfParsedDocument } from "../../pdf-reader";
 import { Toast } from "../Toast";
 import { ReadingControls } from "./ReadingControls";
-import { createSwiper } from "./Swiper";
+import { createSwiper, SWIPER_BUTTON_NEXT_CLASS } from "./Swiper";
 
 export const Document = (
     pdf: PdfParsedDocument,
@@ -21,19 +22,38 @@ export const Document = (
     const CANVASES_CAPACITY = 30;
 
     const canvases: HTMLCanvasElement[] = [];
-    let swiper: ReturnType<typeof createSwiper> | null = null;
+
     let isOpen = false;
 
+    const swiper = createSwiper(pdf.numberOfPages, lastViewedPage);
+    
+    const pageChangeSub = useDocumentPageChange.on((page) => {
+        swiper.swipeTo(page as number - 1);
+    });
+
+    const zoomSub = useZoom.on((isOn) => {
+        if (swiper) {
+            swiper.lockSwipes(isOn);
+        }
+    });
+
     const controls = ReadingControls(fileName, lastViewedPage, pdf);
-    controls.onCloseButtonClick(hideModal);
+    controls.onCloseButtonClick(hideDocument);
+
+    swiper.onSlideChange((index) => {
+        initSliderContent(index);
+        saveLastViewedPage(fileName, index);
+    });
+    initSliderContent(lastViewedPage);
 
     const contentEl = document.createElement("div");
     contentEl.classList.add(
         "flex", 
         "items-center", 
         "w-full",
-        "max-w-2xl"
+        "md:max-w-5xl",
     );
+    contentEl.appendChild(swiper.target);
 
     const wrapper = document.createElement("div");
     wrapper.classList.add(
@@ -60,9 +80,9 @@ export const Document = (
                 return;
             }
             const canvas = document.createElement("canvas");
-            canvas.classList.add("max-w-full", "max-h-dvh", "bg-inherit",);
+            canvas.classList.add("max-w-full", "max-h-dvh", "bg-inherit", "absolute");
             canvases.push(canvas);
-            pdf.render(canvas, index + 1).catch(console.error);
+            pdf.render(canvas, index + 1);
             slides[index].appendChild(canvas);
             if (canvases.length > CANVASES_CAPACITY) {
                 for (let i = 0; i < canvases.length - CANVASES_CAPACITY; i++) {
@@ -88,28 +108,7 @@ export const Document = (
             });
     }, 1000);
 
-    function initSwiper() {
-        swiper = createSwiper(pdf.numberOfPages, lastViewedPage);
-        swiper.onSlideChange((index) => {
-            initSliderContent(index);
-            saveLastViewedPage(fileName, index);
-        });
-        initSliderContent(lastViewedPage);
-        
-        contentEl.innerHTML = "";
-        contentEl.appendChild(swiper.target);
-
-        showModal();
-
-        DB.editFileMeta(fileName, { lastViewedAt: new Date() }
-        ).catch((error) => {
-            if (!(error instanceof NotEnabledError)) {
-                Toast.error(error);
-            }
-        });
-    }
-
-    function showModal() {
+    function showDocument() {
         if (isOpen) return;
         isOpen = true;
         document.body.appendChild(wrapper);
@@ -122,14 +121,24 @@ export const Document = (
             wrapper.classList.remove("opacity-0");
             wrapper.classList.add("opacity-1");
         }, 100);
+
+        DB.editFileMeta(
+            fileName, { lastViewedAt: new Date() }
+        ).catch((error) => {
+            if (!(error instanceof NotEnabledError)) {
+                Toast.error(error);
+            }
+        });
     };
 
-    function hideModal() {
+    function hideDocument() {
         if (!isOpen) return;
         pdf.cleanUp();
         canvases.forEach((el) => el.remove());
         canvases.length = 0;
-        swiper = null;
+        pageChangeSub();
+        zoomSub();
+        controls.unsubscribe();
 
         wrapper.removeChild(controls.target);
         wrapper.classList.add("opacity-0");
@@ -147,20 +156,15 @@ export const Document = (
         }, ANIMATION_DURATION);
     };
 
-    useDocumentPageChange.on((page) => {
-        if (swiper) {
-            swiper.swipeTo(page as number - 1);
-        }
-    });
-
-    initSwiper();
+    showDocument();
 
     if (isTouchDevice()) {
         wrapper.onclick = (e: MouseEvent) => {
             if (
                 !isOpen ||
-                (e.target as HTMLElement).matches(".swiper-button-next") ||
-                (e.target as HTMLElement).matches(".swiper-button-prev")
+                (e.target as HTMLElement).matches("." + SWIPER_BUTTON_NEXT_CLASS) ||
+                (e.target as HTMLElement).matches("." + SWIPER_BUTTON_NEXT_CLASS) ||
+                (e.target as HTMLElement).closest(".btn-icon")
             ) return;
             controls.toggle();
         };    

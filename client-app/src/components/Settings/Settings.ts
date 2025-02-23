@@ -52,19 +52,6 @@ export const Settings = () => {
         return el;
     };
 
-    const joinedDateInfo = () => {
-        const el = document.createElement("span");
-        el.classList.add(
-            "text-slate-400",
-            "text-xs",
-            "my-3",
-            "inline-flex",
-            "justify-center",
-        );
-        el.innerText = "App released on " + new Date(Number(BUILD_VERSION)).toDateString();
-        return el;
-    };
-
     const usedStorageEl = document.createElement("span");
     usedStorageEl.classList.add(
         "ml-2",
@@ -97,7 +84,6 @@ export const Settings = () => {
         wrapper.innerHTML = "";
         wrapper.append(
             userEmailInfo("Anonym guest"),
-            joinedDateInfo(),
             themeToggle.target,
             DbToggle(),
             settingsButtons.storage(usedStorageEl),

@@ -5,16 +5,25 @@ import { ActionButton } from "../Button";
 
 export const CheckUpdatesModal = () => {
     const wrapper = document.createElement("div");
-    const description = document.createElement("span");
-    description.classList.add(
+    wrapper.classList.add(
         "text-sm",
         "text-slate-400",
-        "mt-6"
+        "text-center"
     );
+
+    const releaseDate = document.createElement("span");
+    releaseDate.innerHTML = `Current app was released on <b>${new Date(Number(BUILD_VERSION)).toDateString()}</b>`;
+    releaseDate.classList.add(
+        "mt-6",
+        "mb-1"
+    );
+
+    const description = document.createElement("span");
 
     const button = ActionButton("Okay");
     button.classList.add(
         "mx-auto",
+        "mt-6",
         "mb-6"
     );
     ApiClient.getVersion()
@@ -42,6 +51,6 @@ export const CheckUpdatesModal = () => {
         "justify-between",
         "items-center"
     );
-    wrapper.append(description, button);   
+    wrapper.append(releaseDate, description, button);   
     Modal.show("Updates", wrapper);
 };

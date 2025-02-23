@@ -4,7 +4,6 @@
 * {
     --swiper-navigation-size: 28px;
     --swiper-navigation-color: #f8fafc;
-    --swiper-arrows-visibility: flex;
 }
 
 html {
@@ -20,6 +19,8 @@ html {
     --color-white-darkblue: #ffffff;
     --color-white-darkblue-1: #f1f5f9;
     --color-white-darkblue-2: #e2e8f0;
+    --swiper-arrows-visibility: flex;
+    --swiper-navigation-sides-offset: 30px;
 }
 
 html[theme="dark"] {
@@ -55,8 +56,14 @@ html.no-scroll {
     box-sizing: content-box;
 }
 
-.swiper .swiper-button-prev:hover,
-.swiper .swiper-button-next:hover {
+.swiper .swiper-button-prev.swiper-button-lock,
+.swiper .swiper-button-next.swiper-button-lock {
+    cursor: initial;
+    opacity: 0.5;
+}
+
+.swiper .swiper-button-prev:not(.swiper-button-lock):hover,
+.swiper .swiper-button-next:not(.swiper-button-lock):hover {
     background-color: var(--color-darkblue-gray);
     color: #f2f2f2;
 }
@@ -172,23 +179,36 @@ html[is-touch-device="false"] .list li:hover {
     background-color: var(--color-white-darkblue-1);
 }
 
-html[is-touch-device="false"] .btn-icon:hover {
+html[is-touch-device="false"] .btn-icon:not(:disabled):hover {
     color: var(--color-darkblue-gray);
 }
 
 html[is-touch-device="false"] .btn-card:hover,
-html[is-touch-device="false"] .btn:hover
+html[is-touch-device="false"] .btn:not(:disabled):hover
 {
     opacity: .9;
 }
 
-html.keyboard, html.keyboard body {
-    height: 50%;
-    overflow: hidden;
+.btn-icon:disabled {
+    filter: opacity(.5);
+}
+
+input[type="range"]:disabled {
+    cursor: initial;
+}
+
+input[type="range"]:disabled + div {
+    opacity: .5;
+}
+
+.active-zoom {
+    cursor: grab;
+    max-width: unset !important;
+    max-height: unset !important;
 }
 
 @media (max-width: 640px) {
-    * {
-        --swiper-arrows-visibility: none
+    html[is-touch-device="false"] {
+        --swiper-arrows-visibility: none;
     }
 }

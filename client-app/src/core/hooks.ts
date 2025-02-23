@@ -24,6 +24,7 @@ const EVENTS = {
     DOCUMENTS_RESPONSE: "DOCUMENTS_RESPONSE",
     PAGINATION_EVENT: "PAGINATION_EVENT",
     PAGINATION_REQUEST: "PAGINATION_REQUEST",
+    ZOOM: "ZOOM",
 };
 
 const EventEmitter = (() => {
@@ -77,6 +78,8 @@ export const useDocumentsSort = createHook<SortOrder>(EVENTS.SORT_DOCUMENTS);
 export const usePaginationEvent = createHook<PaginationEvent>(EVENTS.PAGINATION_EVENT);
 
 export const usePaginationRequest = createHook<number>(EVENTS.PAGINATION_REQUEST);
+
+export const useZoom = createHook<boolean>(EVENTS.ZOOM);
 
 
 
