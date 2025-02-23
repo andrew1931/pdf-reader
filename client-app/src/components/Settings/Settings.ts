@@ -44,7 +44,7 @@ export const Settings = () => {
             "font-medium",
             "text-base",
             "md:text-xl",
-            "mt-2",
+            "my-6",
             "justify-center",
             "align-center"
         );

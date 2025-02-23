@@ -11,7 +11,7 @@ export type DbFileMeta = {
     numberOfPages: number;
     size: number;
     lastViewedPage: number;
-    bookmarks: { page: number; note: string }[]
+    bookmarks: { page: number; note: string }[];
 };
 
 type EditFileMeta = {
@@ -69,6 +69,11 @@ export const DB = (() => {
 
     const deleteDb = (): Promise<void> => {
         console.log("[DB] delete attempt");
+        const reloadTimer = setTimeout(() => {
+            // in case delete requests hangs more than 3 seconds
+            // reload closes all clients connections
+            window.location.reload();
+        }, 3000);
         return new Promise((resolve, reject) => {
             try {
                 if (db) {
@@ -77,18 +82,22 @@ export const DB = (() => {
                 const request = indexedDB.deleteDatabase(DB_NAME);
                 request.onsuccess = () => {
                     console.log("[DB] delete db success");
+                    clearTimeout(reloadTimer);
                     resolve();
                 };
                 request.onerror = (e) => {
                     console.error("[DB] Error deleting database: ", e);
+                    clearTimeout(reloadTimer);
                     reject(e);
                 };
                 request.onblocked = () => {
                     console.error("[DB] Error deleting database is blocked");
+                    clearTimeout(reloadTimer);
                     reject("database is blocked");
                 };
             } catch (error) {
                 console.error("[DB] deleteDb", error);
+                clearTimeout(reloadTimer);
                 reject(error);
             }
         });
@@ -104,12 +113,12 @@ export const DB = (() => {
         openRequest.onupgradeneeded = (e) => {
             console.log("[DB] upgrade needed: ", e.oldVersion, VERSION);
             try {
+                db = openRequest.result;
                 if (e.oldVersion === 0) {
                     console.log("[DB] creating store...");
-                    db = openRequest.result;
                     createFilesStore(db);
                 } else {
-                    // handle db updates
+                    // handle db migrations
                 }
             } catch (error) {
                 ApiClient.logError("[onupgradeneeded][catch]", error);

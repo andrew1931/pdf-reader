@@ -116,12 +116,17 @@ html, body, #app, #layout, .document-view-container  {
     color: var(--color-gray-white);
 }
 
-.card:active {
+.card:not(:disabled):active {
     background-color: var(--color-white-darkblue-2) !important;
 }
 
-.card:hover {
+.card:not(:disabled):hover {
     background-color: var(--color-white-darkblue-1);
+}
+
+.card:disabled {
+    opacity: .5;
+    cursor: initial;
 }
 
 .title {
@@ -191,6 +196,10 @@ html[is-touch-device="false"] .btn:not(:disabled):hover
 
 .btn-icon:disabled {
     filter: opacity(.5);
+}
+
+.btn-icon:not(:disabled):active {
+    color: #eab308;
 }
 
 input[type="range"]:disabled {

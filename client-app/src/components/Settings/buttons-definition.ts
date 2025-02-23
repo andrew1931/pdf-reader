@@ -60,33 +60,38 @@ export const settingsButtons = {
     //       );
     //    }
     // }),
-    storage: (labelInfo: HTMLElement) => SettingButton({
-        label: "Clear cache",
-        labelInfo,
-        icon: RecycleIcon,
-        iconColor: "text-orange-500",
-        action: () => {
-            ConfirmModal(
-                "Are you positive you want to remove all viewed documents from cache?",
-                { label: "Cancel", fn: () => Modal.hide() },
-                {
-                    label: "Clear", 
-                    fn: () => {
-                        DB.clear()
-                            .then(() => {
-                                Toast.success("Cache was cleared successfully");
-                                setTimeout(() => {
-                                    window.location.reload();
-                                }, 1000);
-                            })
-                            .catch((error) => {
-                                Toast.error(error);
-                            });
+    storage: (labelInfo: HTMLElement) => {
+        const settingsButton = SettingButton({
+            label: "Clear cache",
+            labelInfo,
+            icon: RecycleIcon,
+            iconColor: "text-orange-500",
+            action: () => {
+                ConfirmModal(
+                    "Are you positive you want to remove all viewed documents from cache?",
+                    { label: "Cancel", fn: () => Modal.hide() },
+                    {
+                        label: "Clear", 
+                        fn: () => {
+                            settingsButton.disabled = true;
+                            DB.clear()
+                                .then(() => {
+                                    Toast.success("Cache was cleared successfully");
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1000);
+                                })
+                                .catch((error) => {
+                                    settingsButton.disabled = false;
+                                    Toast.error(error);
+                                });
+                        }
                     }
-                }
-            );
-        }
-    }),
+                );
+            }
+        });
+        return settingsButton;
+    },
     updates: SettingButton({
         label: "Check for updates",
         icon: ReloadIcon,
