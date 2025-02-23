@@ -17,6 +17,8 @@ import { ZoomOutIcon } from "../icons/zoom-out";
 import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL, zoomHandler } from "./zoom-handler";
 import { SWIPER_ACTIVE_CLASS, SWIPER_CLASS } from "./Swiper";
 import { RotateIcon } from "../icons/rotate";
+// import { PencilIcon } from "../icons/pencil";
+// import { CanvasText } from "./CanvasText";
 
 export const ReadingControls = (
     fileName: string,
@@ -24,6 +26,7 @@ export const ReadingControls = (
     pdfRef: PdfParsedDocument,
 ) => {
     const ANIMATION_DURATION = 500;
+    const ANIMATION_CLASS = "scale-100";
     const numberOfPages = pdfRef.numberOfPages;
 
     let currentRotate = 0;
@@ -49,7 +52,6 @@ export const ReadingControls = (
     const animatedElementClasslist = [
         "z-40",
         "scale-0",
-        "origin-right",
         "transition-[transform]",
         "duration-500"
     ];
@@ -67,8 +69,16 @@ export const ReadingControls = (
 
     const pageRange = Range(numberOfPages, currentPage);
     pageRange.onChange(useDocumentPageChange.emit);
-    pageRange.target.classList.add(...animatedElementClasslist);
+    pageRange.target.classList.add(
+        ...animatedElementClasslist,
+        "absolute",
+        "w-auto",
+        "bottom-4"
+    );
     pageRange.target.onclick = (e) => e.stopPropagation();
+
+    // const addTextButton = IconButton(PencilIcon, "Add text");
+    // addTextButton.onclick = () => CanvasText(fileName, currentPage);
 
     const rotateButton = IconButton(RotateIcon, "Rotate document");
     rotateButton.onclick = () => {
@@ -124,28 +134,37 @@ export const ReadingControls = (
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add(
         "absolute",
-        "rounded",
         "right-2",
-        "bottom-2",
+        "bottom-0",
         "flex",
         "flex-col",
         "items-end",
         "ml-auto",
-        "p-4"
+        "px-4",
+        "py-2"
     );
 
     const wrapper = document.createElement("div");
-    wrapper.append(buttonsContainer);
+    wrapper.classList.add(
+        "absolute",
+        "bottom-0",
+        "left-0",
+        "w-full",
+        "flex",
+        "items-center",
+        "justify-center"
+    );
 
     function hideControls() {
         if (!isVisible) return;
         isVisible = false;
         buttonsContainer.childNodes.forEach((child) => {
-            (child as HTMLElement).classList.remove("scale-100");
+            (child as HTMLElement).classList.remove(ANIMATION_CLASS);
         });
+        pageRange.target.classList.remove(ANIMATION_CLASS);
         setTimeout(() => {
             if (!isVisible) {
-                buttonsContainer.innerHTML = "";
+                wrapper.innerHTML = "";
             }
         }, ANIMATION_DURATION);
     }
@@ -154,24 +173,26 @@ export const ReadingControls = (
         if (isVisible) return;
         isVisible = true;
 
-        if (buttonsContainer.childNodes.length === 0) {
+        if (wrapper.childNodes.length === 0) {
             handleButtonsDisabled();
             handleZoomControlsDisabled();
             buttonsContainer.append(
                 closeButton,
+                // addTextButton,
                 rotateButton,
                 zoomInButton,
                 zoomOutButton,
                 searchButton,
                 bookmarkButton,
-                pageRange.target
             );
+            wrapper.append(buttonsContainer, pageRange.target);
         }
         setTimeout(() => {
             if (isVisible) {
                 buttonsContainer.childNodes.forEach((child) => {
-                    (child as HTMLElement).classList.add("scale-100");
+                    (child as HTMLElement).classList.add(ANIMATION_CLASS);
                 });
+                pageRange.target.classList.add(ANIMATION_CLASS);
             }
         }, 100);
     }

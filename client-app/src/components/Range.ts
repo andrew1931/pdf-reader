@@ -2,12 +2,10 @@ export const Range = (max: number, current: number) => {
     const labelEl = document.createElement("div");
     labelEl.classList.add(
         "disable-dbl-tap-zoom",
-        "w-full",
         "flex",
         "flex-col",
         "justify-center",
         "items-center",
-        "my-2"
     );
 
     const labelTextValue = () => rangeValue() + " out of " + max;
