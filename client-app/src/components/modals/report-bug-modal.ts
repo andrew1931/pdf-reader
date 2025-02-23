@@ -12,7 +12,7 @@ export function reportBugModal() {
     const descriptionInput = Textarea({
         label: "Description",
         name: "description",
-        placeholder: "Enter reproduction steps of the issue if possible ;)"
+        placeholder: "Enter reproduction steps of the issue if possible"
     });
     const form = Form(
         descriptionInput.target,

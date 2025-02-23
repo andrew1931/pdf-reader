@@ -54,7 +54,7 @@ export const AskQuestionModal = () => {
                     button.disabled = false;
                     emailInput.reset();
                     questionInput.reset();
-                    Toast.success("Question was asked, we will answer you ASAP");
+                    Toast.success("Your question was sent, we will answer you ASAP");
                 }
             })
             .catch((error) => {
