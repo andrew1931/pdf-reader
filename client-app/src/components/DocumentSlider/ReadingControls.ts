@@ -73,7 +73,8 @@ export const ReadingControls = (
         ...animatedElementClasslist,
         "absolute",
         "w-auto",
-        "bottom-4"
+        "bottom-8",
+        "md:bottom-4"
     );
     pageRange.target.onclick = (e) => e.stopPropagation();
 
@@ -135,7 +136,8 @@ export const ReadingControls = (
     buttonsContainer.classList.add(
         "absolute",
         "right-2",
-        "bottom-0",
+        "bottom-3",
+        "md:bottom-0",
         "flex",
         "flex-col",
         "items-end",
