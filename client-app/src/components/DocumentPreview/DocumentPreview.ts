@@ -2,13 +2,14 @@ import { useOutlineToggle, useScrollToggle } from "../../core/hooks";
 import { BookOpenIcon } from "../icons/book-open";
 import { DeleteIcon } from "../icons/delete";
 import { deleteDocument, editDocumentModal } from "./edit-document-modal";
-import { viewDetailsModal } from "./view-details-modal";
+import { DocumentInfo } from "./DocumentInfo";
 import { Document } from "../DocumentSlider/Document";
 import { DB, type DbFileMeta } from "../../core/DB";
 import { InfoIcon } from "../icons/info";
 import { EditIcon } from "../icons/edit";
 import { type PdfParsedDocument, PdfReader } from "../../pdf-reader";
 import { Toast } from "../Toast";
+import { Modal } from "../Modal";
 
 type DropDownItem = {
     label: string;
@@ -27,9 +28,26 @@ const userMenuItems: (pdf?: PdfParsedDocument) => DropDownItem[] = (pdf) => {
                 Document(pdf as PdfParsedDocument, doc.fileName, doc.lastViewedPage);
             }
         },
-        { label: "Details", icon: InfoIcon, iconColor: "text-blue-500", cb: viewDetailsModal },
-        { label: "Edit title/author", icon: EditIcon, iconColor: "text-green-500", cb: editDocumentModal },
-        { label: "Remove", icon: DeleteIcon, iconColor: "text-red-500", cb: deleteDocument },
+        { 
+            label: "Details",
+            icon: InfoIcon,
+            iconColor: "text-blue-500",
+            cb: (doc) => {
+                Modal.show("Document info", DocumentInfo(doc));
+            }
+        },
+        {
+            label: "Edit title/author",
+            icon: EditIcon,
+            iconColor: "text-green-500",
+            cb: editDocumentModal
+        },
+        { 
+            label:"Remove",
+            icon: DeleteIcon,
+            iconColor: "text-red-500",
+            cb: deleteDocument
+        },
     ];
     if (!pdf) {
         result.shift();

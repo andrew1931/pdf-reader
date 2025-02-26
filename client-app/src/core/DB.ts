@@ -10,16 +10,18 @@ export type DbFileMeta = {
     author: string;
     numberOfPages: number;
     size: number;
+    pdfVersion: string;
     lastViewedPage: number;
     bookmarks: { page: number; note: string }[];
 };
 
 type EditFileMeta = {
-    title?: string,
-    author?: string,
-    lastViewedAt?: Date,
-    numberOfPages?: number,
-    lastViewedPage?: number,
+    title?: string;
+    author?: string;
+    pdfVersion?: string;
+    lastViewedAt?: Date;
+    numberOfPages?: number;
+    lastViewedPage?: number;
     bookmarks?: { page: number; note: string }[];
 };
 
@@ -194,6 +196,7 @@ export const DB = (() => {
                                 createdAt: new Date(),
                                 fileName: file.name,
                                 size: file.size,
+                                pdfVersion: fileMeta.pdfVersion || "",
                                 lastViewedAt: new Date(),
                                 title: fileMeta.title || "",
                                 author: fileMeta.author || "",

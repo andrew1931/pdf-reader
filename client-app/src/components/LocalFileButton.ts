@@ -20,6 +20,7 @@ export const LocalFileButton = () => {
                         title: pdf.title,
                         author: pdf.author,
                         numberOfPages: pdf.numberOfPages,
+                        pdfVersion: pdf.pdfVersion,
                     })
                         .then(() => Document(pdf, file.name, 0))
                         .catch((error) => {

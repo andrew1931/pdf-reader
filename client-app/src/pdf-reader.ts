@@ -14,6 +14,7 @@ export type PdfParsedDocument = {
     title: string;
     author: string;
     numberOfPages: number;
+    pdfVersion: string;
     render: PdfReaderRenderer;
     getDocumentText: () => Promise<DocumentText>;
     cleanUp: () => void;
@@ -53,6 +54,7 @@ export const PdfReader = (() => {
                         resolvePdfLoad({
                             author: meta.info.Author || "Unknown author",
                             title: meta.info.Title || "Unknown title",
+                            pdfVersion: meta.info.PDFFormatVersion || "Unknown pdf version",
                             numberOfPages: pdf.numPages,
                             cleanUp() {
                                 pdf.cleanup();

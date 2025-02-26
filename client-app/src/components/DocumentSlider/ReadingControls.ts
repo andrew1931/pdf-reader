@@ -17,8 +17,10 @@ import { ZoomOutIcon } from "../icons/zoom-out";
 import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL, zoomHandler } from "./zoom-handler";
 import { SWIPER_ACTIVE_CLASS, SWIPER_CLASS } from "./Swiper";
 import { RotateIcon } from "../icons/rotate";
-// import { PencilIcon } from "../icons/pencil";
-// import { CanvasText } from "./CanvasText";
+import { InfoIcon } from "../icons/info";
+import { DocumentInfo } from "../DocumentPreview/DocumentInfo";
+import { DB } from "../../core/DB";
+import { Toast } from "../Toast";
 
 export const ReadingControls = (
     fileName: string,
@@ -78,9 +80,6 @@ export const ReadingControls = (
     );
     pageRange.target.onclick = (e) => e.stopPropagation();
 
-    // const addTextButton = IconButton(PencilIcon, "Add text");
-    // addTextButton.onclick = () => CanvasText(fileName, currentPage);
-
     const rotateButton = IconButton(RotateIcon, "Rotate document");
     rotateButton.onclick = () => {
         const target = activeSlideCanvas();
@@ -128,6 +127,19 @@ export const ReadingControls = (
             Search(pdfRef),
             closeReadingModalCb
         );
+    };
+
+    const infoButton = IconButton(InfoIcon, "Document info");
+    infoButton.onclick = () => {
+        DB.getFileMeta(fileName)
+            .then((doc) => {
+                Modal.show(
+                    "Document info",
+                    DocumentInfo(doc),
+                    closeReadingModalCb
+                );
+            })
+            .catch(Toast.error);
     };
 
     const closeButton = IconButton(CloseIcon, "Close document");
@@ -180,7 +192,7 @@ export const ReadingControls = (
             handleZoomControlsDisabled();
             buttonsContainer.append(
                 closeButton,
-                // addTextButton,
+                infoButton,
                 rotateButton,
                 zoomInButton,
                 zoomOutButton,

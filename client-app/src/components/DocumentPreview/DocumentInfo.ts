@@ -1,8 +1,7 @@
 import { type DbFileMeta } from "../../core/DB";
 import { bytesToMb } from "../../core/utils";
-import { Modal } from "../Modal";
 
-export function viewDetailsModal(doc: DbFileMeta) {
+export const DocumentInfo = (doc: DbFileMeta) => {
     const details = document.createElement("ul");
     const detail = (label: string, value: string) => {
         const li = document.createElement("li");
@@ -20,15 +19,17 @@ export function viewDetailsModal(doc: DbFileMeta) {
         li.append(labelEl, valueEl);
         return li;
     };
+
     details.append(
         detail("File name", doc.fileName),
         detail("Title", doc.title),
         detail("Author", doc.author),
+        detail("Pdf version", doc.pdfVersion || "-"),
         detail("File size", bytesToMb(doc.size) + " mb"),
         detail("Number of pages", String(doc.numberOfPages)),
         detail("Number of bookmarks", String(doc.bookmarks?.length || 0)),
         detail("Last viewed", doc.lastViewedAt.toLocaleString()),
         detail("Added", doc.createdAt.toLocaleString()),
     );
-    Modal.show("Document details", details);
-}
+    return details;
+};
