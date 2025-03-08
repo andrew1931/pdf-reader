@@ -12,17 +12,21 @@ export type DbFileMeta = {
     size: number;
     pdfVersion: string;
     lastViewedPage: number;
+    lastViewedPageTextMode: number;
+    fontSizeZoom: number;
     bookmarks: { page: number; note: string }[];
 };
 
 type EditFileMeta = {
-    title?: string;
-    author?: string;
-    pdfVersion?: string;
-    lastViewedAt?: Date;
-    numberOfPages?: number;
-    lastViewedPage?: number;
-    bookmarks?: { page: number; note: string }[];
+    title?: DbFileMeta["title"];
+    author?: DbFileMeta["author"];
+    pdfVersion?: DbFileMeta["pdfVersion"];
+    lastViewedAt?: DbFileMeta["lastViewedAt"];
+    numberOfPages?: DbFileMeta["numberOfPages"];
+    lastViewedPage?: DbFileMeta["lastViewedPage"];
+    lastViewedPageTextMode?: DbFileMeta["lastViewedPageTextMode"];
+    fontSizeZoom?: DbFileMeta["fontSizeZoom"];
+    bookmarks?: DbFileMeta["bookmarks"];
 };
 
 export type DbFile = {
@@ -48,6 +52,8 @@ export class NotEnabledError extends Error {
         super("Storage is not enabled, you can enable it settings to use this feature");
     }
 }
+
+export const DEFAULT_FONT_SIZE_ZOOM = 100;
 
 export const DB = (() => {
     const MAX_CONNECT_ATTEMPTS = 3;
@@ -202,7 +208,9 @@ export const DB = (() => {
                                 author: fileMeta.author || "",
                                 numberOfPages: fileMeta.numberOfPages || 0,
                                 lastViewedPage: 0,
-                                bookmarks: []
+                                lastViewedPageTextMode: 0,
+                                fontSizeZoom: DEFAULT_FONT_SIZE_ZOOM,
+                                bookmarks: [],
                             } as DbFileMeta);
                         })
                             .then(() => resolve())

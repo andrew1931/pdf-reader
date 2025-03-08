@@ -22,14 +22,17 @@ export const LocalFileButton = () => {
                         numberOfPages: pdf.numberOfPages,
                         pdfVersion: pdf.pdfVersion,
                     })
-                        .then(() => Document(pdf, file.name, 0))
+                        .then(() => DB.getFileMeta(file.name))
+                        .then((doc) => Document({ pdf,doc, textOnlyMode: false }))
                         .catch((error) => {
                             if (
                                 error instanceof KeyExistsError ||
                                 error instanceof NotEnabledError
                             ) {
                                 console.warn(error);
-                                Document(pdf, file.name, 0);
+                                DB.getFileMeta(file.name)
+                                    .then((doc) => Document({ pdf,doc, textOnlyMode: false }))
+                                    .catch(Toast.error);
                             } else {
                                 Toast.error(error);
                             }

@@ -25,6 +25,7 @@ const EVENTS = {
     PAGINATION_EVENT: "PAGINATION_EVENT",
     PAGINATION_REQUEST: "PAGINATION_REQUEST",
     ZOOM: "ZOOM",
+    DOCUMENT_LOADER: "DOCUMENT_LOADER",
 };
 
 const EventEmitter = (() => {
@@ -80,6 +81,8 @@ export const usePaginationEvent = createHook<PaginationEvent>(EVENTS.PAGINATION_
 export const usePaginationRequest = createHook<number>(EVENTS.PAGINATION_REQUEST);
 
 export const useZoom = createHook<boolean>(EVENTS.ZOOM);
+
+export const useDocumentLoader = createHook<boolean>(EVENTS.DOCUMENT_LOADER);
 
 
 

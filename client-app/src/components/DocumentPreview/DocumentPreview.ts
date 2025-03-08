@@ -10,6 +10,7 @@ import { EditIcon } from "../icons/edit";
 import { type PdfParsedDocument, PdfReader } from "../../pdf-reader";
 import { Toast } from "../Toast";
 import { Modal } from "../Modal";
+import { TitleIcon } from "../icons/title";
 
 type DropDownItem = {
     label: string;
@@ -25,7 +26,23 @@ const userMenuItems: (pdf?: PdfParsedDocument) => DropDownItem[] = (pdf) => {
             icon: BookOpenIcon,
             iconColor: "text-yellow-500",
             cb: (doc) => {
-                Document(pdf as PdfParsedDocument, doc.fileName, doc.lastViewedPage);
+                Document({
+                    pdf: pdf as PdfParsedDocument,
+                    doc,
+                    textOnlyMode: false
+                });
+            }
+        },
+        {
+            label: `Open as text <small class="opacity-90">(experimental)</small>`,
+            icon: TitleIcon,
+            iconColor: "text-orange-500",
+            cb: (doc) => {
+                Document({
+                    pdf: pdf as PdfParsedDocument,
+                    doc,
+                    textOnlyMode: true
+                });
             }
         },
         { 
@@ -76,10 +93,10 @@ const MenuItems = (
         );
         btn.setAttribute("aria-label", item.label);
         const label = document.createElement("span");
-        label.innerText = item.label;
+        label.innerHTML = item.label;
         const icon = document.createElement("span");
         icon.innerHTML = item.icon;
-        icon.classList.add("w-4", item.iconColor);
+        icon.classList.add("w-4", "ml-3", item.iconColor);
         btn.onclick = (e) => {
             e.preventDefault();
             hidePreview();

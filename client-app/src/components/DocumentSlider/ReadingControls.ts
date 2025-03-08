@@ -11,7 +11,7 @@ import { AddBookmark } from "./AddBookmark";
 import { Range } from "../Range";
 import { SearchIcon } from "../icons/search";
 import { Search } from "./Search";
-import { type PdfParsedDocument } from "../../pdf-reader";
+import { type DocumentText, type PdfParsedDocument } from "../../pdf-reader";
 import { ZoomInIcon } from "../icons/zoom-in";
 import { ZoomOutIcon } from "../icons/zoom-out";
 import { MIN_ZOOM_LEVEL, MAX_ZOOM_LEVEL, zoomHandler } from "./zoom-handler";
@@ -21,32 +21,52 @@ import { InfoIcon } from "../icons/info";
 import { DocumentInfo } from "../DocumentPreview/DocumentInfo";
 import { DB } from "../../core/DB";
 import { Toast } from "../Toast";
+import { BookOpenIcon } from "../icons/book-open";
+import { TitleIcon } from "../icons/title";
 
-export const ReadingControls = (
-    fileName: string,
-    initialPage: number,
-    pdfRef: PdfParsedDocument,
-) => {
+type ReadingControlsProps = {
+    fileName: string;
+    initialPage: number;
+    pdf: PdfParsedDocument;
+    textOnlyMode: boolean;
+    initialFontSizeZoom: number;
+    searchHandler: () => Promise<DocumentText>;
+};
+
+export const READING_BUTTON_ICON_CLASS = "btn-icon";
+
+export const ReadingControls = ({
+    fileName,
+    initialPage,
+    pdf,
+    textOnlyMode,
+    initialFontSizeZoom,
+    searchHandler
+}: ReadingControlsProps) => {
     const ANIMATION_DURATION = 500;
     const ANIMATION_CLASS = "scale-100";
-    const numberOfPages = pdfRef.numberOfPages;
-
+    const FONT_SIZE_STEP = 10;
+    const MAX_FONT_SIZE_ZOOM = 250;
+    const MIN_FONT_SIZE_ZOOM = 10;
+    
+    let numberOfPages = pdf.numberOfPages;
     let currentRotate = 0;
     let currentPage = initialPage;
+    let currentFontSizeZoom = initialFontSizeZoom;
     let isVisible = false;
 
     const activeSlideCanvas = (): HTMLCanvasElement | null => {
         return document.querySelector(`.${SWIPER_CLASS} .${SWIPER_ACTIVE_CLASS} canvas`);
     };
 
-    const zoomHandlerInstance = zoomHandler(pdfRef);
+    const zoomHandlerInstance = zoomHandler(pdf);
 
     const zoomSub = useZoom.on(() => {
         handleButtonsDisabled();
     });
 
     const buttonsClasslist = [
-        "btn-icon",
+        READING_BUTTON_ICON_CLASS,
         "w-12",
         "text-slate-500",
         "p-3",
@@ -63,22 +83,29 @@ export const ReadingControls = (
         buttonIcon.setAttribute("aria-label", label);
         buttonIcon.innerHTML = icon;
         buttonIcon.classList.add(
-            ...buttonsClasslist,
-            ...animatedElementClasslist
+            ...buttonsClasslist
         );
         return buttonIcon;
     };
 
-    const pageRange = Range(numberOfPages, currentPage);
-    pageRange.onChange(useDocumentPageChange.emit);
-    pageRange.target.classList.add(
-        ...animatedElementClasslist,
-        "absolute",
-        "w-auto",
-        "bottom-8",
-        "md:bottom-4"
-    );
-    pageRange.target.onclick = (e) => e.stopPropagation();
+    function createPageRange(): ReturnType<typeof Range> {
+        const range = Range(numberOfPages, currentPage);
+        range.onChange(useDocumentPageChange.emit);
+        range.target.classList.add(
+            ...animatedElementClasslist,
+            "origin-bottom",
+            "absolute",
+            "w-auto",
+            "bottom-8",
+            "md:bottom-4"
+        );
+        range.target.onclick = (e) => e.stopPropagation();
+        return range;
+    }
+
+    let pageRange = createPageRange();
+
+    const toggleModeButton = IconButton(textOnlyMode ? BookOpenIcon : TitleIcon, "Switch view mode");
 
     const rotateButton = IconButton(RotateIcon, "Rotate document");
     rotateButton.onclick = () => {
@@ -88,7 +115,7 @@ export const ReadingControls = (
         if (currentRotate === 360) {
             currentRotate = 0;
         }
-        pdfRef.render(
+        pdf.render(
             target,
             currentPage,
             currentRotate,
@@ -96,6 +123,9 @@ export const ReadingControls = (
         )
             .finally(() => zoomHandlerInstance.update(target));
     };
+
+    const fontSizePlusButton = IconButton(ZoomInIcon, "Increase text font size");
+    const fontSizeMinusButton = IconButton(ZoomOutIcon, "Decrease text font size");
 
     const zoomInButton = IconButton(ZoomInIcon, "Zoom in document");
     zoomInButton.onclick = () => {
@@ -123,8 +153,8 @@ export const ReadingControls = (
     const searchButton = IconButton(SearchIcon, "Search in document");
     searchButton.onclick = () => {
         Modal.show(
-            "Search in document",
-            Search(pdfRef),
+            "Search modal",
+            Search(searchHandler),
             closeReadingModalCb
         );
     };
@@ -146,16 +176,21 @@ export const ReadingControls = (
 
     const buttonsContainer = document.createElement("div");
     buttonsContainer.classList.add(
+        ...animatedElementClasslist,
+        "origin-bottom-right",
         "absolute",
         "right-2",
         "bottom-3",
-        "md:bottom-0",
+        "md:bottom-2",
         "flex",
         "flex-col",
         "items-end",
         "ml-auto",
-        "px-4",
-        "py-2"
+        "px-1",
+        "py-2",
+        "bg-slate-100",
+        "opacity-90",
+        "rounded-full"
     );
 
     const wrapper = document.createElement("div");
@@ -172,9 +207,7 @@ export const ReadingControls = (
     function hideControls() {
         if (!isVisible) return;
         isVisible = false;
-        buttonsContainer.childNodes.forEach((child) => {
-            (child as HTMLElement).classList.remove(ANIMATION_CLASS);
-        });
+        buttonsContainer.classList.remove(ANIMATION_CLASS);
         pageRange.target.classList.remove(ANIMATION_CLASS);
         setTimeout(() => {
             if (!isVisible) {
@@ -190,26 +223,42 @@ export const ReadingControls = (
         if (wrapper.childNodes.length === 0) {
             handleButtonsDisabled();
             handleZoomControlsDisabled();
-            buttonsContainer.append(
-                closeButton,
-                infoButton,
-                rotateButton,
-                zoomInButton,
-                zoomOutButton,
-                searchButton,
-                bookmarkButton,
-            );
+            handleFontSizeButtonsDisabled();
+            if (textOnlyMode) {
+                buttonsContainer.append(
+                    closeButton,
+                    toggleModeButton,
+                    infoButton,
+                    fontSizePlusButton,
+                    fontSizeMinusButton,
+                    searchButton,
+                );
+            } else {
+                buttonsContainer.append(
+                    closeButton,
+                    toggleModeButton,
+                    infoButton,
+                    rotateButton,
+                    zoomInButton,
+                    zoomOutButton,
+                    searchButton,
+                    bookmarkButton,
+                );
+            }
             wrapper.append(buttonsContainer, pageRange.target);
         }
         setTimeout(() => {
             if (isVisible) {
-                buttonsContainer.childNodes.forEach((child) => {
-                    (child as HTMLElement).classList.add(ANIMATION_CLASS);
-                });
+                buttonsContainer.classList.add(ANIMATION_CLASS);
                 pageRange.target.classList.add(ANIMATION_CLASS);
             }
         }, 100);
     }
+
+    function handleFontSizeButtonsDisabled() {
+        fontSizePlusButton.disabled = currentFontSizeZoom >= MAX_FONT_SIZE_ZOOM;
+        fontSizeMinusButton.disabled = currentFontSizeZoom <= MIN_FONT_SIZE_ZOOM;
+    };
 
     function handleZoomControlsDisabled() {
         zoomOutButton.disabled = zoomHandlerInstance.level() <= MIN_ZOOM_LEVEL;
@@ -236,15 +285,36 @@ export const ReadingControls = (
         useScrollToggle.emit({ value: false });
     }
 
-    showControls();
-
     return {
         target: wrapper,
         rotationValue() {
             return currentRotate;
         },
-        onCloseButtonClick(cb) {
+        onClose(cb: () => void) {
             closeButton.onclick = cb;
+        },
+        onToggleMode(cb: () => void) {
+            toggleModeButton.onclick = cb;
+        },
+        onFontSizeChange(cb: (value: number) => Promise<void>) {
+            fontSizePlusButton.onclick = () => {
+                fontSizePlusButton.disabled = true;
+                currentFontSizeZoom += FONT_SIZE_STEP;
+                if (currentFontSizeZoom > MAX_FONT_SIZE_ZOOM) {
+                    currentFontSizeZoom = MAX_FONT_SIZE_ZOOM;
+                } else {
+                    cb(currentFontSizeZoom).then(handleFontSizeButtonsDisabled);
+                }
+            };
+            fontSizeMinusButton.onclick = () => {
+                fontSizeMinusButton.disabled = true;
+                currentFontSizeZoom -= FONT_SIZE_STEP;
+                if (currentFontSizeZoom < MIN_FONT_SIZE_ZOOM) {
+                    currentFontSizeZoom = MIN_FONT_SIZE_ZOOM;
+                } else {
+                    cb(currentFontSizeZoom).then(handleFontSizeButtonsDisabled);
+                }
+            };
         },
         show() {
             showControls();
@@ -259,9 +329,23 @@ export const ReadingControls = (
                 showControls();
             }
         },
-        update(current: number) {
+        updatePageRange(current: number, numOfPages?: number) {
             currentPage = current;
-            pageRange.update(currentPage);
+            if (numOfPages !== undefined) {
+                numberOfPages = numOfPages;
+                if (wrapper.contains(pageRange.target)) {
+                    wrapper.removeChild(pageRange.target);
+                }
+                pageRange = createPageRange();
+                wrapper.appendChild(pageRange.target);
+                setTimeout(() => {
+                    if (isVisible) {
+                        pageRange.target.classList.add(ANIMATION_CLASS);
+                    }
+                }, 100);
+            } else {
+                pageRange.update(currentPage);
+            }
         },
         unsubscribe() {
             zoomSub();

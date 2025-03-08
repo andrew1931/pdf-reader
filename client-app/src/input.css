@@ -68,6 +68,15 @@ html.no-scroll {
     color: #f2f2f2;
 }
 
+.swiper {
+    background-color: var(--color-light-dark);
+}
+
+.swiper .swiper-slide {
+    color: var(--color-gray-white);
+    background-color: var(--color-light-dark);
+}
+
 .disable-dbl-tap-zoom {
     touch-action: manipulation;
 }

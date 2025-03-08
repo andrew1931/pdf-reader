@@ -18,9 +18,7 @@ const Label = (text: string, inputEl: HTMLElement, required: boolean): HTMLEleme
 
     const labelEl = document.createElement("label");
     labelEl.classList.add("mt-2", "flex", "flex-col");
-    if (text) {
-        labelEl.appendChild(labelText); 
-    }
+    labelEl.appendChild(labelText); 
     labelEl.appendChild(inputEl);
     return labelEl;
 };
@@ -56,7 +54,7 @@ export const Input = (
     conf: {
         name?: string,
         placeholder: string,
-        label?: string,
+        label: string,
         value?: string,
         icon?: string,
         type?: string,
@@ -103,7 +101,7 @@ export const Input = (
     inputWrapper.append(input);
 
     return {
-        target: Label(conf.label || "", inputWrapper, conf.required ?? true),
+        target: Label(conf.label, inputWrapper, conf.required ?? true),
         value() {
             return input.value.trim();
         },

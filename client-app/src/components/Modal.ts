@@ -41,7 +41,6 @@ export const Modal = (() => {
         "absolute",
         "w-full",
         "md:w-96",
-        "min-h-60",
         "max-h-full",
         "overflow-auto",
         "p-6",

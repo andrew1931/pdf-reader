@@ -1,6 +1,6 @@
 import { useDocumentPageChange } from "../../core/hooks";
 import { debounce } from "../../core/utils";
-import { type PdfParsedDocument, type DocumentText } from "../../pdf-reader";
+import { type DocumentText } from "../../pdf-reader";
 import { Form, Input } from "../Form";
 import { SearchIcon } from "../icons/search";
 import { Modal } from "../Modal";
@@ -58,7 +58,7 @@ const renderSearchList = (
 };
 
 
-export const Search = (pdf: PdfParsedDocument): HTMLElement => {
+export const Search = (searchHandlerFn: () => Promise<DocumentText>): HTMLElement => {
     let documentText: DocumentText = [];
 
     const list = document.createElement("ul");
@@ -67,13 +67,14 @@ export const Search = (pdf: PdfParsedDocument): HTMLElement => {
     const searchInput = Input({
         placeholder: "Search string...",
         icon: SearchIcon,
+        label: "Search in document"
     });
     searchInput.target.classList.add("mb-2");
     const form = Form(searchInput.target);
 
     const applySearch = (searchVal: string) => {
         if (searchVal.length > 0) {
-            const regExp = new RegExp(searchVal, "i");
+            const regExp = new RegExp(searchVal, "ig");
             const results = documentText.filter((page) => regExp.test(page.text));
             renderSearchList(list, results, regExp);
         } else {
@@ -84,13 +85,9 @@ export const Search = (pdf: PdfParsedDocument): HTMLElement => {
     const searchHandler = debounce(() => {
         const searchVal = searchInput.value();
         if (searchVal.length > 0) {
-            if (documentText.length === 0) {
-                pdf.getDocumentText()
-                    .then((res) => documentText = res)
-                    .then(() => applySearch(searchVal));
-            } else {
-                applySearch(searchVal);
-            }
+            searchHandlerFn()
+                .then((res) => documentText = res)
+                .then(() => applySearch(searchVal));
         } else {
             applySearch("");
         }

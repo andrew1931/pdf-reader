@@ -1,8 +1,8 @@
+import { SpinnerIcon } from "./icons/spinner";
 
 export const Loader = () => {
     const el = document.createElement("div");
-    el.classList.add("flex", "items-center", "text-sm", "text-zinc-600");
-    const staticText = document.createElement("span");
-    staticText.innerText = "Loading";
+    el.classList.add("flex", "items-center");
+    el.innerHTML = SpinnerIcon;
     return el;
 };
