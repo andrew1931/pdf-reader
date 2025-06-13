@@ -127,8 +127,7 @@ function handleRoute() {
    let pageFound = false;
    if (rootEl === null) return;
    for (const route of routesDefinition) {
-      const isTarget = (ROUTE_PREFIX + route.path) === pathname;
-      console.debug('path: ', ROUTE_PREFIX, route.path, pathname);
+      const isTarget = normalizedPath(ROUTE_PREFIX + route.path) === pathname;
       if (isTarget) {
          if (!cachedComponents.has(pathname)) {
             const component = route.component();
