@@ -30,7 +30,7 @@ const config = {
 };
 
 (async () => {
-   await esbuild.build(config)
+   await esbuild.build(config);
    const appScriptName = `app-${buildHash}.js`;
    const outputHTMLPath = join(outDir, 'index.html');
    cpSync(resolve(__dirname, 'public'), outDir, { recursive: true });
@@ -60,4 +60,3 @@ const config = {
       ctx.serve({ port: 3000, servedir: 'dist' });
    }
 })();
-
