@@ -1,4 +1,3 @@
-import { ApiClient } from '../api/api-client';
 import { useDbInit } from './hooks';
 import { LS } from './LS';
 
@@ -129,13 +128,11 @@ export const DB = (() => {
                // handle db migrations
             }
          } catch (error) {
-            ApiClient.logError('[onupgradeneeded][catch]', error);
             console.error('[DB] connect: ', error);
          }
       };
 
       openRequest.onerror = () => {
-         ApiClient.logError('[onupgradeneeded][onerror]', openRequest.error);
          console.error('[DB] openRequest', openRequest.error);
       };
 
@@ -166,7 +163,6 @@ export const DB = (() => {
                ) {
                   reject(new KeyExistsError());
                } else {
-                  ApiClient.logError('[transaction][onerror]', request.error);
                   reject(request.error);
                }
             };

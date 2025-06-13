@@ -1,10 +1,8 @@
-import { ApiClient } from '../../api/api-client';
-import { emailIsValid, errorToString } from '../../core/utils';
+import { emailIsValid } from '../../core/utils';
 import { SubmitButton } from '../Button';
 import { FormError, Input, Textarea, Form } from '../Form';
 import { MailIcon } from '../icons/mail';
 import { Modal } from '../Modal';
-import { Toast } from '../Toast';
 
 export const AskQuestionModal = () => {
    const errorText = FormError();
@@ -40,22 +38,6 @@ export const AskQuestionModal = () => {
       }
 
       button.disabled = true;
-      ApiClient.askQuestion(emailInput.value(), questionInput.value())
-         .then((res) => {
-            if (res.status !== 200) {
-               throw new Error(res.errorMessage);
-            } else {
-               Modal.hide();
-               button.disabled = false;
-               emailInput.reset();
-               questionInput.reset();
-               Toast.success('Your question was sent, we will answer you ASAP');
-            }
-         })
-         .catch((error) => {
-            errorText.innerText = errorToString(error);
-            button.disabled = false;
-         });
    };
    Modal.show('Contact us', form);
 };

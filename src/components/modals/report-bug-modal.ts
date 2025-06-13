@@ -1,9 +1,6 @@
-import { errorToString } from '../../core/utils';
 import { SubmitButton } from '../Button';
 import { Form, FormError, Textarea } from '../Form';
 import { Modal } from '../Modal';
-import { ApiClient } from '../../api/api-client';
-import { Toast } from '../Toast';
 
 export function reportBugModal() {
    const errorText = FormError();
@@ -24,20 +21,6 @@ export function reportBugModal() {
       }
 
       button.disabled = true;
-      ApiClient.reportIssue(descriptionInput.value())
-         .then((res) => {
-            if (res.status !== 200) {
-               throw new Error(res.errorMessage);
-            } else {
-               Modal.hide();
-               button.disabled = false;
-               Toast.success('Issue was reported, thank you for your help!');
-            }
-         })
-         .catch((error) => {
-            errorText.innerText = errorToString(error);
-            button.disabled = false;
-         });
    };
    Modal.show('Issue report', form);
 }

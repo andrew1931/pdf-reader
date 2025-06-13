@@ -1,4 +1,3 @@
-import { ApiClient } from '../../api/api-client';
 import { errorToString } from '../../core/utils';
 import { Modal } from '../Modal';
 import { ActionButton } from '../Button';
@@ -15,7 +14,8 @@ export const CheckUpdatesModal = () => {
 
    const button = ActionButton('Okay');
    button.classList.add('mx-auto', 'mt-6', 'mb-6');
-   ApiClient.getVersion()
+   fetch('/version.json')
+      .then((res) => res.json())
       .then((res) => {
          if (BUILD_VERSION === res.buildHash) {
             description.innerText = 'You have the latest version of PDF swiper';

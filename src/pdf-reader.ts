@@ -1,4 +1,3 @@
-import { ApiClient } from './api/api-client';
 import { Theme } from './theme';
 
 export type PdfReaderRenderer = (
@@ -187,7 +186,6 @@ export const PdfReader = (() => {
                                        resolve();
                                     },
                                     (error) => {
-                                       ApiClient.logError('[renderTask.promise]', error);
                                        console.error('Error rendering page: ', error);
                                        page.cleanup();
                                     }
@@ -221,7 +219,6 @@ export const PdfReader = (() => {
                   });
                },
                (error) => {
-                  ApiClient.logError('[loadingTask]', error);
                   rejectPdfLoad(error);
                }
             );
