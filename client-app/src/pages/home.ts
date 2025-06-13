@@ -73,7 +73,7 @@ export const HomePage = (): HTMLElement => {
     return Layout(
         ContentContainer(
             H1( "Welcome to \n PDF swiper"),
-            P("Choose a document from your device using \n the button below to swipe it like a book"),
+            P("Choose a pdf document from your device \n using the button below to read it \n as a text only or as an original"),
             EssentialLinks(),
             LocalFileButton(),
             DocumentsTitle(orderBy.target),
