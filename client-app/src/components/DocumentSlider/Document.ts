@@ -197,13 +197,17 @@ export const Document = ({
         const LineElement = (item: ParsedTextItem) => {
             const lineEl = document.createElement("p");
             lineEl.classList.add("w-full");
-            // lineEl.style.marginTop = item.marginTop + "px";
-            lineEl.style.fontSize = Math.round((item.height * fontSizeZoom) / 100) + "px";
-            lineEl.style.textAlign = item.textAlign;
+            item.text.forEach((tag) => {
+                const span = document.createElement("span");
+                span.textContent = tag.value;
+                span.style.fontSize = Math.round((tag.height * fontSizeZoom) / 100) + "px";
+                lineEl.appendChild(span);
+            });
+            // lineEl.style.textAlign = item.textAlign;
             if (item.textAlign === "start" && item.marginTop > 0) {
                 lineEl.style.textIndent = "5%";
             }
-            lineEl.textContent = item.text;
+            
             return lineEl;
         };
 
@@ -227,9 +231,23 @@ export const Document = ({
             if (targetLine === -1) {
                 return null;
             }
-            for (let i = 0; i < textContent.length; i++) {
-                range.setStart(line.firstChild as ChildNode, 0);
-                range.setEnd(line.firstChild as ChildNode, i + 1);
+            let childI = 0;
+            let i = 0;
+            while (i < textContent.length) {
+                try {
+                    range.setStart(line.children[childI].firstChild as ChildNode, 0);
+                    range.setEnd(line.children[childI].firstChild as ChildNode, i + 1);
+                } catch (error) {
+                    console.log(error);
+                    childI ++;
+                    if (line.children.length < childI) {
+                        break;
+                    }
+                    continue;
+                }
+                
+                i ++;
+                // console.log(range.getClientRects().length)
                 const lineIndex = range.getClientRects().length - 1;
                 if (lineIndex === targetLine) {
                     const cloned = line.cloneNode();
@@ -291,7 +309,7 @@ export const Document = ({
                     textSlidesList[slideIndex].push(element);
                     searchText.push({
                         pageNumber: slideIndex + 1,
-                        text: parsedText[i].text
+                        text: element.textContent || ""
                     });
                     if (handlePageOverflow(element)) {
                         break;

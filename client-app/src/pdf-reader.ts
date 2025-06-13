@@ -15,12 +15,7 @@ const endLineChars = /[.!?;:]/;
 export type DocumentText = { text: string; pageNumber: number }[];
 
 export type ParsedTextItem = {
-    text: string;
-    height: number;
-    left: number;
-    right: number;
-    bottom: number;
-    direction: string;
+    text: { value: string; height: number }[];
     textAlign: "start" | "center" | "end",
     marginTop: number;
 };
@@ -48,17 +43,13 @@ export const PdfReader = (() => {
 
     const parseDocumentText = async (pdf) => {
         const result: DocumentParsedText = [];
-        let pageItem: ParsedTextItem = {
-            text: "",
-            height: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            direction: "ltr",
+        let lineItem: ParsedTextItem = {
+            text: [],
             textAlign: "start",
             marginTop: 0,
         };
-        for (let i = 1; i <= pdf.numPages; i++) {
+        let prevItem;
+        for (let i = 1; i <= 20; i++) {
            
             try {
                 const page = await pdf.getPage(i);
@@ -76,68 +67,61 @@ export const PdfReader = (() => {
                     }
                 }
 
-                const handleNewLine = (item) => {
-                    if (pageItem.height > 0) {
-                        if (result[result.length - 1] && result[result.length - 1].height !== pageItem.height) {
-                            pageItem.marginTop = 20;
-                        }
-                        if (pageItem.left > 60) {
-                            pageItem.textAlign = "end";
-                        } 
-                        // else if (pageItem.left > 25 && pageItem.right > 25) {
-                        //     pageItem.textAlign = "center";
-                        // } 
-                        // console.log(pageItem.left, pageItem.right, pageItem.text)
-                        result.push(pageItem);
-                    }
-                    
+                const startNewLine = (item) => {
+                    // if (
+                    //     result[result.length - 1] && 
+                    //     result[result.length - 1].height !== pageItem.height
+                    // ) {
+                    //     pageItem.marginTop = 20;
+                    // }
+                    // else if (pageItem.left > 25 && pageItem.right > 25) {
+                    //     pageItem.textAlign = "center";
+                    // }
+
+                    if (lineItem.text.length > 0) {
+                        result.push(lineItem);
+                    } 
                     const left = (item.transform[4] * 100) / pageWidth;
-                    const right = ((pageWidth - item.width - item.transform[4]) * 100) / pageWidth;
-                    pageItem = {
-                        text: item.str,
-                        height: item.height,
-                        left,
-                        right,
-                        textAlign: "start",
-                        bottom: item.transform[5],
-                        direction: item.dir,
+                    lineItem = {
+                        text: [{ value: item.str, height: item.height }],
+                        textAlign: left > 60 ? "end" : "start",
                         marginTop: 0
                     };
                 };
 
                 const maxStringWidth = pageWidth - (2 * minLeftOffset);
-                for (const [index, item] of filteredItems.entries()) {
-                    if (index === 0) {
-                        handleNewLine(item);
+                for (let i = 0; i < filteredItems.length; i ++) {
+                    const item = filteredItems[i];
+                    if (!prevItem) {
+                        startNewLine(item);
                     } else {
-                        const prev = filteredItems[index - 1];
-                        const bottomIsNotSame = prev.transform[5] !== item.transform[5] &&
-                            prev.transform[5] > (item.transform[5] + item.height);
-                        // console.log(item);
+                        // console.log(item)
+                        const bottomIsNotSame = prevItem.transform[5] > (item.transform[5] + item.height) || 
+                            prevItem.transform[5] < item.transform[5];
                         if (
-                            index === 0 ||
                             (
                                 bottomIsNotSame &&
-                                prev.height !== item.height
+                                prevItem.height !== item.height
                             ) ||
                             (
                                 bottomIsNotSame &&
-                                (prev.width + prev.transform[4]) < maxStringWidth
+                                (prevItem.width + prevItem.transform[4]) < maxStringWidth
                             ) ||
                             (
                                 bottomIsNotSame &&
-                                endLineChars.test(prev.str.charAt(prev.str.length - 1))
+                                endLineChars.test(prevItem.str.charAt(prevItem.str.length - 1))
                             )
                         ) {
-                            handleNewLine(item);
+                            startNewLine(item);
                         } else {
-                            // const isSmallText = prev.height > item.height && item.height > 0;
-                            // const prevIsSmall = prev.height < item.height && prev.height > 0;
-                            const nextText = " " + item.str;
-                            pageItem.text += nextText;
-                            pageItem.height = item.height || pageItem.height; // ignore 0 height;
+                            if (prevItem.height === item.height) {
+                                lineItem.text[lineItem.text.length - 1].value += (" " + item.str); 
+                            } else {
+                                lineItem.text.push({ value: item.str, height: item.height });
+                            }
                         }
                     }
+                    prevItem = item;
                 }
                 page.cleanup();
             } catch (error) {
