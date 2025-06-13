@@ -21,6 +21,7 @@ const config = {
    ],
    define: {
       BUILD_VERSION: JSON.stringify(buildHash),
+      ROUTE_PREFIX: isProd ? JSON.stringify('/pdf-swiper') : '',
    },
    write: true,
    bundle: true,

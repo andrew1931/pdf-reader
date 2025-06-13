@@ -9,8 +9,6 @@ export type Route = {
 };
 
 type PageKey = 'home' | 'settings';
-// "auth" |
-// "forgotPassword";
 
 export const routes: Record<PageKey, Route> = {
    home: { label: 'Home', pathname: '/', search: '', icon: HomeIcon },
@@ -19,17 +17,5 @@ export const routes: Record<PageKey, Route> = {
       pathname: '/settings',
       search: '',
       icon: SettingsIcon,
-   },
-   // auth: {
-   //    label: "Sign in / Sign up",
-   //    pathname: "/auth",
-   //    search: "?type=sign-in",
-   //    icon: UserCardIcon
-   // },
-   // forgotPassword: {
-   //    label: "Forgot password?",
-   //    pathname: "/forgot-password",
-   //    search: "",
-   //    icon: ""
-   // }
+   }
 };
