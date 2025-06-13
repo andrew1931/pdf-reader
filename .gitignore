@@ -1,8 +1,4 @@
 .DS_Store
 
-client-app/node_modules
-
-deno-app/dist
-deno-app/log
-deno-app/node_modules
-deno-app/pdf_slider.sqlite
+node_modules
+dist

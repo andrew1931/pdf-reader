@@ -5,7 +5,7 @@ const { execSync } = require("node:child_process");
 require("dotenv").config({ path: "../deno-app/.env" });
 
 const isProd = process.argv.includes("--prod");
-const outDir = resolve(__dirname, "../deno-app/dist");
+const outDir = resolve(__dirname, "dist");
 const baseDir = "src";
 const pdfWorkerPath = "node_modules/pdfjs-dist/legacy/build";
 
