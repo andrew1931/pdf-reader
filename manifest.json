@@ -1,0 +1,33 @@
+{
+   "name": "Pdf Swiper",
+   "short_name": "Pdf Swiper",
+   "id": "/?page=1",
+   "start_url": "/?page=1",
+   "description": "App for swiping local pdf file pages",
+   "display_override": ["window-controls-overlay"],
+   "display": "standalone",
+   "icons": [
+      {
+         "src": "/pdf-icon_64.png",
+         "type": "image/png",
+         "sizes": "64x64"
+      },
+      {
+         "src": "/pdf-icon_128.png",
+         "type": "image/png",
+         "sizes": "128x128"
+      },
+      {
+         "src": "/pdf-icon_256.png",
+         "type": "image/png",
+         "sizes": "256x256"
+      },
+      {
+         "src": "/pdf-icon_512.png",
+         "type": "image/png",
+         "sizes": "512x512"
+      }
+   ],
+   "theme_color": "#242629",
+   "background_color": "#242629"
+}

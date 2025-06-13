@@ -1,0 +1,35 @@
+PDF Swiper Privacy Policy
+<small>Last updated: Feb 16, 2025</small>
+
+<h2>INTRODUCTION</h2>
+PDF Swiper (“we,” “us,” or “our”) collects and uses users' personal information in order to provide services to them.
+This privacy policy describes how we collect, use, protect and share information that we collect during usage of our website (<a href="https://pdf-swiper.com" target="_blank">https://pdf-swiper.com</a>).
+
+<h2>WHAT DATA DO WE COLLECT AND WHERE DO WE STORE IT?</h2>
+Information which is stored on <u>our server</u>:
+- application error logs;
+- user's emails and questions asked via our website's interfaces;
+- user's found issues reported via our website's interfaces;
+
+Information which is stored in users' <u>browser application</u>:
+- users' pdf files viewed via our website's interfaces;
+- users' setting choices on our website:
+    - application appearance;
+    - whether or not to store viewed pdf files;
+
+We DO NOT collect any information to identify our users (i.e. IP addresses, usernames, pictures etc.)
+
+<h2>HOW LONG COLLECTED DATA IS RETAINED?</h2>
+Collected data is stored in users' browser applications until they decide to clear it.
+
+<h2>HOW WE USE COLLECTED DATA?</h2>
+We use collected users' data to provide improved website experience.
+
+<h2>WHO DO WE SHARE COLLECTED DATA WITH?</h2>
+All the collected information is NOT being transferred to or shared with anyone.
+
+Viewed PDF files from users' devices may or may not be used by our third party library <a href="https://mozilla.github.io/pdf.js/" target="_blank">https://mozilla.github.io/pdf.js/</a> which we use to parse pdf documents.
+Please get acquainted with their privacy policy and terms and conditions.
+
+<h2>CONTACT US</h2>
+We may be contacted via <a href="https://pdf-swiper.com/settings" target="_blank">https://pdf-swiper.com/settings</a> website interfaces ("Ask a question" button).
