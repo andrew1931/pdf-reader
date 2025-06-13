@@ -1,117 +1,97 @@
 export const Range = (max: number, current: number) => {
-    const labelEl = document.createElement("div");
-    labelEl.classList.add(
-        "disable-dbl-tap-zoom",
-        "flex",
-        "flex-col",
-        "justify-center",
-        "items-center",
-    );
+   const labelEl = document.createElement('div');
+   labelEl.classList.add(
+      'disable-dbl-tap-zoom',
+      'flex',
+      'flex-col',
+      'justify-center',
+      'items-center'
+   );
 
-    const labelTextValue = () => rangeValue() + " out of " + max;
+   const labelTextValue = () => rangeValue() + ' out of ' + max;
 
-    const rangeVisibleBody = document.createElement("div");
-    rangeVisibleBody.classList.add(
-        "w-full",
-        "h-full",
-        "bg-slate-500",
-    );
+   const rangeVisibleBody = document.createElement('div');
+   rangeVisibleBody.classList.add('w-full', 'h-full', 'bg-slate-500');
 
-    const rangeVisibleBodyFilled = document.createElement("div");
-    rangeVisibleBodyFilled.classList.add(
-        "h-full",
-        "bg-blue-500",
-        "absolute",
-        "left-0",
-        "top-0",
-    );
+   const rangeVisibleBodyFilled = document.createElement('div');
+   rangeVisibleBodyFilled.classList.add('h-full', 'bg-blue-500', 'absolute', 'left-0', 'top-0');
 
-    const rangeVisible = document.createElement("div");
-    rangeVisible.classList.add(
-        "absolute",
-        "z-0",
-        "w-full",
-        "h-full",
-        "rounded-md",
-        "overflow-hidden"
-    );
-    rangeVisible.append(rangeVisibleBody, rangeVisibleBodyFilled);
+   const rangeVisible = document.createElement('div');
+   rangeVisible.classList.add(
+      'absolute',
+      'z-0',
+      'w-full',
+      'h-full',
+      'rounded-md',
+      'overflow-hidden'
+   );
+   rangeVisible.append(rangeVisibleBody, rangeVisibleBodyFilled);
 
-    const rangeHidden = document.createElement("input");
-    rangeHidden.setAttribute("type", "range");
-    rangeHidden.setAttribute("step", "any");
-    rangeHidden.setAttribute("min", String(0));
-    rangeHidden.setAttribute("max", String(max));
-    rangeHidden.value = String(current);
-    rangeHidden.classList.add(
-        "opacity-0",
-        "z-10",
-        "absolute",
-        "w-full",
-        "cursor-pointer",
-        "absolute",
-        "left-0",
-        "h-full",
-    );
+   const rangeHidden = document.createElement('input');
+   rangeHidden.setAttribute('type', 'range');
+   rangeHidden.setAttribute('step', 'any');
+   rangeHidden.setAttribute('min', String(0));
+   rangeHidden.setAttribute('max', String(max));
+   rangeHidden.value = String(current);
+   rangeHidden.classList.add(
+      'opacity-0',
+      'z-10',
+      'absolute',
+      'w-full',
+      'cursor-pointer',
+      'absolute',
+      'left-0',
+      'h-full'
+   );
 
-    const labelText = document.createElement("span");
-    labelText.classList.add(
-        "font-medium",
-        "text-xs",
-        "text-white",
-        "absolute",
-        "z-10",
-    );
+   const labelText = document.createElement('span');
+   labelText.classList.add('font-medium', 'text-xs', 'text-white', 'absolute', 'z-10');
 
-    function mapInputValueToVisibleRange() {
-        labelText.innerText = labelTextValue();
-        rangeVisibleBodyFilled.style.width = calcValuePercent() + "%";
-    }
+   function mapInputValueToVisibleRange() {
+      labelText.innerText = labelTextValue();
+      rangeVisibleBodyFilled.style.width = calcValuePercent() + '%';
+   }
 
-    rangeHidden.oninput = mapInputValueToVisibleRange;
-    
-    mapInputValueToVisibleRange();
+   rangeHidden.oninput = mapInputValueToVisibleRange;
 
-    const rangeWrapper = document.createElement("div");
-    rangeWrapper.classList.add(
-        "relative",
-        "w-52",
-        "h-[30px]",
-    );
-    rangeWrapper.append(rangeHidden, rangeVisible);
+   mapInputValueToVisibleRange();
 
-    function calcValuePercent(): number {
-        return (Number(rangeHidden.value) * 100) / max;
-    }
+   const rangeWrapper = document.createElement('div');
+   rangeWrapper.classList.add('relative', 'w-52', 'h-[30px]');
+   rangeWrapper.append(rangeHidden, rangeVisible);
 
-    function rangeValue(): number {
-        return Math.floor(Number(rangeHidden.value)) || 1; // prevent 0
-    }
+   function calcValuePercent(): number {
+      return (Number(rangeHidden.value) * 100) / max;
+   }
 
-    labelEl.append(labelText, rangeWrapper);
+   function rangeValue(): number {
+      return Math.floor(Number(rangeHidden.value)) || 1; // prevent 0
+   }
 
-    return {
-        target: labelEl,
-        onChange(cb: (page: number) => void): void {
-            rangeHidden.onchange = () => {
-                rangeHidden.blur(); // if focus stays - left/right keys conflict with input accessibility left/right
-                const floorValue = rangeValue();
-                rangeHidden.value = String(floorValue);
-                mapInputValueToVisibleRange(); 
-                cb(floorValue);
-            };
-        },
-        update(val: number) {
-            if (val !== Math.floor(+rangeHidden.value)) {
-                rangeHidden.value = String(val);
-                mapInputValueToVisibleRange();
-            }
-        },
-        disable() {
-            rangeHidden.disabled = true;
-        },
-        enable() {
-            rangeHidden.disabled = false;
-        }
-    };
+   labelEl.append(labelText, rangeWrapper);
+
+   return {
+      target: labelEl,
+      onChange(cb: (page: number) => void): void {
+         rangeHidden.onchange = () => {
+            rangeHidden.blur(); // if focus stays - left/right keys conflict with input accessibility left/right
+            const floorValue = rangeValue();
+            rangeHidden.value = String(floorValue);
+            mapInputValueToVisibleRange();
+            cb(floorValue);
+         };
+      },
+      update(val: number) {
+         if (val !== Math.floor(+rangeHidden.value)) {
+            rangeHidden.value = String(val);
+            mapInputValueToVisibleRange();
+         }
+      },
+      disable() {
+         rangeHidden.disabled = true;
+      },
+      enable() {
+         rangeHidden.disabled = false;
+      },
+   };
 };

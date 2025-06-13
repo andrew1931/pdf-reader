@@ -1,5 +1,5 @@
-import { HomeIcon } from "./components/icons/home";
-import { SettingsIcon } from "./components/icons/settings";
+import { HomeIcon } from './components/icons/home';
+import { SettingsIcon } from './components/icons/settings';
 
 export type Route = {
    label: string;
@@ -8,23 +8,28 @@ export type Route = {
    icon: string;
 };
 
-type PageKey = "home" | "settings";
+type PageKey = 'home' | 'settings';
 // "auth" |
 // "forgotPassword";
 
 export const routes: Record<PageKey, Route> = {
-    home: { label: "Home", pathname: "/", search: "", icon: HomeIcon },
-    settings: { label: "Settings", pathname: "/settings", search: "", icon: SettingsIcon },
-    // auth: { 
-    //    label: "Sign in / Sign up",
-    //    pathname: "/auth",
-    //    search: "?type=sign-in",
-    //    icon: UserCardIcon
-    // },
-    // forgotPassword: { 
-    //    label: "Forgot password?",
-    //    pathname: "/forgot-password",
-    //    search: "",
-    //    icon: ""
-    // }
+   home: { label: 'Home', pathname: '/', search: '', icon: HomeIcon },
+   settings: {
+      label: 'Settings',
+      pathname: '/settings',
+      search: '',
+      icon: SettingsIcon,
+   },
+   // auth: {
+   //    label: "Sign in / Sign up",
+   //    pathname: "/auth",
+   //    search: "?type=sign-in",
+   //    icon: UserCardIcon
+   // },
+   // forgotPassword: {
+   //    label: "Forgot password?",
+   //    pathname: "/forgot-password",
+   //    search: "",
+   //    icon: ""
+   // }
 };

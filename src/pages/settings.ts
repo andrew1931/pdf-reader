@@ -1,13 +1,9 @@
-import { ContentContainer } from "../components/ContentContainer";
-import { Layout } from "../components/Layout";
-import { Settings } from "../components/Settings/Settings";
+import { ContentContainer } from '../components/ContentContainer';
+import { Layout } from '../components/Layout';
+import { Settings } from '../components/Settings/Settings';
 
 export const SettingsPage = (): HTMLElement => {
+   const settingsComponent = Settings();
 
-    const settingsComponent = Settings();
-
-    return Layout(
-        ContentContainer(
-            settingsComponent()
-        ));
+   return Layout(ContentContainer(settingsComponent()));
 };

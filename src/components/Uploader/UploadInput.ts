@@ -13,9 +13,9 @@
 //       "pl-4",
 //       "pr-20",
 //       "disabled:opacity-50",
-//       "h-full", 
-//       "border-0", 
-//       "rounded-[inherit]", 
+//       "h-full",
+//       "border-0",
+//       "rounded-[inherit]",
 //       "text-base",
 //    );
 

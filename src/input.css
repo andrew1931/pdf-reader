@@ -2,231 +2,246 @@
 @tailwind utilities;
 
 * {
-    --swiper-navigation-size: 28px;
-    --swiper-navigation-color: #f8fafc;
+   --swiper-navigation-size: 28px;
+   --swiper-navigation-color: #f8fafc;
 }
 
 html {
-    --color-yellow-blue: #eab308;
-    --color-white-gray: #e5e7eb;
-    --color-white-blue: #ffffff;
-    --color-blue-white: #127cff;
-    --color-darkblue-gray: #101823; 
-    --color-light-dark: #f8fafc;
-    --color-light-dark-1: #f8fafc;
-    --color-gray-white: #475569;
-    --color-lightgrey-white: #64748b;
-    --color-white-darkblue: #ffffff;
-    --color-white-darkblue-1: #f1f5f9;
-    --color-white-darkblue-2: #e2e8f0;
-    --swiper-arrows-visibility: flex;
-    --swiper-navigation-sides-offset: 30px;
+   --color-yellow-blue: #eab308;
+   --color-white-gray: #e5e7eb;
+   --color-white-blue: #ffffff;
+   --color-blue-white: #127cff;
+   --color-darkblue-gray: #101823;
+   --color-light-dark: #f8fafc;
+   --color-light-dark-1: #f8fafc;
+   --color-gray-white: #475569;
+   --color-lightgrey-white: #64748b;
+   --color-white-darkblue: #ffffff;
+   --color-white-darkblue-1: #f1f5f9;
+   --color-white-darkblue-2: #e2e8f0;
+   --swiper-arrows-visibility: flex;
+   --swiper-navigation-sides-offset: 30px;
 }
 
-html[theme="dark"] {
-    --color-yellow-blue: #127cff;
-    --color-white-gray: #303337;
-    --color-white-blue: #127cff;
-    --color-blue-white: #ffffff;
-    --color-darkblue-gray: #94a3b8;
-    --color-light-dark: #242629;
-    --color-light-dark-1: #303337;
-    --color-gray-white: #f1f5f9;
-    --color-lightgrey-white: #e2e8f0;
-    --color-white-darkblue: #102339;
-    --color-white-darkblue-1: #112e4b; 
-    --color-white-darkblue-2: #1f4164;
+html[theme='dark'] {
+   --color-yellow-blue: #127cff;
+   --color-white-gray: #303337;
+   --color-white-blue: #127cff;
+   --color-blue-white: #ffffff;
+   --color-darkblue-gray: #94a3b8;
+   --color-light-dark: #242629;
+   --color-light-dark-1: #303337;
+   --color-gray-white: #f1f5f9;
+   --color-lightgrey-white: #e2e8f0;
+   --color-white-darkblue: #102339;
+   --color-white-darkblue-1: #112e4b;
+   --color-white-darkblue-2: #1f4164;
 }
 
-html[is-touch-device="true"] {
-    --swiper-arrows-visibility: none;
+html[is-touch-device='true'] {
+   --swiper-arrows-visibility: none;
 }
 
 html.no-scroll {
-    overflow: hidden;
-    padding-right: 0;
+   overflow: hidden;
+   padding-right: 0;
 }
 
 .swiper .swiper-button-prev,
 .swiper .swiper-button-next {
-    display: var(--swiper-arrows-visibility);
-    border-radius: 6px;
-    color: #767a80;
-    padding: 6px;
-    box-sizing: content-box;
+   display: var(--swiper-arrows-visibility);
+   border-radius: 6px;
+   color: #767a80;
+   padding: 6px;
+   box-sizing: content-box;
 }
 
 .swiper .swiper-button-prev.swiper-button-lock,
 .swiper .swiper-button-next.swiper-button-lock {
-    cursor: initial;
-    opacity: 0.5;
+   cursor: initial;
+   opacity: 0.5;
 }
 
 .swiper .swiper-button-prev:not(.swiper-button-lock):hover,
 .swiper .swiper-button-next:not(.swiper-button-lock):hover {
-    background-color: var(--color-darkblue-gray);
-    color: #f2f2f2;
+   background-color: var(--color-darkblue-gray);
+   color: #f2f2f2;
 }
 
 .swiper {
-    background-color: var(--color-light-dark);
+   background-color: var(--color-light-dark);
 }
 
 .swiper .swiper-slide {
-    color: var(--color-gray-white);
-    background-color: var(--color-light-dark);
+   color: var(--color-gray-white);
+   background-color: var(--color-light-dark);
 }
 
 .disable-dbl-tap-zoom {
-    touch-action: manipulation;
+   touch-action: manipulation;
 }
 
-button, input, textarea, a {
-    outline-offset: 2px !important;
-    outline-width: 2px !important;
-    outline-color: transparent !important;
-    outline-style: solid !important;
+button,
+input,
+textarea,
+a {
+   outline-offset: 2px !important;
+   outline-width: 2px !important;
+   outline-color: transparent !important;
+   outline-style: solid !important;
 }
 
-.btn-card:focus, .toggle:focus, input:focus, textarea:focus {
-    outline-color: var(--color-yellow-blue) !important;
+.btn-card:focus,
+.toggle:focus,
+input:focus,
+textarea:focus {
+   outline-color: var(--color-yellow-blue) !important;
 }
 
-button:focus, a:focus {
-    color: #eab308 !important;
+button:focus,
+a:focus {
+   color: #eab308 !important;
 }
 
-input, textarea, .progress-text {
-    background-color: var(--color-light-dark-1);
-    color: var(--color-lightgrey-white);
+input,
+textarea,
+.progress-text {
+   background-color: var(--color-light-dark-1);
+   color: var(--color-lightgrey-white);
 }
 
 .input-icon {
-    color: var(--color-lightgrey-white);
+   color: var(--color-lightgrey-white);
 }
 
 .file-attached {
-    background-color: var(--color-white-darkblue-2);
-    color: var(--color-lightgrey-white);
+   background-color: var(--color-white-darkblue-2);
+   color: var(--color-lightgrey-white);
 }
 
-html, body, #app, #layout, .document-view-container  {
-    height: 100%;
-    background-color: var(--color-light-dark);
+html,
+body,
+#app,
+#layout,
+.document-view-container {
+   height: 100%;
+   background-color: var(--color-light-dark);
 }
 
-.card, .header {
-    background-color: var(--color-white-darkblue);
-    color: var(--color-gray-white);
+.card,
+.header {
+   background-color: var(--color-white-darkblue);
+   color: var(--color-gray-white);
 }
 
-.modal, .preview {
-    background-color: var(--color-light-dark);
-    color: var(--color-gray-white);
+.modal,
+.preview {
+   background-color: var(--color-light-dark);
+   color: var(--color-gray-white);
 }
 
 .card:not(:disabled):active {
-    background-color: var(--color-white-darkblue-2) !important;
+   background-color: var(--color-white-darkblue-2) !important;
 }
 
 .card:not(:disabled):hover {
-    background-color: var(--color-white-darkblue-1);
+   background-color: var(--color-white-darkblue-1);
 }
 
 .card:disabled {
-    opacity: .5;
-    cursor: initial;
+   opacity: 0.5;
+   cursor: initial;
 }
 
 .title {
-    color: var(--color-gray-white);
+   color: var(--color-gray-white);
 }
 
 .subtitle {
-    color: var(--color-lightgrey-white);
+   color: var(--color-lightgrey-white);
 }
 
-.link, .label {
-    color: var(--color-gray-white);
+.link,
+.label {
+   color: var(--color-gray-white);
 }
 
 .link:active {
-    color: var(--color-yellow-blue) !important;
+   color: var(--color-yellow-blue) !important;
 }
 
 .link:hover {
-    color: var(--color-darkblue-gray);
+   color: var(--color-darkblue-gray);
 }
 
 .header button:active {
-    background-color: var(--color-white-darkblue-2);
-    color: var(--color-blue-white);
+   background-color: var(--color-white-darkblue-2);
+   color: var(--color-blue-white);
 }
 
 .tabs {
-    background-color: var(--color-white-gray);
-    color: var(--color-gray-white);
+   background-color: var(--color-white-gray);
+   color: var(--color-gray-white);
 }
 
 .active-tab {
-    color: var(--color-blue-white);
+   color: var(--color-blue-white);
 }
 
 .tabs-active {
-    background-color: var(--color-white-blue);
+   background-color: var(--color-white-blue);
 }
 
 .policy-text h2 {
-    font-weight: 600;
-    margin: 0;
+   font-weight: 600;
+   margin: 0;
 }
 
 .policy-text a {
-    color: #127cff;
+   color: #127cff;
 }
 
 .list {
-    color: var(--color-lightgrey-white);
+   color: var(--color-lightgrey-white);
 }
 
-html[is-touch-device="false"] .list li:hover {
-    background-color: var(--color-white-darkblue-1);
+html[is-touch-device='false'] .list li:hover {
+   background-color: var(--color-white-darkblue-1);
 }
 
-html[is-touch-device="false"] .btn-icon:not(:disabled):hover {
-    color: var(--color-darkblue-gray);
+html[is-touch-device='false'] .btn-icon:not(:disabled):hover {
+   color: var(--color-darkblue-gray);
 }
 
-html[is-touch-device="false"] .btn-card:hover,
-html[is-touch-device="false"] .btn:not(:disabled):hover
-{
-    opacity: .9;
+html[is-touch-device='false'] .btn-card:hover,
+html[is-touch-device='false'] .btn:not(:disabled):hover {
+   opacity: 0.9;
 }
 
 .btn-icon:disabled {
-    filter: opacity(.5);
+   filter: opacity(0.5);
 }
 
 .btn-icon:not(:disabled):active {
-    color: #eab308;
+   color: #eab308;
 }
 
-input[type="range"]:disabled {
-    cursor: initial;
+input[type='range']:disabled {
+   cursor: initial;
 }
 
-input[type="range"]:disabled + div {
-    opacity: .5;
+input[type='range']:disabled + div {
+   opacity: 0.5;
 }
 
 .active-zoom {
-    cursor: grab;
-    max-width: unset !important;
-    max-height: unset !important;
+   cursor: grab;
+   max-width: unset !important;
+   max-height: unset !important;
 }
 
 @media (max-width: 640px) {
-    html[is-touch-device="false"] {
-        --swiper-arrows-visibility: none;
-    }
+   html[is-touch-device='false'] {
+      --swiper-arrows-visibility: none;
+   }
 }

@@ -12,17 +12,17 @@
 // export const Uploader = (fetchPreviewDocs: () => void): HTMLElement => {
 //    const form = document.createElement("form");
 //    form.classList.add(
-//       "flex", 
+//       "flex",
 //       "flex-col",
-//       "items-center", 
-//       "justify-center", 
-//       "w-full", 
+//       "items-center",
+//       "justify-center",
+//       "w-full",
 //       "mt-5",
 //       "mb-6"
 //    );
 
 //    const inputEl = UploadInput();
-  
+
 //    form.append(inputEl.target);
 
 //    function handleSubmit(res: Response) {
@@ -95,7 +95,7 @@
 //             ApiClient.publishDocumentUrl(inputEl.value()).then(handleSubmit);
 //          }
 
-//          if (!ClientStorage.hasToken()) {            
+//          if (!ClientStorage.hasToken()) {
 //             ConfirmModal(
 //                "You are about to publish a document without an account. You won't be able to manage your documents in this case:( Are you positive you want to continue?",
 //                {
@@ -103,8 +103,8 @@
 //                   fn: () => navigate(routes.auth.pathname + routes.auth.search),
 //                },
 //                { label: "Publish", fn: handleDocumentPublish }
-//             ); 
-            
+//             );
+
 //          } else {
 //             handleDocumentPublish();
 //          }

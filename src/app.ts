@@ -1,52 +1,51 @@
-import { DB } from "./core/DB";
-import { useOutlineToggle, useScrollToggle, useThemeToggle, useWindowResize } from "./core/hooks";
-import { createRouter } from "./core/router";
-import { html, isTouchDevice } from "./core/utils";
-import { NotFoundPage } from "./pages/404";
-import { HomePage } from "./pages/home";
-import { SettingsPage } from "./pages/settings";
-import { routes } from "./routes.definition";
-import { Theme } from "./theme";
-
+import { DB } from './core/DB';
+import { useOutlineToggle, useScrollToggle, useThemeToggle, useWindowResize } from './core/hooks';
+import { createRouter } from './core/router';
+import { html, isTouchDevice } from './core/utils';
+import { NotFoundPage } from './pages/404';
+import { HomePage } from './pages/home';
+import { SettingsPage } from './pages/settings';
+import { routes } from './routes.definition';
+import { Theme } from './theme';
 
 (() => {
-    const htmlEl = html();
+   const htmlEl = html();
 
-    const root = document.createElement("div");
-    root.setAttribute("id", "app");
-    document.body.appendChild(root);
+   const root = document.createElement('div');
+   root.setAttribute('id', 'app');
+   document.body.appendChild(root);
 
-    htmlEl.setAttribute("is-touch-device", String(isTouchDevice()));
-   
-    useOutlineToggle.on(({ skippedElement, value }) => {
-        const elements = "button, input, textarea, a";
-        htmlEl.querySelectorAll(elements).forEach((el) => {
-            el.setAttribute("tabindex", value ?  "0" : "-1");
-        });
-        if (skippedElement) {
-            skippedElement.querySelectorAll(elements).forEach((el) => {
-                el.setAttribute("tabindex", !value ?  "0" : "-1");
-            });
-        }
-    });
+   htmlEl.setAttribute('is-touch-device', String(isTouchDevice()));
 
-    useScrollToggle.on(({ value }) => {
-        if (value) {
-            htmlEl.classList.remove("no-scroll");
-        } else {
-            htmlEl.classList.add("no-scroll");
-        }
-    });
+   useOutlineToggle.on(({ skippedElement, value }) => {
+      const elements = 'button, input, textarea, a';
+      htmlEl.querySelectorAll(elements).forEach((el) => {
+         el.setAttribute('tabindex', value ? '0' : '-1');
+      });
+      if (skippedElement) {
+         skippedElement.querySelectorAll(elements).forEach((el) => {
+            el.setAttribute('tabindex', !value ? '0' : '-1');
+         });
+      }
+   });
 
-    useThemeToggle.on(() => Theme.handleThemeChange());
+   useScrollToggle.on(({ value }) => {
+      if (value) {
+         htmlEl.classList.remove('no-scroll');
+      } else {
+         htmlEl.classList.add('no-scroll');
+      }
+   });
 
-    window.addEventListener("resize", () => useWindowResize.emit());
+   useThemeToggle.on(() => Theme.handleThemeChange());
 
-    DB.connect();
+   window.addEventListener('resize', () => useWindowResize.emit());
 
-    createRouter(root, [
-        { path: routes.home.pathname, component: HomePage },
-        { path: routes.settings.pathname, component: SettingsPage },
-        { path: "*", component: NotFoundPage }
-    ]);
+   DB.connect();
+
+   createRouter(root, [
+      { path: routes.home.pathname, component: HomePage },
+      { path: routes.settings.pathname, component: SettingsPage },
+      { path: '*', component: NotFoundPage },
+   ]);
 })();
