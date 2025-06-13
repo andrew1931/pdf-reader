@@ -14,7 +14,7 @@ export const CheckUpdatesModal = () => {
 
    const button = ActionButton('Okay');
    button.classList.add('mx-auto', 'mt-6', 'mb-6');
-   fetch('/version.json')
+   fetch(ROUTE_PREFIX + '/version.json')
       .then((res) => res.json())
       .then((res) => {
          if (BUILD_VERSION === res.buildHash) {
