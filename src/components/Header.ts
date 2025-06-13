@@ -1,4 +1,4 @@
-import { Link, normalizedPath } from '../core/router';
+import { isCurrentRoute, Link, normalizedPath } from '../core/router';
 import { routes } from '../routes.definition';
 
 const menuItems = [routes.home, routes.settings];
@@ -23,7 +23,6 @@ export const Header = (): HTMLElement => {
    const ul = document.createElement('ul');
    ul.classList.add('flex', 'w-full', 'justify-around', 'md:justify-end');
    menuItems.forEach((item) => {
-      const isActive = item.pathname === normalizedPath();
       const link = Link(item.pathname + item.search);
       link.classList.add(
          'btn-icon',
@@ -43,7 +42,7 @@ export const Header = (): HTMLElement => {
          'md:mx-4',
          'md:mt-4'
       );
-      if (isActive) {
+      if (isCurrentRoute(item.pathname, normalizedPath())) {
          link.classList.add('text-button-400');
       }
 

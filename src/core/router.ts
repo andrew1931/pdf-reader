@@ -48,6 +48,10 @@ export const Link = (url: string) => {
    return link;
 };
 
+export const isCurrentRoute = (routePath: string, urlPath: string): boolean => {
+   return normalizedPath(ROUTE_PREFIX + routePath) === urlPath;
+};
+
 export const updateSearchParams = (key: string, value: string): void => {
    const url = new URL(window.location.href);
    url.searchParams.set(key, value);
@@ -73,9 +77,9 @@ export const useQueryParamsChange = (effect: SideEffect) => {
 export const navigate = (url: string) => {
    const prevUrl = window.location.href;
    if (isTouchDevice()) {
-      window.history.replaceState({}, '', url);
+      window.history.replaceState({}, '', ROUTE_PREFIX + url);
    } else {
-      window.history.pushState({}, '', url);
+      window.history.pushState({}, '', ROUTE_PREFIX + url);
    }
    useRouterPush.emit();
    handleQueryParamsEffects(prevUrl);
@@ -127,7 +131,7 @@ function handleRoute() {
    let pageFound = false;
    if (rootEl === null) return;
    for (const route of routesDefinition) {
-      const isTarget = normalizedPath(ROUTE_PREFIX + route.path) === pathname;
+      const isTarget = isCurrentRoute(route.path, pathname);
       if (isTarget) {
          if (!cachedComponents.has(pathname)) {
             const component = route.component();
