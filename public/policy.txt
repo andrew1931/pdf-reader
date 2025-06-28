@@ -3,19 +3,17 @@ PDF Swiper Privacy Policy
 
 <h2>INTRODUCTION</h2>
 PDF Swiper (“we,” “us,” or “our”) collects and uses users' personal information in order to provide services to them.
-This privacy policy describes how we collect, use, protect and share information that we collect during usage of our website (<a href="https://pdf-swiper.com" target="_blank">https://pdf-swiper.com</a>).
+This privacy policy describes how we collect, use, protect and share information that we collect during usage of our website (<a href="https://andrew1931.github.io/pdf-swiper" target="_blank">https://andrew1931.github.io/pdf-swiper/</a>).
 
 <h2>WHAT DATA DO WE COLLECT AND WHERE DO WE STORE IT?</h2>
-Information which is stored on <u>our server</u>:
-- application error logs;
-- user's emails and questions asked via our website's interfaces;
-- user's found issues reported via our website's interfaces;
 
 Information which is stored in users' <u>browser application</u>:
 - users' pdf files viewed via our website's interfaces;
 - users' setting choices on our website:
     - application appearance;
     - whether or not to store viewed pdf files;
+
+PDF swiper does not have web server and do not store any logs or anything,
 
 We DO NOT collect any information to identify our users (i.e. IP addresses, usernames, pictures etc.)
 
@@ -32,4 +30,4 @@ Viewed PDF files from users' devices may or may not be used by our third party l
 Please get acquainted with their privacy policy and terms and conditions.
 
 <h2>CONTACT US</h2>
-We may be contacted via <a href="https://pdf-swiper.com/settings" target="_blank">https://pdf-swiper.com/settings</a> website interfaces ("Ask a question" button).
+We may be contacted via <a href="https://github.com/andrew1931/pdf-swiper/issues" target="_blank">Report issue</a> link.
