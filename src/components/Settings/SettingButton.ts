@@ -1,3 +1,5 @@
+import { attr, children, classList, elem, html, ifOnly, on, txt } from 'fundom.js';
+
 export type SettingsActionButton = {
    label: string;
    labelInfo?: HTMLElement;
@@ -6,39 +8,33 @@ export type SettingsActionButton = {
    action: () => void;
 };
 
-export const SettingButton = (item: SettingsActionButton) => {
-   const iconEl = document.createElement('span');
-   iconEl.classList.add('w-5', 'mr-4', item.iconColor);
-   iconEl.innerHTML = item.icon;
-   const labelEl = document.createElement('span');
-   labelEl.innerText = item.label;
-
-   const button = document.createElement('button');
-   button.setAttribute('aria-label', item.label);
-   button.classList.add(
-      'card',
-      'w-full',
-      'flex',
-      'items-center',
-      'shadow-card',
-      'rounded-full',
-      'font-medium',
-      'text-base',
-      'py-2',
-      'px-4',
-      'my-2',
-      'cursor-pointer'
-   );
-
-   button.onclick = (e) => {
-      e.preventDefault();
-      item.action();
-      button.blur();
-   };
-
-   button.append(iconEl, labelEl);
-   if (item.labelInfo) {
-      button.appendChild(item.labelInfo);
-   }
-   return button;
+export const SettingButton = (item: SettingsActionButton): HTMLButtonElement => {
+   return elem(
+      'button',
+      attr({ 'aria-label': item.label }),
+      classList(
+         'card',
+         'w-full',
+         'flex',
+         'items-center',
+         'shadow-card',
+         'rounded-full',
+         'font-medium',
+         'text-base',
+         'py-2',
+         'px-4',
+         'my-2',
+         'cursor-pointer'
+      ),
+      on('click', function (e) {
+         e.preventDefault();
+         item.action();
+         this.blur();
+      }),
+      children(
+         elem('span', html(item.icon), classList('w-5', 'mr-4', item.iconColor)),
+         elem('span', txt(item.label))
+      ),
+      ifOnly<'button'>(item.labelInfo)(children(item.labelInfo as HTMLElement))
+   )();
 };

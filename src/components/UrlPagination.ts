@@ -1,3 +1,4 @@
+import { children, classList, elem, funState, ifOnly, on, txt } from 'fundom.js';
 import { usePageUpdate, usePaginationEvent, usePaginationRequest } from '../core/hooks';
 import {
    updateSearchParams,
@@ -10,28 +11,9 @@ import { ActionButtonSm } from './Button';
 export const PAGE_SIZE = 12;
 
 export const UrlPagination = (dependencyParams: Array<[string, string]> = []): HTMLElement => {
-   const el = document.createElement('div');
-   el.classList.add('flex', 'flex-col', 'items-center', 'justify-between', 'my-2');
-
-   const info = document.createElement('p');
-   info.classList.add('text-xs', 'text-slate-500', 'px-2', 'mb-3');
-
-   const BoldText = (text: string | number): HTMLElement => {
-      const el = document.createElement('span');
-      el.classList.add('font-semibold');
-      el.innerText = String(text);
-      return el;
-   };
-   const infoText = (page: number, total: number) => {
-      info.innerHTML = '';
-      info.append('Showing page ', BoldText(page), ' out of ', BoldText(total));
-   };
-
-   const prevButton = ActionButtonSm('Previous');
-   const nextButton = ActionButtonSm('Next');
-
-   const buttonsWrapper = document.createElement('div');
-   buttonsWrapper.append(prevButton, nextButton);
+   const [getVisible, setVisible] = funState(false);
+   const [getCurrentPage, setCurrentPage] = funState(0);
+   const [getMaxNumberOfPages, setMaxNumberOfPages] = funState(0);
 
    const PAGE_SIZE = 12;
    const MIN_PAGE = 1;
@@ -57,6 +39,25 @@ export const UrlPagination = (dependencyParams: Array<[string, string]> = []): H
       }
    }
 
+   const prevButton = ActionButtonSm(
+      'Previous',
+      on('click', function () {
+         if (getPage() > MIN_PAGE) {
+            this.disabled = true;
+            updateSearchParams('page', String(getPage() - 1));
+         }
+      })
+   );
+   const nextButton = ActionButtonSm(
+      'Next',
+      on('click', function () {
+         if (getOffset() + PAGE_SIZE < maxItems) {
+            this.disabled = true;
+            updateSearchParams('page', String(getPage() + 1));
+         }
+      })
+   );
+
    useNavigationEnter(() => {
       handleSearchParams();
    });
@@ -71,36 +72,41 @@ export const UrlPagination = (dependencyParams: Array<[string, string]> = []): H
       maxItems = data;
       const maxNumberOfPages = Math.ceil(maxItems / PAGE_SIZE);
       if (maxItems === 0) {
-         el.innerHTML = '';
+         setVisible(false);
       } else if (getPage() > maxNumberOfPages) {
          updateSearchParams('page', String(maxNumberOfPages));
       } else {
          if (maxNumberOfPages > MIN_PAGE) {
-            el.append(info, buttonsWrapper);
             nextButton.disabled = getOffset() + PAGE_SIZE >= maxItems;
             prevButton.disabled = getOffset() === 0;
-            infoText(getPage(), maxNumberOfPages);
+            setCurrentPage(getPage());
+            setMaxNumberOfPages(maxNumberOfPages);
+            setVisible(true);
          } else {
-            el.innerHTML = '';
+            setVisible(false);
          }
       }
    });
 
    usePageUpdate.on(handleSearchParams);
 
-   prevButton.onclick = () => {
-      if (getPage() > MIN_PAGE) {
-         prevButton.disabled = true;
-         updateSearchParams('page', String(getPage() - 1));
-      }
-   };
-
-   nextButton.onclick = () => {
-      if (getOffset() + PAGE_SIZE < maxItems) {
-         nextButton.disabled = true;
-         updateSearchParams('page', String(getPage() + 1));
-      }
-   };
-
-   return el;
+   return elem(
+      'div',
+      classList('flex', 'flex-col', 'items-center', 'justify-between', 'my-2'),
+      ifOnly(getVisible)(
+         children(
+            elem(
+               'p',
+               classList('text-xs', 'text-slate-500', 'px-2', 'mb-3'),
+               children(
+                  elem('span', txt('Showing page ')),
+                  elem('span', classList('font-semibold'), txt(getCurrentPage)),
+                  elem('span', txt(' out of ')),
+                  elem('span', classList('font-semibold'), txt(getMaxNumberOfPages))
+               )
+            ),
+            elem('div', children(prevButton, nextButton))
+         )
+      )
+   )();
 };

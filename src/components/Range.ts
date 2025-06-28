@@ -1,74 +1,67 @@
+import { attr, children, classList, elem, fmt, funState, on, style, txt } from 'fundom.js';
+
 export const Range = (max: number, current: number) => {
-   const labelEl = document.createElement('div');
-   labelEl.classList.add(
-      'disable-dbl-tap-zoom',
-      'flex',
-      'flex-col',
-      'justify-center',
-      'items-center'
-   );
+   const [getLabelText, setLabelText] = funState('');
+   const [getWidth, setWidth] = funState(0);
 
-   const labelTextValue = () => rangeValue() + ' out of ' + max;
+   const rangeVisible = elem(
+      'div',
+      classList('absolute', 'z-0', 'w-full', 'h-full', 'rounded-md', 'overflow-hidden'),
+      children(
+         elem('div', classList('w-full', 'h-full', 'bg-slate-500')),
+         elem(
+            'div',
+            classList('h-full', 'bg-blue-500', 'absolute', 'left-0', 'top-0'),
+            style({ width: fmt('{}%', getWidth) })
+         )
+      )
+   )();
 
-   const rangeVisibleBody = document.createElement('div');
-   rangeVisibleBody.classList.add('w-full', 'h-full', 'bg-slate-500');
+   const rangeHidden = elem(
+      'input',
+      attr({
+         type: 'range',
+         step: 'any',
+         min: '0',
+         max: String(max),
+         value: String(current),
+      }),
+      classList(
+         'opacity-0',
+         'z-10',
+         'absolute',
+         'w-full',
+         'cursor-pointer',
+         'absolute',
+         'left-0',
+         'h-full'
+      ),
+      on('input', mapInputValueToVisibleRange)
+   )();
 
-   const rangeVisibleBodyFilled = document.createElement('div');
-   rangeVisibleBodyFilled.classList.add('h-full', 'bg-blue-500', 'absolute', 'left-0', 'top-0');
-
-   const rangeVisible = document.createElement('div');
-   rangeVisible.classList.add(
-      'absolute',
-      'z-0',
-      'w-full',
-      'h-full',
-      'rounded-md',
-      'overflow-hidden'
-   );
-   rangeVisible.append(rangeVisibleBody, rangeVisibleBodyFilled);
-
-   const rangeHidden = document.createElement('input');
-   rangeHidden.setAttribute('type', 'range');
-   rangeHidden.setAttribute('step', 'any');
-   rangeHidden.setAttribute('min', String(0));
-   rangeHidden.setAttribute('max', String(max));
-   rangeHidden.value = String(current);
-   rangeHidden.classList.add(
-      'opacity-0',
-      'z-10',
-      'absolute',
-      'w-full',
-      'cursor-pointer',
-      'absolute',
-      'left-0',
-      'h-full'
-   );
-
-   const labelText = document.createElement('span');
-   labelText.classList.add('font-medium', 'text-xs', 'text-white', 'absolute', 'z-10');
+   const labelEl = elem(
+      'div',
+      classList('disable-dbl-tap-zoom', 'flex', 'flex-col', 'justify-center', 'items-center'),
+      children(
+         elem(
+            'span',
+            classList('font-medium', 'text-xs', 'text-white', 'absolute', 'z-10'),
+            txt(getLabelText)
+         ),
+         elem('div', classList('relative', 'w-52', 'h-[30px]'), children(rangeHidden, rangeVisible))
+      )
+   )();
 
    function mapInputValueToVisibleRange() {
-      labelText.innerText = labelTextValue();
-      rangeVisibleBodyFilled.style.width = calcValuePercent() + '%';
+      setLabelText(rangeValue() + ' out of ' + max);
+      setWidth((Number(rangeHidden.value) * 100) / max);
    }
-
-   rangeHidden.oninput = mapInputValueToVisibleRange;
 
    mapInputValueToVisibleRange();
-
-   const rangeWrapper = document.createElement('div');
-   rangeWrapper.classList.add('relative', 'w-52', 'h-[30px]');
-   rangeWrapper.append(rangeHidden, rangeVisible);
-
-   function calcValuePercent(): number {
-      return (Number(rangeHidden.value) * 100) / max;
-   }
 
    function rangeValue(): number {
       return Math.floor(Number(rangeHidden.value)) || 1; // prevent 0
    }
-
-   labelEl.append(labelText, rangeWrapper);
 
    return {
       target: labelEl,

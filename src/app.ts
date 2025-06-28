@@ -1,3 +1,4 @@
+import { attr, elem } from 'fundom.js';
 import { DB } from './core/DB';
 import { useOutlineToggle, useScrollToggle, useThemeToggle, useWindowResize } from './core/hooks';
 import { createRouter } from './core/router';
@@ -11,8 +12,7 @@ import { Theme } from './theme';
 (() => {
    const htmlEl = html();
 
-   const root = document.createElement('div');
-   root.setAttribute('id', 'app');
+   const root = elem('div', attr({ id: 'app' }))();
    document.body.appendChild(root);
 
    htmlEl.setAttribute('is-touch-device', String(isTouchDevice()));

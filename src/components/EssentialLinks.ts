@@ -1,26 +1,25 @@
-import { AskQuestionModal } from './modals/ask-question-modal';
+import { elem, attr, on, txt, classList, children } from 'fundom.js';
 import { PolicyModal } from './modals/policy-modal';
+import { openIssuesPage } from './Settings/buttons-definition';
 
 export const A = (label: string, cb: () => void) => {
-   const link = document.createElement('a');
-   link.setAttribute('href', '');
-   link.classList.add('link', 'text-xs', 'underline', 'px-1', 'cursor-pointer');
-   link.innerText = label;
-   link.onclick = (e) => {
-      e.preventDefault();
-      cb();
-   };
-   return link;
+   return elem(
+      'a',
+      attr({ href: '' }),
+      classList('link', 'text-xs', 'underline', 'px-1', 'cursor-pointer'),
+      txt(label),
+      on('click', function (e) {
+         e.preventDefault();
+         cb();
+         this.blur();
+      })
+   )();
 };
 
 export const EssentialLinks = (): HTMLElement => {
-   const el = document.createElement('div');
-   el.classList.add('flex', 'justify-center');
-
-   const policyLink = A('Our policy', PolicyModal);
-
-   const contactLink = A('Contact us', AskQuestionModal);
-
-   el.append(policyLink, contactLink);
-   return el;
+   return elem(
+      'div',
+      classList('flex', 'justify-center'),
+      children(A('Our policy', PolicyModal), A('Report issue', openIssuesPage))
+   )();
 };

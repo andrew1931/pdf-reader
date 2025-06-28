@@ -1,9 +1,18 @@
 const esbuild = require('esbuild');
-const { rmSync, cpSync, copyFileSync, readFileSync, writeFileSync } = require('node:fs');
+const {
+   rmSync,
+   cpSync,
+   copyFileSync,
+   mkdirSync,
+   existsSync,
+   readFileSync,
+   writeFileSync,
+} = require('node:fs');
 const { resolve, join } = require('node:path');
 const { execSync } = require('node:child_process');
 require('dotenv').config({ path: '../deno-app/.env' });
 
+const routes = ['', 'settings'];
 const isProd = process.argv.includes('--prod');
 const outDir = resolve(__dirname, 'dist');
 const baseDir = 'src';
@@ -21,7 +30,7 @@ const config = {
    ],
    define: {
       BUILD_VERSION: JSON.stringify(buildHash),
-      ROUTE_PREFIX: isProd ? JSON.stringify('/pdf-swiper') : '',
+      ROUTE_PREFIX: JSON.stringify(isProd ? '/pdf-swiper' : ''),
    },
    write: true,
    bundle: true,
@@ -33,19 +42,31 @@ const config = {
 (async () => {
    await esbuild.build(config);
    const appScriptName = `app-${buildHash}.js`;
-   const outputHTMLPath = join(outDir, 'index.html');
    cpSync(resolve(__dirname, 'public'), outDir, { recursive: true });
    copyFileSync(join(outDir, pdfWorkerPath, 'pdf.worker.min.js'), join(outDir, 'pdf.worker.js'));
    copyFileSync(join(outDir, pdfWorkerPath, 'pdf.min.js'), join(outDir, 'pdf.min.js'));
    copyFileSync(join(outDir, baseDir, 'app.js'), join(outDir, appScriptName));
-   copyFileSync(join(__dirname, 'index.html'), outputHTMLPath);
+
+   for (const route of routes) {
+      const dirPath = join(outDir, route);
+      const outputHTMLPath = join(dirPath, 'index.html');
+      if (!existsSync(dirPath)) {
+         mkdirSync(dirPath);
+      }
+      copyFileSync(join(__dirname, 'index.html'), outputHTMLPath);
+      const indexHTML = readFileSync(outputHTMLPath);
+      writeFileSync(
+         outputHTMLPath,
+         indexHTML
+            .toString()
+            .replace('{SCRIPT_PATH}', appScriptName)
+            .replace(/{RELATIVE_PATH}/g, route ? '../' : '')
+      );
+   }
    copyFileSync(
       join(__dirname, 'node_modules/swiper/swiper-bundle.min.css'),
       join(outDir, 'swiper.css')
    );
-
-   const indexHTML = readFileSync(outputHTMLPath);
-   writeFileSync(outputHTMLPath, indexHTML.toString().replace('{SCRIPT_PATH}', appScriptName));
 
    writeFileSync(join(outDir, 'version.json'), JSON.stringify({ buildHash }));
 

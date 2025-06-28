@@ -13,13 +13,6 @@ export const bytesToMb = (bytes: number): string => {
    return (bytes / Math.pow(1024, 2)).toFixed(1);
 };
 
-const emailRegExp =
-   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-export const emailIsValid = (email: string) => {
-   return emailRegExp.test(email);
-};
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const debounce = (callback: (...args: any[]) => void, wait = 0) => {
    let timeout;

@@ -18,6 +18,7 @@
       "typescript-eslint": "^8.24.0"
    },
    "dependencies": {
+      "fundom.js": "^0.4.0",
       "pdfjs-dist": "4.10.38",
       "swiper": "^11.2.1",
       "tailwindcss": "^3.4.17"

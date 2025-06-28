@@ -1,17 +1,21 @@
+import { classList, elem, funState, html } from 'fundom.js';
 import { errorToString } from '../../core/utils';
 import { Modal } from '../Modal';
 
 export const PolicyModal = () => {
-   const text = document.createElement('p');
-   text.classList.add('policy-text', 'whitespace-break-spaces', 'text-sm');
+   const [getText, setText] = funState('');
 
    fetch(ROUTE_PREFIX + '/policy.txt')
       .then((res) => res.text())
       .then((res) => {
-         text.innerHTML = errorToString(res);
+         setText(errorToString(res));
       })
       .catch((error) => {
-         text.innerHTML = errorToString(error);
+         setText(errorToString(error));
       });
-   Modal.show('Privacy policy', text);
+
+   Modal.show(
+      'Privacy policy',
+      elem('p', classList('policy-text', 'whitespace-break-spaces', 'text-sm'), html(getText))()
+   );
 };

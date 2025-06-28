@@ -13,29 +13,29 @@ import {
    usePaginationRequest,
 } from '../core/hooks';
 import { UrlPagination } from '../components/UrlPagination';
+import { children, classList, elem, txt } from 'fundom.js';
 
 export const DocumentsTitle = (orderBy: HTMLElement): HTMLElement => {
-   const wrapper = document.createElement('div');
-   wrapper.classList.add(
-      'flex',
-      'justify-center',
-      'md:justify-between',
-      'flex-col',
-      'md:flex-row',
-      'items-center',
-      'py-3',
-      'border-b',
-      'border-slate-200',
-      'w-11/12',
-      'mx-auto'
-   );
-
-   const title = document.createElement('h2');
-   title.classList.add('subtitle', 'text-center', 'text-2xl');
-   title.innerText = 'Viewed documents';
-
-   wrapper.append(title, orderBy);
-   return wrapper;
+   return elem(
+      'div',
+      classList(
+         'flex',
+         'justify-center',
+         'md:justify-between',
+         'flex-col',
+         'md:flex-row',
+         'items-center',
+         'py-3',
+         'border-b',
+         'border-slate-200',
+         'w-11/12',
+         'mx-auto'
+      ),
+      children(
+         elem('h2', classList('subtitle', 'text-center', 'text-2xl'), txt('Viewed documents')),
+         orderBy
+      )
+   )();
 };
 
 export const HomePage = (): HTMLElement => {

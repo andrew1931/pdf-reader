@@ -23,6 +23,7 @@ import { DB } from '../../core/DB';
 import { Toast } from '../Toast';
 import { BookOpenIcon } from '../icons/book-open';
 import { TitleIcon } from '../icons/title';
+import { attr, children, classList, elem, funState, html, ifElse, ifOnly, on } from 'fundom.js';
 
 type ReadingControlsProps = {
    fileName: string;
@@ -31,6 +32,9 @@ type ReadingControlsProps = {
    textOnlyMode: boolean;
    initialFontSizeZoom: number;
    searchHandler: () => Promise<DocumentText>;
+   onClose: () => void;
+   onFontSizeChange: (fontSizeZoom?: number) => Promise<void>;
+   onToggleMode: () => void;
 };
 
 export const READING_BUTTON_ICON_CLASS = 'btn-icon';
@@ -42,6 +46,9 @@ export const ReadingControls = ({
    textOnlyMode,
    initialFontSizeZoom,
    searchHandler,
+   onClose,
+   onFontSizeChange,
+   onToggleMode,
 }: ReadingControlsProps) => {
    const ANIMATION_DURATION = 500;
    const ANIMATION_CLASS = 'scale-100';
@@ -53,7 +60,10 @@ export const ReadingControls = ({
    let currentRotate = 0;
    let currentPage = initialPage;
    let currentFontSizeZoom = initialFontSizeZoom;
-   let isVisible = false;
+   let isShown = false;
+
+   const [getIsVisible, setIsVisible] = funState(false);
+   const [getEffects, setEffects] = funState(false);
 
    const activeSlideCanvas = (): HTMLCanvasElement | null => {
       return document.querySelector(`.${SWIPER_CLASS} .${SWIPER_ACTIVE_CLASS} canvas`);
@@ -68,12 +78,14 @@ export const ReadingControls = ({
    const buttonsClasslist = [READING_BUTTON_ICON_CLASS, 'w-12', 'text-slate-500', 'p-3'];
    const animatedElementClasslist = ['z-40', 'scale-0', 'transition-[transform]', 'duration-500'];
 
-   const IconButton = (icon: string, label: string) => {
-      const buttonIcon = document.createElement('button');
-      buttonIcon.setAttribute('aria-label', label);
-      buttonIcon.innerHTML = icon;
-      buttonIcon.classList.add(...buttonsClasslist);
-      return buttonIcon;
+   const IconButton = (icon: string, label: string, onClick: () => void) => {
+      return elem(
+         'button',
+         attr({ 'aria-label': label }),
+         html(icon),
+         classList(...buttonsClasslist),
+         on('click', onClick)
+      )();
    };
 
    function createPageRange(): ReturnType<typeof Range> {
@@ -93,10 +105,13 @@ export const ReadingControls = ({
 
    let pageRange = createPageRange();
 
-   const toggleModeButton = IconButton(textOnlyMode ? BookOpenIcon : TitleIcon, 'Switch view mode');
+   const toggleModeButton = IconButton(
+      textOnlyMode ? BookOpenIcon : TitleIcon,
+      'Switch view mode',
+      onToggleMode
+   );
 
-   const rotateButton = IconButton(RotateIcon, 'Rotate document');
-   rotateButton.onclick = () => {
+   const rotateButton = IconButton(RotateIcon, 'Rotate document', () => {
       const target = activeSlideCanvas();
       if (!target) return;
       currentRotate += 90;
@@ -109,124 +124,142 @@ export const ReadingControls = ({
          currentRotate,
          zoomHandlerInstance.isActiveZoom() ? zoomHandlerInstance.level() : undefined
       ).finally(() => zoomHandlerInstance.update(target));
-   };
+   });
 
-   const fontSizePlusButton = IconButton(ZoomInIcon, 'Increase text font size');
-   const fontSizeMinusButton = IconButton(ZoomOutIcon, 'Decrease text font size');
+   const fontSizePlusButton = IconButton(ZoomInIcon, 'Increase text font size', () => {
+      fontSizePlusButton.disabled = true;
+      currentFontSizeZoom += FONT_SIZE_STEP;
+      if (currentFontSizeZoom > MAX_FONT_SIZE_ZOOM) {
+         currentFontSizeZoom = MAX_FONT_SIZE_ZOOM;
+      } else {
+         onFontSizeChange(currentFontSizeZoom).then(handleFontSizeButtonsDisabled);
+      }
+   });
+   const fontSizeMinusButton = IconButton(ZoomOutIcon, 'Decrease text font size', () => {
+      fontSizeMinusButton.disabled = true;
+      currentFontSizeZoom -= FONT_SIZE_STEP;
+      if (currentFontSizeZoom < MIN_FONT_SIZE_ZOOM) {
+         currentFontSizeZoom = MIN_FONT_SIZE_ZOOM;
+      } else {
+         onFontSizeChange(currentFontSizeZoom).then(handleFontSizeButtonsDisabled);
+      }
+   });
 
-   const zoomInButton = IconButton(ZoomInIcon, 'Zoom in document');
-   zoomInButton.onclick = () => {
+   const zoomInButton = IconButton(ZoomInIcon, 'Zoom in document', () => {
       zoomInButton.disabled = true;
       zoomHandlerInstance
          .zoomIn(activeSlideCanvas(), currentPage, currentRotate)
          .finally(handleZoomControlsDisabled);
-   };
+   });
 
-   const zoomOutButton = IconButton(ZoomOutIcon, 'Zoom out document');
-   zoomOutButton.onclick = () => {
+   const zoomOutButton = IconButton(ZoomOutIcon, 'Zoom out document', () => {
       zoomOutButton.disabled = true;
       zoomHandlerInstance
          .zoomOut(activeSlideCanvas(), currentPage, currentRotate)
          .finally(handleZoomControlsDisabled);
-   };
+   });
 
-   const bookmarkButton = IconButton(BookmarkIcon, 'Add bookmark');
-   bookmarkButton.onclick = () => {
+   const bookmarkButton = IconButton(BookmarkIcon, 'Add bookmark', () => {
       Modal.show('Bookmarks', AddBookmark(fileName, currentPage), closeReadingModalCb);
-   };
+   });
 
-   const searchButton = IconButton(SearchIcon, 'Search in document');
-   searchButton.onclick = () => {
+   const searchButton = IconButton(SearchIcon, 'Search in document', () => {
       Modal.show('Search modal', Search(searchHandler), closeReadingModalCb);
-   };
+   });
 
-   const infoButton = IconButton(InfoIcon, 'Document info');
-   infoButton.onclick = () => {
+   const infoButton = IconButton(InfoIcon, 'Document info', () => {
       DB.getFileMeta(fileName)
          .then((doc) => {
             Modal.show('Document info', DocumentInfo(doc), closeReadingModalCb);
          })
          .catch(Toast.error);
-   };
+   });
 
-   const closeButton = IconButton(CloseIcon, 'Close document');
+   const closeButton = IconButton(CloseIcon, 'Close document', onClose);
 
-   const buttonsContainer = document.createElement('div');
-   buttonsContainer.classList.add(
-      ...animatedElementClasslist,
-      'origin-bottom-right',
-      'absolute',
-      'right-2',
-      'bottom-3',
-      'md:bottom-2',
-      'flex',
-      'flex-col',
-      'items-end',
-      'ml-auto',
-      'px-1',
-      'py-2',
-      'bg-slate-100',
-      'opacity-90',
-      'rounded-full'
+   const buttonsContainer = elem(
+      'div',
+      classList(
+         ...animatedElementClasslist,
+         'origin-bottom-right',
+         'absolute',
+         'right-2',
+         'bottom-3',
+         'md:bottom-2',
+         'flex',
+         'flex-col',
+         'items-end',
+         'ml-auto',
+         'px-1',
+         'py-2',
+         'bg-slate-100',
+         'opacity-90',
+         'rounded-full'
+      ),
+      ifOnly(getEffects)(classList(ANIMATION_CLASS)),
+      ifElse(textOnlyMode)(
+         children(
+            closeButton,
+            toggleModeButton,
+            infoButton,
+            fontSizePlusButton,
+            fontSizeMinusButton,
+            searchButton
+         )
+      )(
+         children(
+            closeButton,
+            toggleModeButton,
+            infoButton,
+            rotateButton,
+            zoomInButton,
+            zoomOutButton,
+            searchButton,
+            bookmarkButton
+         )
+      )
    );
 
-   const wrapper = document.createElement('div');
-   wrapper.classList.add(
-      'absolute',
-      'bottom-0',
-      'left-0',
-      'w-full',
-      'flex',
-      'items-center',
-      'justify-center'
-   );
+   const wrapper = elem(
+      'div',
+      classList(
+         'absolute',
+         'bottom-0',
+         'left-0',
+         'w-full',
+         'flex',
+         'items-center',
+         'justify-center'
+      ),
+      ifOnly(getIsVisible)(children(buttonsContainer, pageRange.target))
+   )();
 
    function hideControls() {
-      if (!isVisible) return;
-      isVisible = false;
-      buttonsContainer.classList.remove(ANIMATION_CLASS);
+      if (!isShown) return;
+      isShown = false;
+      setEffects(false);
       pageRange.target.classList.remove(ANIMATION_CLASS);
       setTimeout(() => {
-         if (!isVisible) {
-            wrapper.innerHTML = '';
+         if (!isShown) {
+            setIsVisible(false);
          }
       }, ANIMATION_DURATION);
    }
 
    function showControls() {
-      if (isVisible) return;
-      isVisible = true;
+      if (isShown) return;
+      isShown = true;
+      // if (wrapper.children.length === 0) {
 
-      if (wrapper.childNodes.length === 0) {
-         handleButtonsDisabled();
-         handleZoomControlsDisabled();
-         handleFontSizeButtonsDisabled();
-         if (textOnlyMode) {
-            buttonsContainer.append(
-               closeButton,
-               toggleModeButton,
-               infoButton,
-               fontSizePlusButton,
-               fontSizeMinusButton,
-               searchButton
-            );
-         } else {
-            buttonsContainer.append(
-               closeButton,
-               toggleModeButton,
-               infoButton,
-               rotateButton,
-               zoomInButton,
-               zoomOutButton,
-               searchButton,
-               bookmarkButton
-            );
-         }
-         wrapper.append(buttonsContainer, pageRange.target);
-      }
+      // }
+      setIsVisible(true);
+      handleButtonsDisabled();
+      handleZoomControlsDisabled();
+      handleFontSizeButtonsDisabled();
+
       setTimeout(() => {
-         if (isVisible) {
-            buttonsContainer.classList.add(ANIMATION_CLASS);
+         if (isShown) {
+            setEffects(true);
             pageRange.target.classList.add(ANIMATION_CLASS);
          }
       }, 100);
@@ -267,32 +300,6 @@ export const ReadingControls = ({
       rotationValue() {
          return currentRotate;
       },
-      onClose(cb: () => void) {
-         closeButton.onclick = cb;
-      },
-      onToggleMode(cb: () => void) {
-         toggleModeButton.onclick = cb;
-      },
-      onFontSizeChange(cb: (value: number) => Promise<void>) {
-         fontSizePlusButton.onclick = () => {
-            fontSizePlusButton.disabled = true;
-            currentFontSizeZoom += FONT_SIZE_STEP;
-            if (currentFontSizeZoom > MAX_FONT_SIZE_ZOOM) {
-               currentFontSizeZoom = MAX_FONT_SIZE_ZOOM;
-            } else {
-               cb(currentFontSizeZoom).then(handleFontSizeButtonsDisabled);
-            }
-         };
-         fontSizeMinusButton.onclick = () => {
-            fontSizeMinusButton.disabled = true;
-            currentFontSizeZoom -= FONT_SIZE_STEP;
-            if (currentFontSizeZoom < MIN_FONT_SIZE_ZOOM) {
-               currentFontSizeZoom = MIN_FONT_SIZE_ZOOM;
-            } else {
-               cb(currentFontSizeZoom).then(handleFontSizeButtonsDisabled);
-            }
-         };
-      },
       show() {
          showControls();
       },
@@ -300,7 +307,7 @@ export const ReadingControls = ({
          hideControls();
       },
       toggle() {
-         if (isVisible) {
+         if (isShown) {
             hideControls();
          } else {
             showControls();
@@ -316,7 +323,7 @@ export const ReadingControls = ({
             pageRange = createPageRange();
             wrapper.appendChild(pageRange.target);
             setTimeout(() => {
-               if (isVisible) {
+               if (isShown) {
                   pageRange.target.classList.add(ANIMATION_CLASS);
                }
             }, 100);

@@ -9,11 +9,11 @@ import { usePageUpdate } from '../../core/hooks';
 import { ConfirmModal } from '../modals/confirm-modal';
 import { Toast } from '../Toast';
 import { DB, DbFileMeta } from '../../core/DB';
+import { classList, funState } from 'fundom.js';
 
 export function editDocumentModal(doc: DbFileMeta) {
-   const errorText = FormError();
-   const button = SubmitButton('Edit');
-   button.classList.add('mt-4');
+   const [getErrorText, setErrorText] = funState('');
+   const button = SubmitButton('Edit', classList('mt-4'));
 
    const titleInput = Input({
       label: 'Title',
@@ -29,22 +29,23 @@ export function editDocumentModal(doc: DbFileMeta) {
       icon: AuthorIcon,
       value: doc.author,
    });
-   const form = Form(titleInput.target, authorInput.target, button, errorText);
+   const form = Form(titleInput.target, authorInput.target, button, FormError(getErrorText));
 
    form.onsubmit = (e) => {
       e.preventDefault();
-      errorText.innerText = '';
+      setErrorText('');
+
       if (!titleInput.value()) {
-         errorText.innerText = 'Title field is required';
+         setErrorText('Title field is required');
          return;
       }
       if (!authorInput.value()) {
-         errorText.innerText = 'Author field is required';
+         setErrorText('Author field is required');
          return;
       }
 
       if (doc.author === authorInput.value() && doc.title === titleInput.value()) {
-         errorText.innerText = 'Nothing was changed';
+         setErrorText('Nothing was changed');
          return;
       }
 
@@ -60,7 +61,7 @@ export function editDocumentModal(doc: DbFileMeta) {
             Toast.success('Your document was edited successfully');
          })
          .catch((error) => {
-            errorText.innerText = errorToString(error);
+            setErrorText(errorToString(error));
             button.disabled = false;
          });
    };

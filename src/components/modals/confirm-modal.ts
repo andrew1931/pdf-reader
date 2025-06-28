@@ -1,3 +1,4 @@
+import { children, classList, elem, on, txt } from 'fundom.js';
 import { ActionButton, SubmitButton } from '../Button';
 import { Modal, MODAL_ANIMATION_TIME } from '../Modal';
 
@@ -11,34 +12,40 @@ export const ConfirmModal = (
    cancel: ConfirmButtonItem,
    submit: ConfirmButtonItem
 ) => {
-   const text = document.createElement('span');
-   text.innerText = warmText;
-   text.classList.add('text-sm', 'mb-8', 'text-slate-500', 'text-center');
+   const buttonsWrapper = elem(
+      'div',
+      classList('flex', 'justify-center'),
+      children(
+         ActionButton(
+            cancel.label,
+            classList('mx-1'),
+            on('click', () => {
+               Modal.hide();
+               cancel.fn();
+            })
+         ),
+         SubmitButton(
+            submit.label,
+            classList('mx-1'),
+            on('click', () => {
+               Modal.hide();
+               // setTimeout for modal close animation
+               setTimeout(() => {
+                  submit.fn();
+               }, MODAL_ANIMATION_TIME);
+            })
+         )
+      )
+   );
 
-   const cancelBtn = ActionButton(cancel.label);
-   cancelBtn.classList.add('mx-1');
-   cancelBtn.onclick = () => {
-      Modal.hide();
-      cancel.fn();
-   };
-
-   const continueBtn = SubmitButton(submit.label);
-   continueBtn.classList.add('mx-1');
-   continueBtn.onclick = () => {
-      Modal.hide();
-      // setTimeout for modal close animation
-      setTimeout(() => {
-         submit.fn();
-      }, MODAL_ANIMATION_TIME);
-   };
-
-   const buttonsWrapper = document.createElement('div');
-   buttonsWrapper.classList.add('flex', 'justify-center');
-   buttonsWrapper.append(cancelBtn, continueBtn);
-
-   const el = document.createElement('div');
-   el.classList.add('flex-1', 'flex', 'flex-col', 'justify-center');
-   el.append(text, buttonsWrapper);
+   const el = elem(
+      'div',
+      classList('flex-1', 'flex', 'flex-col', 'justify-center'),
+      children(
+         elem('span', classList('text-sm', 'mb-8', 'text-slate-500', 'text-center'), txt(warmText)),
+         buttonsWrapper
+      )
+   )();
 
    Modal.show('Friendly warning', el);
 };

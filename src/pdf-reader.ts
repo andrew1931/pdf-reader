@@ -130,7 +130,8 @@ export const PdfReader = (() => {
          // @ts-expect-error loaded to window by script
          if (!window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
             // @ts-expect-error loaded to window by script
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc = location.origin + '/pdf.worker.js';
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+               location.origin + ROUTE_PREFIX + '/pdf.worker.js';
          }
          const url = URL.createObjectURL(file);
          return new Promise((resolvePdfLoad, rejectPdfLoad) => {

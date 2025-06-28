@@ -1,3 +1,4 @@
+import { elem, classList, child, list, ifElse, cmp, funState } from 'fundom.js';
 import {
    type SortOrder,
    type PaginationEvent,
@@ -12,40 +13,20 @@ import { DocumentCard } from './DocumentCard';
 import { EmptyData } from './EmptyData';
 
 export const DocumentsList = (): HTMLElement => {
-   let sorOrder: SortOrder = 'DESC';
    let fetchedFiles: DbFileMeta[] = [];
+   let sorOrder: SortOrder = 'DESC';
    let paginationState: PaginationEvent | null = null;
 
-   const list = document.createElement('ul');
-   list.classList.add('flex', 'flex-wrap', 'items-center', 'w-full');
+   const [visibleFiles, setVisibleFiles] = funState<DbFileMeta[]>([]);
+   const filesExist = cmp(visibleFiles, (files) => files.length > 0);
 
-   const listWrapper = document.createElement('div');
-   listWrapper.classList.add(
-      'flex',
-      'items-center',
-      'justify-center',
-      'w-11/12',
-      'mt-6',
-      'mx-auto',
-      'min-h-[320px]'
-   );
-
-   const emptyList = EmptyData("You don't have any files in cache:(");
-   emptyList.classList.add('mx-auto');
-
-   const listItemCb = (item: DbFileMeta, index: number) => {
-      if (paginationState) {
-         if (
-            index >= paginationState.offset &&
-            index < paginationState.offset + paginationState.limit
-         ) {
-            list.appendChild(DocumentCard(item));
-         }
-      }
+   const applyPagination = (files: DbFileMeta[]) => {
+      if (!paginationState) return files;
+      return files.slice(paginationState.offset, paginationState.offset + paginationState.limit);
    };
 
-   const sortByDate = (order: SortOrder) => {
-      return fetchedFiles.sort((a, b) => {
+   const applySortByDate = (order: SortOrder) => {
+      return [...fetchedFiles].sort((a, b) => {
          if (!a.lastViewedAt || !b.lastViewedAt) return 0;
          if (order === 'ASC') {
             return a.lastViewedAt.getTime() - b.lastViewedAt.getTime();
@@ -59,14 +40,7 @@ export const DocumentsList = (): HTMLElement => {
       DB.getAllFilesMeta()
          .then((files) => {
             fetchedFiles = files;
-            listWrapper.innerHTML = '';
-            if (files.length > 0) {
-               list.innerHTML = '';
-               sortByDate(sorOrder).forEach(listItemCb);
-               listWrapper.append(list);
-            } else {
-               listWrapper.appendChild(emptyList);
-            }
+            setVisibleFiles(applyPagination(applySortByDate(sorOrder)));
             usePaginationRequest.emit(files.length);
          })
          .catch((error) => {
@@ -82,8 +56,7 @@ export const DocumentsList = (): HTMLElement => {
 
    useDocumentsSort.on((order) => {
       sorOrder = order;
-      list.innerHTML = '';
-      sortByDate(sorOrder).forEach(listItemCb);
+      setVisibleFiles(applyPagination(applySortByDate(sorOrder)));
    });
 
    usePaginationEvent.on((res) => {
@@ -91,5 +64,25 @@ export const DocumentsList = (): HTMLElement => {
       fetchDocuments();
    });
 
-   return listWrapper;
+   return elem(
+      'div',
+      classList(
+         'flex',
+         'items-center',
+         'justify-center',
+         'w-11/12',
+         'mt-6',
+         'mx-auto',
+         'min-h-[320px]'
+      ),
+      ifElse(filesExist)(
+         child(
+            'ul',
+            classList('flex', 'flex-wrap', 'items-center', 'w-full'),
+            list(visibleFiles, (file) => {
+               return DocumentCard(file);
+            })
+         )
+      )(EmptyData("You don't have any files in cache:(", classList('mx-auto')))
+   )();
 };

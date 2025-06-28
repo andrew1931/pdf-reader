@@ -1,40 +1,47 @@
+import {
+   attr,
+   child,
+   children,
+   classList,
+   elem,
+   FunStateGetter,
+   html,
+   ifOnly,
+   txt,
+} from 'fundom.js';
+
 const MAX_INPUT_LENGTH = '1000';
 
 const Label = (text: string, inputEl: HTMLElement, required: boolean): HTMLElement => {
-   const labelMeta = document.createElement('small');
-   labelMeta.classList.add('ml-1', 'opacity-80');
-   labelMeta.innerText = !required ? '(optional)' : '';
-
-   const labelText = document.createElement('div');
-   labelText.innerText = text;
-   labelText.classList.add('label', 'text-sm', 'font-semibold', 'ml-2', 'mb-1');
-   labelText.appendChild(labelMeta);
-
-   const labelEl = document.createElement('label');
-   labelEl.classList.add('mt-2', 'flex', 'flex-col');
-   labelEl.appendChild(labelText);
-   labelEl.appendChild(inputEl);
-   return labelEl;
+   return elem(
+      'label',
+      classList('mt-2', 'flex', 'flex-col'),
+      children(
+         elem(
+            'div',
+            txt(text),
+            classList('label', 'text-sm', 'font-semibold', 'ml-2', 'mb-1'),
+            child('small', classList('ml-1', 'opacity-80'), ifOnly(!required)(txt('(optional)')))
+         ),
+         inputEl
+      )
+   )();
 };
 
-export const FormError = () => {
-   const errorText = document.createElement('span');
-   errorText.classList.add(
-      'my-2',
-      'w-full',
-      'text-xs',
-      'text-center',
-      'text-red-500',
-      'font-semibold'
-   );
-   return errorText;
+export const FormError = (text: string | FunStateGetter<string> = '') => {
+   return elem(
+      'span',
+      classList('my-2', 'w-full', 'text-xs', 'text-center', 'text-red-500', 'font-semibold'),
+      txt(text)
+   )();
 };
 
 export const Form = (...inputs: HTMLElement[]): HTMLFormElement => {
-   const form = document.createElement('form');
-   form.classList.add('mt-2', 'flex', 'flex-col', 'w-full', 'overflow-hidden', 'p-2');
-   form.append(...inputs);
-   return form;
+   return elem(
+      'form',
+      classList('mt-2', 'flex', 'flex-col', 'w-full', 'overflow-hidden', 'p-2'),
+      children(...inputs)
+   )();
 };
 
 export const Input = (conf: {
@@ -46,44 +53,49 @@ export const Input = (conf: {
    type?: string;
    required?: boolean;
 }) => {
-   const input = document.createElement('input');
-   input.classList.add(
-      'flex-1',
-      'h-full',
-      'pl-9',
-      'pr-2',
-      'border-none',
-      'text-base',
-      'md:text-sm',
-      'disabled:opacity-50',
-      'rounded-[inherit]'
-   );
-   input.setAttribute('type', conf.type || 'text');
-   input.setAttribute('name', conf.name || '');
-   input.setAttribute('placeholder', conf.placeholder);
-   input.setAttribute('maxlength', MAX_INPUT_LENGTH);
-   input.value = conf.value || '';
+   const input = elem(
+      'input',
+      classList(
+         'flex-1',
+         'h-full',
+         'pl-9',
+         'pr-2',
+         'border-none',
+         'text-base',
+         'md:text-sm',
+         'disabled:opacity-50',
+         'rounded-[inherit]'
+      ),
+      attr({
+         type: conf.type || 'text',
+         name: conf.name || '',
+         placeholder: conf.placeholder,
+         maxlength: MAX_INPUT_LENGTH,
+         value: conf.value || '',
+      })
+   )();
 
-   const inputWrapper = document.createElement('div');
-   inputWrapper.classList.add(
-      'flex',
-      'items-center',
-      'h-11',
-      'md:h-10',
-      'border',
-      'border-yellow-500',
-      'rounded-3xl',
-      'relative'
-   );
-
-   if (conf.icon) {
-      const iconEl = document.createElement('span');
-      iconEl.innerHTML = conf.icon;
-      iconEl.classList.add('input-icon', 'w-4', 'left-3', 'absolute');
-      inputWrapper.append(iconEl);
-   }
-
-   inputWrapper.append(input);
+   const inputWrapper = elem(
+      'div',
+      classList(
+         'flex',
+         'items-center',
+         'h-11',
+         'md:h-10',
+         'border',
+         'border-yellow-500',
+         'rounded-3xl',
+         'relative'
+      ),
+      ifOnly(conf.icon)(
+         child(
+            'span',
+            html(conf.icon as string),
+            classList('input-icon', 'w-4', 'left-3', 'absolute')
+         )
+      ),
+      children(input)
+   )();
 
    return {
       target: Label(conf.label, inputWrapper, conf.required ?? true),
@@ -114,23 +126,27 @@ export const Textarea = (conf: {
    placeholder: string;
    required?: boolean;
 }) => {
-   const textarea = document.createElement('textarea');
-   textarea.classList.add(
-      'w-full',
-      'h-40',
-      'px-4',
-      'py-4',
-      'resize-none',
-      'border',
-      'border-yellow-500',
-      'rounded-3xl',
-      'text-base',
-      'md:text-sm',
-      'disabled:opacity-50'
-   );
-   textarea.setAttribute('name', conf.name);
-   textarea.setAttribute('placeholder', conf.placeholder);
-   textarea.setAttribute('maxlength', MAX_INPUT_LENGTH);
+   const textarea = elem(
+      'textarea',
+      classList(
+         'w-full',
+         'h-40',
+         'px-4',
+         'py-4',
+         'resize-none',
+         'border',
+         'border-yellow-500',
+         'rounded-3xl',
+         'text-base',
+         'md:text-sm',
+         'disabled:opacity-50'
+      ),
+      attr({
+         name: conf.name,
+         placeholder: conf.placeholder,
+         maxlength: MAX_INPUT_LENGTH,
+      })
+   )();
 
    return {
       target: Label(conf.label, textarea, conf.required ?? true),

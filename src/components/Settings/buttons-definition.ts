@@ -1,9 +1,6 @@
 import { BugIcon } from '../icons/bug';
 import { InfoIcon } from '../icons/info';
-import { QuestionIcon } from '../icons/question';
 import { ReloadIcon } from '../icons/reload';
-import { reportBugModal } from '../modals/report-bug-modal';
-import { AskQuestionModal } from '../modals/ask-question-modal';
 import { SettingButton } from './SettingButton';
 import { PolicyModal } from '../modals/policy-modal';
 import { CheckUpdatesModal } from '../modals/check-updates-modal';
@@ -12,6 +9,10 @@ import { Modal } from '../Modal';
 import { DB } from '../../core/DB';
 import { Toast } from '../Toast';
 import { RecycleIcon } from '../icons/recycle';
+
+export const openIssuesPage = () => {
+   window.open('https://github.com/andrew1931/pdf-swiper/issues');
+};
 
 export const settingsButtons = {
    // auth: SettingButton({
@@ -22,17 +23,11 @@ export const settingsButtons = {
    //       navigate(routes.auth.pathname + routes.auth.search);
    //    }
    // }),
-   question: SettingButton({
-      label: 'Ask a question',
-      icon: QuestionIcon,
-      iconColor: 'text-sky-500',
-      action: AskQuestionModal,
-   }),
    report: SettingButton({
       label: 'Report an issue',
       icon: BugIcon,
       iconColor: 'text-red-500',
-      action: reportBugModal,
+      action: openIssuesPage,
    }),
    info: SettingButton({
       label: 'Privacy policy',

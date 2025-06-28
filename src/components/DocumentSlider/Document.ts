@@ -1,3 +1,16 @@
+import {
+   children,
+   classList,
+   cmp,
+   elem,
+   funState,
+   ifElse,
+   ifOnly,
+   list,
+   on,
+   style,
+   txt,
+} from 'fundom.js';
 import { DB, type DbFileMeta, DEFAULT_FONT_SIZE_ZOOM, NotEnabledError } from '../../core/DB';
 import {
    useOutlineToggle,
@@ -35,8 +48,11 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
 
    const lastViewedPage = (textOnlyMode ? doc.lastViewedPageTextMode : doc.lastViewedPage) || 0;
 
+   const [getIsLoading, setIsLoading] = funState(textOnlyMode);
+   const [getEffects, setEffects] = funState(false);
+
    let isOpen = false;
-   let isLoading = textOnlyMode;
+
    let textSlidesList: HTMLElement[][] = [];
    let parsedText: DocumentParsedText = [];
    let searchText: DocumentText = [];
@@ -68,15 +84,18 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
       textOnlyMode,
       initialFontSizeZoom: doc.fontSizeZoom || DEFAULT_FONT_SIZE_ZOOM,
       searchHandler,
+      onClose: hideDocument,
+      onFontSizeChange: renderTextSlides,
+      onToggleMode: () => {
+         hideDocument(true);
+         DB.getFileMeta(doc.fileName).then((doc) =>
+            Document({ pdf, doc, textOnlyMode: !textOnlyMode })
+         );
+      },
    });
-   controls.onClose(hideDocument);
-   controls.onFontSizeChange(renderTextSlides);
-   controls.onToggleMode(() => {
-      hideDocument(true);
-      DB.getFileMeta(doc.fileName).then((doc) =>
-         Document({ pdf, doc, textOnlyMode: !textOnlyMode })
-      );
-   });
+
+   const hideControlsDelayed = debounce(controls.hide, INACTIVITY_TIMEOUT);
+   hideControlsDelayed();
 
    const saveLastViewedPage = debounce((fileName: string, index: number) => {
       DB.editFileMeta(
@@ -120,56 +139,79 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
       controls.show();
    }
 
-   const contentEl = document.createElement('div');
-   contentEl.classList.add('flex', 'items-center', 'w-full', 'md:max-w-5xl');
-   contentEl.appendChild(swiper.target);
-
-   const loaderWrapper = document.createElement('div');
-   loaderWrapper.classList.add(
-      'h-full',
-      'w-full',
-      'bg-white',
-      'flex',
-      'items-center',
-      'justify-center',
-      'absolute',
-      'left-0',
-      'top-0',
-      'z-20',
-      'opacity-90'
-   );
-   loaderWrapper.appendChild(Loader());
    const loaderSub = useDocumentLoader.on((loading) => {
-      isLoading = loading;
-      if (isLoading) {
-         loaderWrapper.classList.remove('hidden');
-      } else {
-         loaderWrapper.classList.add('hidden');
-      }
+      setIsLoading(loading);
    });
 
-   const wrapper = document.createElement('div');
-   wrapper.classList.add(
-      'document-view-container',
-      'flex',
-      'w-full',
-      'h-full',
-      'justify-center',
-      'fixed',
-      'top-0',
-      'left-0',
-      'bg-slate-50',
-      'z-40',
-      'transition-opacity',
-      'duration-500',
-      'opacity-0'
-   );
-   wrapper.append(contentEl, controls.target, loaderWrapper);
+   const wrapper = elem(
+      'div',
+      classList(
+         'document-view-container',
+         'flex',
+         'w-full',
+         'h-full',
+         'justify-center',
+         'fixed',
+         'top-0',
+         'left-0',
+         'bg-slate-50',
+         'z-40',
+         'transition-opacity',
+         'duration-500'
+      ),
+      ifOnly(getEffects)(classList('opacity-0')),
+      children(
+         elem(
+            'div',
+            classList('flex', 'items-center', 'w-full', 'md:max-w-5xl'),
+            children(swiper.target)
+         ),
+         controls.target,
+         elem(
+            'div',
+            classList(
+               'h-full',
+               'w-full',
+               'bg-white',
+               'flex',
+               'items-center',
+               'justify-center',
+               'absolute',
+               'left-0',
+               'top-0',
+               'z-20',
+               'opacity-90'
+            ),
+            ifOnly(cmp(getIsLoading, (v) => v === false))(classList('hidden')),
+            children(Loader())
+         )
+      ),
+      ifElse(isTouchDevice())(
+         on('click', (e) => {
+            if (getIsLoading()) return;
+            if (
+               !isOpen ||
+               (e.target as HTMLElement).matches('.' + SWIPER_BUTTON_NEXT_CLASS) ||
+               (e.target as HTMLElement).matches('.' + SWIPER_BUTTON_NEXT_CLASS) ||
+               (e.target as HTMLElement).closest('.' + READING_BUTTON_ICON_CLASS)
+            )
+               return;
+            controls.toggle();
+         })
+      )(
+         on('mousemove', () => {
+            if (getIsLoading()) return;
+            controls.show();
+            hideControlsDelayed();
+         })
+      )
+   )();
 
    const SlideTextPage = () => {
-      const div = document.createElement('div');
-      div.classList.add('w-full', 'max-w-3xl', 'h-full', 'bg-inherit', 'px-4', 'md:px-12', 'py-4');
-      return div;
+      return elem(
+         'div',
+         classList('w-full', 'max-w-3xl', 'h-full', 'bg-inherit', 'px-4', 'md:px-12', 'py-4')
+      )();
    };
 
    async function renderTextSlides(fontSizeZoom?: number): Promise<void> {
@@ -184,20 +226,18 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
       }
 
       const LineElement = (item: ParsedTextItem) => {
-         const lineEl = document.createElement('p');
-         lineEl.classList.add('w-full');
-         item.text.forEach((tag) => {
-            const span = document.createElement('span');
-            span.textContent = tag.value;
-            span.style.fontSize = Math.round((tag.height * fontSizeZoom) / 100) + 'px';
-            lineEl.appendChild(span);
-         });
-         // lineEl.style.textAlign = item.textAlign;
-         if (item.textAlign === 'start' && item.marginTop > 0) {
-            lineEl.style.textIndent = '5%';
-         }
-
-         return lineEl;
+         return elem(
+            'p',
+            classList('w-full'),
+            list(item.text, (tag) => {
+               return elem(
+                  'span',
+                  style({ fontSize: Math.round((tag.height * fontSizeZoom) / 100) + 'px' }),
+                  txt(tag.value, { useTextContent: true })
+               );
+            }),
+            ifOnly(item.textAlign === 'start' && item.marginTop > 0)(style({ textIndent: '5%' }))
+         )();
       };
 
       const cutOverflowedText = (
@@ -361,8 +401,10 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
             }
          }
 
-         const canvas = document.createElement('canvas');
-         canvas.classList.add('max-w-full', 'max-h-dvh', 'bg-inherit', 'absolute');
+         const canvas = elem(
+            'canvas',
+            classList('max-w-full', 'max-h-dvh', 'bg-inherit', 'absolute')
+         )();
          canvases.push(canvas);
          pdf.render(canvas, index + 1, controls.rotationValue());
          slides[index].appendChild(canvas);
@@ -402,7 +444,7 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
       });
       useScrollToggle.emit({ value: false });
       setTimeout(() => {
-         wrapper.classList.remove('opacity-0');
+         setEffects(false);
       }, 100);
 
       DB.editFileMeta(doc.fileName, { lastViewedAt: new Date() }).catch((error) => {
@@ -433,8 +475,8 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
       canvases.forEach((el) => el.remove());
       canvases = [];
 
-      wrapper.removeChild(controls.target);
-      wrapper.classList.add('opacity-0');
+      // wrapper.removeChild(controls.target);
+      setEffects(true);
       useOutlineToggle.emit({ value: true });
       useScrollToggle.emit({ value: true });
       usePageUpdate.emit();
@@ -449,26 +491,4 @@ export const Document = ({ pdf, doc, textOnlyMode }: DocumentProps) => {
 
    useDocumentLoader.emit(textOnlyMode);
    showDocument();
-
-   if (isTouchDevice()) {
-      wrapper.onclick = (e: MouseEvent) => {
-         if (isLoading) return;
-         if (
-            !isOpen ||
-            (e.target as HTMLElement).matches('.' + SWIPER_BUTTON_NEXT_CLASS) ||
-            (e.target as HTMLElement).matches('.' + SWIPER_BUTTON_NEXT_CLASS) ||
-            (e.target as HTMLElement).closest('.' + READING_BUTTON_ICON_CLASS)
-         )
-            return;
-         controls.toggle();
-      };
-   } else {
-      const hideControlsDelayed = debounce(controls.hide, INACTIVITY_TIMEOUT);
-      hideControlsDelayed();
-      wrapper.onmousemove = () => {
-         if (isLoading) return;
-         controls.show();
-         hideControlsDelayed();
-      };
-   }
 };

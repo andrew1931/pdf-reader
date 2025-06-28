@@ -17,5 +17,5 @@ export const routes: Record<PageKey, Route> = {
       pathname: '/settings',
       search: '',
       icon: SettingsIcon,
-   }
+   },
 };

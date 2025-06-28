@@ -1,5 +1,6 @@
 import { useRouterPush } from './hooks';
 import { debounce, isTouchDevice } from './utils';
+import { elem, on } from 'fundom.js';
 
 type Route = {
    path: string;
@@ -39,13 +40,14 @@ export const createRouter = (root: HTMLElement, routes: Route[]) => {
 };
 
 export const Link = (url: string) => {
-   const link = document.createElement('button');
-   link.onclick = (e) => {
-      e.preventDefault();
-      navigate(url);
-      link.blur();
-   };
-   return link;
+   return elem(
+      'button',
+      on('click', function (e) {
+         e.preventDefault();
+         navigate(url);
+         this.blur();
+      })
+   );
 };
 
 export const isCurrentRoute = (routePath: string, urlPath: string): boolean => {

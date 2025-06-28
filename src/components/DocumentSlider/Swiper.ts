@@ -1,3 +1,4 @@
+import { children, classList, elem, style } from 'fundom.js';
 import Swiper from 'swiper';
 import { Navigation, Keyboard } from 'swiper/modules';
 
@@ -9,37 +10,42 @@ export const SWIPER_BUTTON_PREV_CLASS = 'swiper-button-prev';
 export const SWIPER_BUTTON_NEXT_CLASS = 'swiper-button-next';
 
 export const createSwiper = (numberOfSlides: number, initialSlide: number) => {
-   const el = document.createElement('div');
-   el.classList.add(SWIPER_CLASS, 'h-full', 'w-full');
-   const wrapper = document.createElement('div');
-   wrapper.classList.add('swiper-wrapper', 'h-full', 'w-full');
-
-   const buttonPrev = document.createElement('div');
-   buttonPrev.classList.add(SWIPER_BUTTON_PREV_CLASS);
-   const buttonNext = document.createElement('div');
-   buttonNext.classList.add(SWIPER_BUTTON_NEXT_CLASS);
+   const slides: HTMLElement[] = [];
 
    const Slide = () => {
-      const slide = document.createElement('div');
-      slide.classList.add(
-         'swiper-slide',
-         'h-full',
-         'w-full',
-         'bg-white',
-         'items-center',
-         'justify-center',
-         'relative'
-      );
-      slide.style.display = 'flex';
-      return slide;
+      return elem(
+         'div',
+         classList(
+            'swiper-slide',
+            'h-full',
+            'w-full',
+            'bg-white',
+            'items-center',
+            'justify-center',
+            'relative'
+         ),
+         style({ display: 'flex' })
+      )();
    };
 
-   const slides: HTMLElement[] = [];
    for (let i = 0; i < numberOfSlides; i++) {
       slides.push(Slide());
    }
-   wrapper.append(...slides);
-   el.append(wrapper, buttonPrev, buttonNext);
+   const wrapper = elem(
+      'div',
+      classList('swiper-wrapper', 'h-full', 'w-full'),
+      children(...slides)
+   )();
+
+   const el = elem(
+      'div',
+      classList(SWIPER_CLASS, 'h-full', 'w-full'),
+      children(
+         wrapper,
+         elem('div', classList(SWIPER_BUTTON_PREV_CLASS)),
+         elem('div', classList(SWIPER_BUTTON_NEXT_CLASS))
+      )
+   )();
 
    let swipesSub: SwipeSubscriber = () => {};
    const swiper = new Swiper('.' + SWIPER_CLASS, {
