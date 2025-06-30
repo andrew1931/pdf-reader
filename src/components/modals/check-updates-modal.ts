@@ -11,9 +11,9 @@ export const CheckUpdatesModal = () => {
       .then((res) => res.json())
       .then((res) => {
          if (BUILD_VERSION === res.buildHash) {
-            setDescription('You have the latest version of PDF swiper');
+            setDescription('You have the latest version of PDF reader');
          } else {
-            setDescription('New version of PDF swiper is available');
+            setDescription('New version of PDF reader is available');
             setBtnText('Update');
          }
       })

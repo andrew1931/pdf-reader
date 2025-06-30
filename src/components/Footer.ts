@@ -8,7 +8,7 @@ export const Footer = (showLinks: boolean): HTMLElement => {
       classList('flex', 'flex-col', 'items-center', 'mt-4', 'pb-20', 'md:pb-4', 'p-4'),
       child(
          'span',
-         txt(`© ${new Date().getFullYear()} Pdf Swiper v.${packageJson.version}`),
+         txt(`© ${new Date().getFullYear()} Pdf Reader v.${packageJson.version}`),
          classList('text-xs', 'text-slate-400', 'mb-1')
       ),
       ifOnly(showLinks)(children(EssentialLinks()))

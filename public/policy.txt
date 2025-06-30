@@ -1,8 +1,8 @@
-PDF Swiper Privacy Policy
+Privacy Policy
 <small>Last updated: Feb 16, 2025</small>
 
 <h2>INTRODUCTION</h2>
-PDF Swiper (“we,” “us,” or “our”) collects and uses users' personal information in order to provide services to them.
+We collect and use users' personal information in order to provide services to them.
 This privacy policy describes how we collect, use, protect and share information that we collect during usage of our website (<a href="https://andrew1931.github.io/pdf-swiper" target="_blank">https://andrew1931.github.io/pdf-swiper/</a>).
 
 <h2>WHAT DATA DO WE COLLECT AND WHERE DO WE STORE IT?</h2>
@@ -13,7 +13,7 @@ Information which is stored in users' <u>browser application</u>:
     - application appearance;
     - whether or not to store viewed pdf files;
 
-PDF swiper does not have web server and do not store any logs or anything,
+We does not have web server and do not store any logs or anything,
 
 We DO NOT collect any information to identify our users (i.e. IP addresses, usernames, pictures etc.)
 
