@@ -11,7 +11,7 @@ import { Toast } from '../Toast';
 import { RecycleIcon } from '../icons/recycle';
 
 export const openIssuesPage = () => {
-   window.open('https://github.com/andrew1931/pdf-swiper/issues');
+   window.open('https://github.com/andrew1931/pdf-reader/issues');
 };
 
 export const settingsButtons = {

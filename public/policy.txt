@@ -3,7 +3,7 @@ Privacy Policy
 
 <h2>INTRODUCTION</h2>
 We collect and use users' personal information in order to provide services to them.
-This privacy policy describes how we collect, use, protect and share information that we collect during usage of our website (<a href="https://andrew1931.github.io/pdf-swiper" target="_blank">https://andrew1931.github.io/pdf-swiper/</a>).
+This privacy policy describes how we collect, use, protect and share information that we collect during usage of our website (<a href="https://andrew1931.github.io/pdf-reader" target="_blank">https://andrew1931.github.io/pdf-reader/</a>).
 
 <h2>WHAT DATA DO WE COLLECT AND WHERE DO WE STORE IT?</h2>
 
@@ -30,4 +30,4 @@ Viewed PDF files from users' devices may or may not be used by our third party l
 Please get acquainted with their privacy policy and terms and conditions.
 
 <h2>CONTACT US</h2>
-We may be contacted via <a href="https://github.com/andrew1931/pdf-swiper/issues" target="_blank">Report issue</a> link.
+We may be contacted via <a href="https://github.com/andrew1931/pdf-reader/issues" target="_blank">Report issue</a> link.

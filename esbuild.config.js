@@ -30,7 +30,7 @@ const config = {
    ],
    define: {
       BUILD_VERSION: JSON.stringify(buildHash),
-      ROUTE_PREFIX: JSON.stringify(isProd ? '/pdf-swiper' : ''),
+      ROUTE_PREFIX: JSON.stringify(isProd ? '/pdf-reader' : ''),
    },
    write: true,
    bundle: true,

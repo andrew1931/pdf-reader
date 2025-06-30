@@ -56,7 +56,7 @@ export const DEFAULT_FONT_SIZE_ZOOM = 100;
 
 export const DB = (() => {
    const MAX_CONNECT_ATTEMPTS = 3;
-   const DB_NAME = '@pdf-swiper';
+   const DB_NAME = '@pdf-reader';
    const FILES_STORE = 'pdf_files';
    const FILES_META_STORE = 'pdf_meta';
    const VERSION = 1;
