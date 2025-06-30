@@ -1,6 +1,6 @@
 {
-   "name": "Pdf Swiper",
-   "short_name": "Pdf Swiper",
+   "name": "Pdf reader",
+   "short_name": "Pdf reader",
    "id": "/?page=1",
    "start_url": "/?page=1",
    "description": "App for swiping local pdf file pages",
